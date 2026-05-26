@@ -7,7 +7,7 @@ A repository for organizing and summarizing papers I have read.
 ## Paper List
 
 <details>
-<summary><b><b>1. Dynamic Self-Righting of Planar-Based Objects on Dual Supports and its Implications for Robotic Object Placement</b></b></summary>
+<summary><b>1. Dynamic Self-Righting of Planar-Based Objects on Dual Supports and its Implications for Robotic Object Placement</b></summary>
 
 ## Basic Information
 
@@ -28,7 +28,7 @@ A repository for organizing and summarizing papers I have read.
 </details>
 
 <details>
-<summary><b><b>2. Dynamic RDMM: Scalable, Controllable Dataset Generation for Instruction-Grounded Robot Learning</b></b></summary>
+<summary><b>2. Dynamic RDMM: Scalable, Controllable Dataset Generation for Instruction-Grounded Robot Learning</b></summary>
 
 ## Basic Information
 
@@ -53,7 +53,7 @@ A repository for organizing and summarizing papers I have read.
 
 ## Basic Information
 
-- **Title**: ANUBIS: a Compact, Low-Cost, Compliant Humanoid Mobile Manipulation Robo
+- **Title**: ANUBIS: a Compact, Low-Cost, Compliant Humanoid Mobile Manipulation Robot
 - **Authors**: Taewoong Kang, Joonyoung Kim, Shady Nasrat, Dongwoon Song, Gijae Ahn, Minseong Jo
 - **Conference / Journal**: 2025 IEEE-RAS 24th International Conference on Humanoid Robots (Humanoids)
 - **Year**: 2025
@@ -88,7 +88,6 @@ A repository for organizing and summarizing papers I have read.
 ---
 
 
-## Understanding the Structure
 
 ## Understanding the Structure
 
@@ -177,7 +176,6 @@ A repository for organizing and summarizing papers I have read.
 
 ## Understanding the Structure
 
-## Understanding the Structure
 
 ### I. Introduction
 
@@ -477,7 +475,7 @@ A repository for organizing and summarizing papers I have read.
 
 
 <details>
-<summary><b>11. Paper Title</b></summary>
+<summary><b>11. Learning-Based Force Control of Twisted String Actuators Using a Neural Network-Based Inverse Model</b></summary>
 
 ## Basic Information
 
@@ -654,6 +652,7 @@ A repository for organizing and summarizing papers I have read.
 - CusADi 논문은 CasADi 기반의 기호적(symbolic) 수식과 최적제어 문제를 GPU에서 대규모 병렬로 계산할 수 있게 하는 프레임워크를 제안한다. 기존 CasADi는 CPU에서만 동작하여 수천 개 환경을 동시에 다루는 강화학습(RL)이나 병렬 시뮬레이션에 한계가 있었는데, 이 논문은 CasADi의 기호 표현 그래프를 CUDA 커널로 코드 생성하여 임의의 닫힌형식(closed-form) 수식을 GPU에서 SIMD 방식으로 병렬 평가할 수 있도록 확장한다. 또한 분기 없는 고정 연산 수의 최적제어 문제(OCP 근사 해법)를 제안해, MPC를 수천 개 환경에서 동시에 실행 가능하게 하였고, 이를 통해 휴머노이드 로봇의 MPC 병렬 실행, centroidal momentum 기반 RL 학습 보조, 쿼드콥터의 흡인 영역·민감도 분석 등 다양한 로보틱스 응용에서 CPU 대비 수십~수백 배의 속도 향상을 보였다. 결과적으로 CusADi는 모델 기반 최적제어와 강화학습을 GPU 상에서 효율적으로 결합할 수 있는 핵심 연결 도구임을 입증한다
 - 난이도: 상
 ---
+
 ## Understanding the Structure
 
 ### I. Introduction
@@ -740,8 +739,8 @@ A repository for organizing and summarizing papers I have read.
 ---
 
 ## One-line Summary
-- 이 논문은 모델 예측 제어(MPC)의 해석 가능성과 물리적 제약 처리 능력에 강화학습(RL)의 강건성과 적응성을 결합하기 위해,*GPU 병렬화된 MPC 위에 잔차(residual) 정책을 토크 수준에서 결합하는 제어 아키텍처(Residual MPC)를 제안합니다. 핵심은 MPC를 “모방 대상”이 아니라 강력한 제어 기준선(prior)으로 두고, RL 정책이 모델 불일치·접촉 불확실성·비미분/희소 제약 등 MPC가 다루기 어려운 요소만 국소적으로 보정하도록 학습시키는 것입니다. 이를 위해 MPC를 GPU에서 대규모 병렬로 고주파(100 Hz) 평가하여 RL 루프 안에 직접 포함시키고, 잔차 정책은 MPC 출력에 작은 토크 보정을 더해 성능을 향상시킵니다. 실험 결과, 제안 방식은 순수 MPC나 종단 간 RL 대비 샘플 효율과 최종 성능이 우수하며, 보상 설계 부담을 줄이면서도 더 넓은 속도 명령 범위, 미학습 보행/지형에 대한 제로샷 적응, 그리고 하드웨어 전이 가능성을 입증합니다
--난이도: 최상
+- 이 논문은 모델 예측 제어(MPC)의 해석 가능성과 물리적 제약 처리 능력에 강화학습(RL)의 강건성과 적응성을 결합하기 위해, GPU 병렬화된 MPC 위에 잔차(residual) 정책을 토크 수준에서 결합하는 제어 아키텍처(Residual MPC)를 제안합니다. 핵심은 MPC를 “모방 대상”이 아니라 강력한 제어 기준선(prior)으로 두고, RL 정책이 모델 불일치·접촉 불확실성·비미분/희소 제약 등 MPC가 다루기 어려운 요소만 국소적으로 보정하도록 학습시키는 것입니다. 이를 위해 MPC를 GPU에서 대규모 병렬로 고주파(100 Hz) 평가하여 RL 루프 안에 직접 포함시키고, 잔차 정책은 MPC 출력에 작은 토크 보정을 더해 성능을 향상시킵니다. 실험 결과, 제안 방식은 순수 MPC나 종단 간 RL 대비 샘플 효율과 최종 성능이 우수하며, 보상 설계 부담을 줄이면서도 더 넓은 속도 명령 범위, 미학습 보행/지형에 대한 제로샷 적응, 그리고 하드웨어 전이 가능성을 입증합니다
+- 난이도: 최상
 ---
 
 ## Understanding the Structure
@@ -878,7 +877,7 @@ A repository for organizing and summarizing papers I have read.
 ---
 
 ## Understanding the Structure
-## Understanding the Structure
+
 
 ### 0. Abstract
 
@@ -1028,13 +1027,11 @@ A repository for organizing and summarizing papers I have read.
 
 
 <details>
-<summary><b>16. LUOR: A Framework for Language Understanding in Object Retrieval
-and Grasping</b></summary>
+<summary><b>16. LUOR: A Framework for Language Understanding in Object Retrieval and Grasping</b></summary>
 
 ## Basic Information
 
-- **Title**: LUOR: A Framework for Language Understanding in Object Retrieval
-and Grasping
+- **Title**: LUOR: A Framework for Language Understanding in Object Retrieval and Grasping
 - **Authors**: Dongmin Yoon, Seonghun Cha, Yoonseon Oh
 - **Conference / Journal**: International Journal of Control, Automation and Systems
 - **Year**: 2025
@@ -1113,13 +1110,46 @@ LUOR가 의미적으로 선택
 - 또한 객체를 직접 class로 분류하지 않는 MTD 방식을 활용하여, 기존 방법보다 암묵적 명령에서 객체 식별 및 파지 성능이 향상됨을 4자유도 로봇 실험을 통해 입증함.
 
 
+![Structure](images/Structure_LUOR.png)
+
+
+---
+
+## Questions That Came to Mind
+
+### Object Selection in Usage-Based Retrieval
+
+- 같은 용도의 물체이지만 속성이 다르다면 모델은 어떤 객체를 선택해야 하는가?
+
+- 예를 들어:
+  - 플라스틱 숟가락 vs 쇠숟가락
+  - 빈 물통 vs 물이 가득 찬 물통
+
+  처럼 affordance는 유사하지만 물리적 상태나 속성이 다른 경우, 어떤 기준으로 객체를 선택하는가?
+
+---
+
+### Affordance and Current Object State
+
+- 언어 명령이 주어졌을 때, 객체의 affordance뿐만 아니라 현재 상태까지 반영하여 task에 적합한 객체를 선택할 수 있는가?
+
+- 또한 명령에 직접 명시되지 않은 객체 속성까지 추론하여 객체 선택 과정에 반영할 수 있는가?
+
+- 예를 들어 다음과 같은 속성들:
+  - material
+  - fill-level
+  - weight
+  - cleanliness
+
+  이 retrieval 과정에 함께 고려될 수 있는지 궁금했다.
+
 ---
 </details>
 
 
 
 <details>
-<summary><b><b>17. Task-Aware Semantic Map++: Cost-Efficient Task Assignment With Advanced Benchmark</b></b></summary>
+<summary><b>17. Task-Aware Semantic Map++: Cost-Efficient Task Assignment With Advanced Benchmark</b></summary>
 
 ## Basic Information
 
@@ -1138,7 +1168,6 @@ LUOR가 의미적으로 선택
 
 ## Understanding the Structure
 
-## Understanding the Structure
 
 ### 0. Abstract
 
@@ -1303,34 +1332,348 @@ LUOR가 의미적으로 선택
 - 현재의 heuristic 방식에서 벗어나, 적응적 frame selection을 위한 학습 기반 전략을 개발할 계획임.
 - task planning과 TASMap++를 통합하여, 개인화된 task assignment mechanism을 개발하는 방향으로 확장할 수 있음.
 
+## 한장 요약
+
+
+![Structure](images/Structure_TASMap.png)
+
+
 ---
+
+## Questions That Came to Mind
+
+### Scene Representation for Task Assignment
+
+- 같은 환경이지만 다른 장소에서도 로봇은 객체를 올바르게 파악할 수 있는가?
+
+- 예를 들어, 기존에 학습된 환경과 비교했을 때 인테리어 또는 물체의 색깔이 바뀐 상황에서도 객체를 올바르게 인식할 수 있는가?
+
+---
+
+### Generalization to Different Environments
+
+- 학습된 데이터와 다른 환경에서도 로봇은 객체를 올바르게 파악하고 업무를 배정할 수 있는가?
+
+- 특히 다음과 같은 변화가 있을 때 객체 인식 및 task assignment 성능은 어떻게 변화하는가?
+  - 객체 주변 환경의 색깔 변화
+  - 객체 자체의 색깔 변화
+
+---
+
+### Final Question
+
+- 학습된 데이터와는 다른 환경에서 객체의 주변 환경 또는 객체의 색깔이 변화했을 때, 객체 인식 및 task assignment 성능은 어떻게 변화하는가?
+
+---
+
 </details>
 
 
 
 <details>
-<summary><b><b>18. Paper Title</b></b></summary>
+<summary><b>18. Task Planning for Long-Horizon Cooking Tasks Based on Large Language Models</b></summary>
 
 ## Basic Information
 
-- **Title**:
-- **Authors**:
-- **Conference / Journal**:
-- **Year**:
+- **Title**: Task Planning for Long-Horizon Cooking Tasks Based on Large Language Models
+- **Authors**: Jungkyoo Shin, Jieun Han, SeungJun Kim, Yoonseon Oh, Eunwoo Kim
+- **Conference / Journal**: 2024 IEEE/RSJ International Conference
+- **Year**: 2024
 
 ---
 
 ## One-line Summary
 
--
--
+- 이 논문은 요리와 같은 장기 작업에서 기존 symbolic task planner가 unseen object에 약한 문제를, LLM 기반 semantic feature과 encoder-decoder 구조를 이용해 object-oriented subgoal을 생성하는 방식으로 해결한다.
+- 난이도: 중
 ---
 
 ## Understanding the Structure
 
+### 1. Introduce Encoder-Decoder Framework
+
+#### A. Problem Statement
+
+- **Task planner**
+  - **Input**: target recipe name, 재료명
+  - **Output**: generate object-oriented sub-goals
+
+- **3-prediction**
+  - Robot action
+  - Objects involved action
+  - Inter-relationship between objects
+
+---
+
+#### B. Task Planning Framework
+
+- **Three main modules**
+  1. Linguistic encoder
+  2. Object encoder
+  3. Sequential decoder
+
+---
+
+##### 1. Linguistic Encoder
+
+- CLIP, latent embeddings
+  - **CLIP**: pretrained text encoder
+  - **Latent embeddings**: compose rich semantic feature from annotations
+
+- 재료목록 `r_ing`, 타겟 레시피 `r_tgt`의 토큰을 CLIP 또는 BERT에서 받아와 각 단어를 잠재적 embedding으로 표현함.
+
+---
+
+##### 2. Object Encoder
+
+- `e_tgt` 생성
+  - 재료목록 + 레시피가 포괄적으로 표현됨
+
+- LLM 구조를 건드리는 것 같음.
+  - 다만 내가 LLM 구조에 약해서 LLM 구조 공부가 필요함.
+
+- Generate a sequence of subgoals with various ingredients
+  - Grasp the individual essence of ingredients
+  - Understand their synergistic interactions
+
+- Transformer-based encoder에 각 재료의 semantic features와 레시피의 관계가 수식 `r_in`으로 표현됨.
+
+- `E`식은 multi-head attention layer에서 query, key, value inputs를 활용하여 BERT 방식으로 special class token으로 semantic features를 잡아냄.
+
+- Encoder의 마지막 input인 `r_tgt`를 final vector로 채용함.
+
+- 이렇게 나온 `e_tgt`는 재료와 레시피 간의 종합적인 표현을 포함함.
+
+---
+
+##### 3. Sequential Decoder
+
+- `e_tgt`를 input으로 각 환경과 진행상황에 맞는 sub-goals를 생성함.
+
+- 이를 위해 novel transformer인 external memory와 결합함.
+
+- External memory는 과거의 특징과 현재 상태를 고려하여 새로운 특징을 업데이트함.
+
+- Cross-attention으로 표현:
+  - `h_t`
+  - `m_t`
+  - `M_t`
+
+- `h_t`에 MHA를 적용할 때, `e_tgt`와 external memory인 `M_t-1`이 key와 value로 제공됨.
+
+- 특히 previous stage를 활용한 `M_t-1`은 gradient vanishing을 방지해줌.
+
+- 이러한 과정을 통한 축적은 subsequent tasks를 이해하는 데 있어 계산 비효율과 관련 없는 정보를 유발함.
+
+- 이를 해결하기 위해 gating mechanism을 통해 external memory에서 non-essential elements는 지우고, crucial feature만 얻도록 함.
+
+- 결과적으로 external memory에는 indispensable sequential information만 남음.
+
+- Fully connected layer에 action, object, relation별로 각각 sub-goals를 뽑아내기 위해 입력함.
+
+- `y_obj`, `y_act`, `y_rel`은 time step `t`별로 최적의 선택을 하는 가능성을 표현함.
+
+- Planner는 다음 loss를 줄이도록 end-to-end로 훈련됨.
+  - Action prediction: binary cross entropy loss
+  - Object and relation prediction: log-likelihood loss
+
+- 각 객체에 대해 여러 행동이 발생할 수 있기 때문에 action prediction을 multi-label classification으로 표현함.
+
+---
+
+### 2. Autoregressive LLM을 사용하여 Pseudo Dataset 생성
+
+#### C. LLM-Driven Data Generation
+
+- Propose a strategy to utilize recursive LLM, GPT-3.
+
+- LLM이 real-world natural language descriptions를 object-oriented format으로 바꿔줌.
+
+- 이 방법은 unseen knowledge를 배우게 해주는 pseudo dataset을 생성함.
+
+- 훈련 데이터셋의 사이즈 한계로 인해 unfamiliar recipe를 마주할 수 있기 때문에, 1M+ dataset을 학습함.
+
+- 초기에 저장된 레시피의 제목을 framework를 훈련하는 데 사용함.
+
+- 초기에 저장된 레시피와 1M+ dataset 사이의 semantic similarity를 측정함.
+
+- 이 중 unseen recipes는 predefined threshold 아래의 cosine similarity score를 가진 것들로 식별함.
+
+---
+
+##### Unseen Recipe Description Selection
+
+- 추가로 unseen recipe descriptions를 선택함.
+
+- 선택된 recipes는 robot의 capabilities와 constraints를 반영하는 in-context prompts와 함께 사용됨.
+
+- 이 prompts는 GPT-3가 language를 object-oriented structures로 번역하도록 함.
+
+- 이 중 기준에 맞지 않는 것은 제외됨.
+  - Impractical objects
+  - Incomplete structure
+
+- Viable output이 얻어질 때까지 unseen recipe 선택과정이 반복됨.
+
+- 이렇게 pseudo dataset을 생성함.
+
+## 한장 요약
+
+![Encoder-Decoder Framework](images/Structure_Long_Horizon.png)
+
+---
+
+## Questions That Came to Mind
+
+### Planner and Object State Change
+
+- 로봇이 동작하는 도중 객체의 상태가 바뀌었을 때 planner는 어떻게 대응할 것인가?
+
+- 예를 들어, 물이 담긴 접시를 옮기다가 접시가 깨지고 물이 쏟아졌다면 기존 subgoal을 유지해야 하는가, 아니면 새로운 subgoal을 생성해야 하는가?
+
+---
+
+### Subgoal Reassignment
+
+- 모델의 동작으로 인해 객체의 상태가 변화했을 때, subgoal은 어떤 과정으로 재배정되어야 하는가?
+
+- 객체가 `a → a-1, a-2`처럼 분리되었을 때:
+  - 기존 객체 `a`의 subgoal을 `a-1`, `a-2`에 그대로 이어서 배정할 수 있는가?
+  - 아니면 새로운 객체 상태로 인식하고 새로운 subgoal을 생성해야 하는가?
+
+- 예를 들어:
+  - 양파처럼 형태를 유지한 채 두 조각으로 나뉜 경우에는 기존 cooking subgoal을 이어서 사용할 수 있을 수 있음.
+  - 반면 카레 소스가 담긴 그릇이 엎어진 경우에는 카메라 상에서는 객체가 존재하더라도 실제 task 수행에는 사용할 수 없는 상태가 될 수 있음.
+  - 이 경우 planner는 기존 cooking task 대신 `wipe`, `clean`과 같은 새로운 subgoal을 생성해야 하지 않을까?
+
+---
+
+### Affordance and State Transition
+
+- 객체 상태 변화가 발생했을 때, 해당 변화가 task 수행 가능성(affordance)에 미치는 영향을 기반으로:
+  - 기존 subgoal을 유지할지,
+  - subgoal을 분해할지,
+  - 혹은 새로운 goal로 전환할지를
+
+  어떤 기준으로 결정하는가?
+
+- 특히 planner가 객체 상태 변화를 어느 시점에서 인식하고 subgoal을 재구성하는지도 궁금했다.
+
+---
+
+</details>
 
 
+
+
+<details>
+<summary><b>19. Do As I Can, Not As I Say: Grounding Language in Robotic Affordances </b></summary>
+
+## Basic Information
+
+- **Title**: Do As I Can, Not As I Say: Grounding Language in Robotic Affordances
+- **Authors**: Michael Ahn, Anthony Brohan, Noah Brown, et al.
+- **Conference / Journal**: arXiv
+- **Year**: 2022
 
 
 ---
+
+## One-line Summary
+
+- 기존 LLM은 real-world task의 절차를 언어적으로 제안할 수 있지만, 로봇의 실제 능력과 현재 환경에 grounded되어 있지 않다. 이 논문은 LLM이 각 skill의 task 적합도를 평가하고, 로봇의 value function이 각 skill의 실행 가능성 affordance를 평가한 뒤, 두 점수를 결합해 실행 가능한 행동 순서를 선택하는 SayCan 방식을 제안한다.
+
+---
+
+## Understanding the Structure
+
+```text
+User Instruction
+        ↓
+Available Skills
+        ↓
+Say Score from LLM
+        +
+Can Score from Affordance Function
+        ↓
+Select Executable Skill
+        ↓
+Robot Execution
+```
+
+---
+
+## Main Idea
+
+- **Say-LLM**
+  - Describes the probability that each skill contributes to completing the instruction.
+  - 즉, LLM이 현재 명령을 수행하는 데 어떤 skill이 적절한지 판단한다.
+
+- **Can-Affordance Function**
+  - Describes the probability that each skill succeeds.
+  - 즉, 로봇이 현재 환경에서 해당 skill을 실제로 수행할 수 있는지 판단한다.
+
+- **SayCan**
+  - `Say` 점수와 `Can` 점수를 결합하여, 의미적으로 적절하면서도 실제로 실행 가능한 행동을 선택한다.
+
+---
+
+## Method
+
+- A robot’s performance can be improved simply by enhancing the underlying language model.
+
+- LLM은 task completion 관점에서 어떤 skill이 적절한지 평가한다.
+
+- Affordance function은 로봇의 현재 상태와 환경에서 해당 skill이 성공할 수 있는지를 평가한다.
+
+- 최종적으로 두 점수를 결합해 다음 행동을 선택한다.
+
+```text
+Score(skill) = Say(skill) × Can(skill)
+```
+
+---
+
+## Limitations
+
+1. LLM 학습 데이터에 의존한다.
+2. The primary bottleneck of the system is in the range and capabilities of the underlying skills.
+
+---
+
+## Why I Read This Paper
+
+- LLM 기반 로봇 task planning에서 핵심 문제는 언어적으로 그럴듯한 계획이 실제 로봇이 수행 가능한 행동과 다를 수 있다는 점이다. 이 논문은 LLM의 high-level semantic knowledge와 로봇의 affordance/value function을 결합해 실행 가능한 행동을 선택하는 SayCan 방식을 제안한다. 따라서 LLM을 실제 로봇 환경에 grounding하는 대표적인 접근을 이해하기 위해 읽었다.
+
+---
+
+</details>
+
+
+
+<details>
+<summary><b>20. Robot Object Retrieval with Contextual Natural Language Queries </b></summary>
+
+## Basic Information
+
+- **Title**: Robot Object Retrieval with Contextual Natural Language Queries
+- **Authors**: Thao Nguyen, Nakul Gopalan, Roma Patel, et al.
+- **Conference / Journal**: arXiv
+- **Year**: 2020
+
+
+---
+
+## One-line Summary
+
+- 이 논문은 기존에 사람이 로봇에게 명령할 때, 자연어 명령으로 객체의 명칭이나 정확한 시각적 묘사가 필요했다. 하지만 이 모델에선 객체의 usage인 verb-command만으로 본 적 없는 객체가 섞여 있는 5개의 후보군에서도 usage에 가장 적절하게 객체를 가져오는 모델을 제안한다.
+
+---
+
+## Why I Read This Paper
+
+- 기존 object retrieval 연구들은  객체 이름이나 시각적 특징(color, shape 등)에 많이 의존했는데, 이 논문은 “cut할 수 있는 물건”처럼 usage 기반의 자연어 명령만으로 객체를 찾는다는 점이 흥미로워 읽었다. 특히 본 적 없는 객체가 포함된 후보군에서도 verb와 object usage 관계를 기반으로 적절한 객체를 선택한다는 점이 인상적이었다.
+
+---
+
 </details>
