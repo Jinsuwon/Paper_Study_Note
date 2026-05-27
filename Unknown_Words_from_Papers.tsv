@@ -1,0 +1,167 @@
+영어	뜻	예문	논문
+sophisticated	정교한	requires a sophisticated semantic understanding of 3D scenes.	오윤선_Task-Aware Semantic Map++: Cost-Efficient Task Assignment With Advanced Benchmark
+conventional	기존의	conventional scene representations	
+attribute	특징, 속성	rely on static attributes like visual information	
+infer	추론하다	allowing robots to infer context-awareactions.	
+construct	만들어내다, 작성하다	construct a map	
+assign	할당하다	assigns appropriate tasks	
+holistic	전체적인	holistic context	
+centric	중심의	While prior work like TASMap pioneered this task-centric approach,	
+pioneer	개척하다	While prior work like TASMap pioneered this task-centric approach,	
+synthesis	합성	a multi-view synthesis pipeline	
+predecessor	전임자(이전 모델)	improved computational efficiency over its predecessor	
+derived from	~에서 유래되다	we established a reliable benchmark derived from the consensus	
+consensus	합의	 the consensus of 32 participants across 231 cluttered scenes. 	
+cluttered	어수선한	 the consensus of 32 participants across 231 cluttered scenes. 	
+across	(전반에)걸쳐	the consensus of 32 participants across 231 cluttered scenes	
+superior	우수한	TASMap++ demonstrates superior accuracy over baselines	
+baseline	기준치	TASMap++ demonstrates superior accuracy over baselines	
+paradigm	패러다임	 a paradigm distinct from conventional object grounding	
+distinct from 	~와 구별되는	 a paradigm distinct from conventional object grounding	
+grouding	연결하는 과정(로보틱스 용어)	 conventional object grounding that relies on visual and spatial attributes	
+downstream application	후속 응용 작업	We present a downstream application of TASMap++	
+experimentally	실험적으로	show experimentally that conventional grounding methods	
+struggle in	어려움을 겪다	show experimentally that conventional grounding methods struggle in this setting	
+finding	결과	To confirm these findings	
+practicality	실용성, 현실성	the framework’s robustness and practicality	
+validate	검증하다	the framework’s robustness and practicality were validated through extensive experiments	
+cornerstone	주춧돌	scene representation is a cornerstone	
+to date	지금까지	To date, ~~	
+instrumental	중요한	scene representation have been instrumental in solving robotics tasks	
+predominantly	대부분	existing approaches have predominantly relied on low-level semantic information,	
+tidy	깔끔한, 정리하다	a tidy desk / tidy a cluttered room	
+depict	(그림으로) 묘사하다	as depicted in Fig 1	
+crumpled	구겨진	crumpled clothes	
+straighten	(자세를) 똑바르게 하다	Straighten the trash can	
+inherently	선천적으로	an object-by-object basis is inherently inefficient	
+capable	가능한	a robot should be capable of autonomously inferring necessary actions	
+capability	능력	they lack the capability to reason	
+group	모이다	since these methods group objects based on relevance	
+explicit	분명한	without explicit user commands.	
+redundant	불필요한	a high volume of redundant tasks	
+pose	제기하다	These limitations pose a formidable barrier	
+formidable	어마어마한	These limitations pose a formidable barrier	
+shortcomings	단점, 결점	To address these shortcomings	
+segmentation	분할	3D segmentation module to capture	
+geometry	기하학적 구조	to capture the geometry of objects	
+encapsulate	요약하다, 압축하다	encapsulate the object's overall status	
+subsequently	그 다음에	Subsequently	
+stitch	봉합하다	TASMap++ stitches these multiple views into an integrated representation	
+annotation	주석	collecting annotations from 32 human participants	
+configuration	배치, 구성	By utilizing the same scene configurations	
+consistency	일관성	experimental consistency	
+methodology	방법론	the precious evaluation methodology.	
+unlike	~와 달리	Unlike conventional grounding tasks	
+necessitate	필요로 하다	context-aware grounding necessitates analyzing the context	
+prompt	프롬프트	Our code,prompts,and the human-annotated benchmark are publicly available at ~	
+outperform	능가하다	outperforms baselines across diverse environments	
+pivotal	중심(축)이 되는	3D semantic maps are pivotal for robotic tasks like planning	
+prominent	중요한	semantic mapping has become a prominent research area.	
+heterogeneous	여러 종류로 이뤄진	CUA-O3D [10] extends this by fusing heterogeneous foundation models via distillation.	
+fuse	융합하다	CUA-O3D [10] extends this by fusing heterogeneous foundation models via distillation.	
+distillation	증류	CUA-O3D [10] extends this by fusing heterogeneous foundation models via distillation.	
+inconsistencies	불일치	LEGaussians address mapping inconsistencies by employing feature codebooks and adaptive feature aggregation.	
+employ	사용하다	LEGaussians address mapping inconsistencies by employing feature codebooks and adaptive feature aggregation.	
+adaptive	적응형의	LEGaussians address mapping inconsistencies by employing feature codebooks and adaptive feature aggregation.	
+aggregation	집합	LEGaussians address mapping inconsistencies by employing feature codebooks and adaptive feature aggregation.	
+granularity	세분화	adjusting object granularity	
+decompose	분해하다	decomposing instructions to align scene representations with specific tasks	
+align	일치시키다	decomposing instructions to align scene representations with specific tasks	
+causality	인과관계	yet their clutter often results from random placement rather than contextual causality.	
+placement	배치	yet their clutter often results from random placement rather than contextual causality.	
+crucially	결정적으로 	Crucially, existing datasets lack representations of realistic object states (e.g., stained, dusted)	
+stained	얼룩진	Crucially, existing datasets lack representations of realistic object states (e.g., stained, dusted)	
+exhibit	보여주다	we establish a reliable benchmark based on consensus among annotators on scenes exhibiting realistic clutter.	
+annotator	주석자	we establish a reliable benchmark based on consensus among annotators on scenes exhibiting realistic clutter.	
+leverage	활용하다	Advancements in 3D Visual Grounding leverage LLM	
+fidelity	충실함	high visual fidelity	
+phrase	(말로) 표현하다	humans frequently phrase directives indirectly	
+encode	부호화하다, 표현하다	This representation encodes both the state of each object	
+intervention	개입	If no intervention is required	
+denote	의미하다	where N denotes the total number of objects	
+discrete	별개의	discrete tasks	
+feasible	실현 가능한	feasible for the robot to execute	
+in principle	원칙적으로	In principle, ~	
+prune	가지치기	Prune dead leaves	
+untangle	(엉킨 것을) 풀다	untangle cables	
+arise	발생하다	contain clutter arising from random	
+household	가정(집)	household scenarios	
+odorous	냄새	‘Odorous’, ‘Laundry-Piled’, ‘Disordered’, ‘Unsanitary’	
+unsanitary	비위생적	‘Odorous’, ‘Laundry-Piled’, ‘Disordered’, ‘Unsanitary’	
+span	(범위를)포함하다	spanning 35 houses, 231 rooms	
+scattered	흩어져 있는	ingredients remain scattered throughout the kitchen	
+stove	가스레인지	the stove is left on(스토브가 켜져있다.)	
+ajar	열려있는	drawers are ajar	
+retain	유지하다	we retain only tasks 	
+correlation	상관관계	Correlation matrix showing task co-occurrence based on user annotations.	
+occurrenece	발생	Correlation matrix showing task co-occurrence based on user annotations.	
+diagonal	대각선의	main diagonal	
+hue	색조, 빛깔	blue hues	
+mop	닦아내다		
+dispose	배치하다		
+associate	연관짓다	each object is associated with 1302 tasks	
+deviation	편차	standard deviation	
+plausible	현실적인	the annotations are selective and plausible	
+quantify	정량화하다	to more explicitly quantify annotator bias in TASMap	
+corresponding	해당하는	a corresponding set of evalution	
+pseudo	실제 정답은 아니지만 정답처럼 사용되는 것	 we regard as pseudo ground truth	
+attain	이르다	attain similar agreement scores	
+substantially	상당히, 주로	the substantially lower Jaccard and F1 scores	
+taken together	종합적으로	Taken together, these results	
+behave	동작하다	TASMap behaves like a single annotator label	
+inherit	물려받다	TASMAp inherits individual-preference	
+curated	(전문가에 의해)선별된	curated object instance	
+segmentation	나누다, 반할하다	which segments P into Pi	
+descending order	내림차순	descending order of coverage	
+inference	추론	running inference over the entire set	
+subset	부분집합	a subset of frames	
+acutal	실제의	actual observed depth map	
+projected	예상된	projected 3D points	
+refined	정제된	refined mask	
+tolerance	허용 오차, 관용	the tolerance for the strictness of visibility	
+threshold	임계값	The threshold C	
+enclose	포함하다	it exactly encloses the object mask M	
+occupancy	사용, 점유	occupancy ratio	
+enlarged	커진, 확대된	an enlarged object-centered view	
+sufficient	충분한	a sufficient portion of the object	
+bias	편향값, 편향을 갖게 하다	Single-view inputs can bias MM-LLMs	
+facet	측면	one facet (stained chair may look clean from behind)	
+mitigate	완하하다	To mitigate this	
+composite	합성의	composite grid image	
+rationale	이유	The prompt Q includes chain-of-thought rationales	
+criteria	기준	with their selection criteria	
+directive	지시	pharse their directives to robots	
+convey	전달하다	convey intent	
+misaligned 	어긋난	Misaligned object	
+reason	추론하다	go beyond simple object dectection to reason about the object's context	
+faucet	수도꼭지	a faucet that is currently turned on	
+yet	동시에	a problem fundamentally different from, yet strictly more complex than, the standard visual grounding tasks	
+canonical	표준의	canonical state	
+centroid	중심	the centroid of its point cloud	
+extent	범위, 정도	its physical extent	
+comprehensive	포괄적인	comprehensive validation	
+viability	실현 가능성	the viability of our proposed method with experiments	
+thoroughly	철저히	thorougly investigate the result	
+metrix	평가 지표	Evaluation Metrics	
+absent	존재하지 않는	absent task classes	
+configure	환경을 설정하다	TASMap is configured based on the 3D segmentation results	
+ambiguity	모호성	reduce ambiguity caused by single-view inputs	
+compromise	악화시키다	bathing does not compromise task-assingment quality	
+yield	산출하다	yields the same	
+consolidated	통합된	consolidated view per object	
+firmly	확고히, 단단히	Faucet is firmly shut	
+contaminated	오염된	Rag contaminated with red dust	
+dispose	배치하다	the trash bin is marked Dispose	
+neatly	단정하게	The neatly hung Red top	
+domestic	가정의	diverse domestic scenarios	
+nuanced	미묘한	TASMap++ demonstrates nuanced, context-aware task assignments	
+rigorously	엄격히	To rigorously evaluate context-aware grounding performance	
+supplement	보충, 보충하다	supplemented by Average Precision	
+lift	들어올리다	3D feature maps by lifting 2D CLIP embeddings	
+ranging from A to B	A부터 B까지 다양한	We also compare against large model-based frameworks, ranging from ZS3DVG [21]’s use of LLM-generated visual programs to the direct multi-view analysis via MM-LLMs employed by VLM-Grounder [24] and SeeGround	
+compositional	복잡한	compositional semantics of complex queries	
+margin	차이	outperforming baselines by a wide margin.	
+underscore	분명히 보여주다, 강조하다	These results underscore that	
+To tackle this	이 문제를 해결하기 위해	To tackle this, we present an application of TASMap++ as a solution	
+incremental	점진적	incremental task-aware semantic map	
+scheme	계획	post-processing scheme	
