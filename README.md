@@ -1677,3 +1677,35 @@ Score(skill) = Say(skill) × Can(skill)
 ---
 
 </details>
+
+
+details>
+<summary><b>21. LightSplat: Fast and Memory-Efficient Open-Vocabulary 3D Scene Understanding in Five Seconds</b></summary>
+
+## Basic Information
+
+- **Title**: LightSplat: Fast and Memory-Efficient Open-Vocabulary 3D Scene Understanding in Five Seconds
+- **Authors**: Jaehun Bang, Jinhyeok Kim, Minji Kim, Seungheon Jeong, Kyungdon Joo
+- **Conference / Journal**: CVRP
+- **Year**: 2026
+
+
+---
+
+## One-line Summary
+
+- LightSplat은 open-vocabulary 3D scene understanding에서 기존 방법들이 iterative optimization과 dense per-Gaussian feature assignment 때문에 slow, memory-intensive, overly complex하다는 문제를 해결하기 위해 제안된 방법이다. 기존 방식처럼 Gaussian마다 full CLIP feature를 저장하는 대신, multi-view images에서 얻은 2D mask semantics를 2-byte semantic indices 형태로 3D Gaussian에 주입하고 lightweight index-feature mapping을 통해 CLIP feature를 참조한다. 또한 geometric overlap과 semantic similarity를 기반으로 object-level clustering을 수행하여 semantic consistency를 유지한다. 이를 통해 per-Gaussian feature storage를 제거하고 memory/computational overhead를 크게 줄이면서도, fast object-level inference와 efficient open-vocabulary 3D scene understanding을 가능하게 한다.
+
+---
+
+
+![2D semantics extraction](images/2D_semantics_extraction_Lightsplat.PNG)
+
+![3D representation background](images/3D_representation_background_Lightsplat.PNG)
+
+## comment
+- 아직 논문에서 나온 전체 개념은 습득하지 못했음.
+
+</details>
+
+
