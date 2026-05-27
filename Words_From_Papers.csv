@@ -164,9 +164,4 @@ margin,차이,outperforming baselines by a wide margin.,
 underscore,"분명히 보여주다, 강조하다",These results underscore that,
 To tackle this,이 문제를 해결하기 위해,"To tackle this, we present an application of TASMap++ as a solution",
 incremental,점진적,incremental task-aware semantic map,
-<<<<<<< HEAD
 scheme,계획,post-processing scheme,
-constrained,부자연스러운,constrained motion,
-=======
-scheme,계획,post-processing scheme,
->>>>>>> 91abff3f9e3aa77f7d7d57a46dd8ad2371565e33
