@@ -1706,6 +1706,7 @@ Score(skill) = Say(skill) × Can(skill)
 ## comment
 - 아직 논문에서 나온 전체 개념은 습득하지 못했음.
 
+
 </details>
 
 
