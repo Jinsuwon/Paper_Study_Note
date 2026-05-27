@@ -1679,7 +1679,7 @@ Score(skill) = Say(skill) × Can(skill)
 </details>
 
 
-details>
+<details>
 <summary><b>21. LightSplat: Fast and Memory-Efficient Open-Vocabulary 3D Scene Understanding in Five Seconds</b></summary>
 
 ## Basic Information
