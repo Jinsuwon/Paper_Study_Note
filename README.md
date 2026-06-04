@@ -1710,3 +1710,34 @@ Score(skill) = Say(skill) × Can(skill)
 </details>
 
 
+
+<details>
+<summary><b>22. Self-Corrective Task Planning by Inverse Prompting with Large Language Models</b></summary>
+
+## Basic Information
+
+- **Title**: Self-Corrective Task Planning by Inverse Prompting with Large Language Models
+- **Authors**: Jiho Lee, Hayun Lee, Jonghyeon Kim, Kyungjae Lee, Eunwoo Kim
+- **Conference / Journal**: IEEE International Conference on Robotics and Automation (ICRA)
+- **Year**: 2025
+
+
+---
+
+## One-line Summary
+
+- 이 논문에서는 기존의 self-correction에서 불충분한 추론으로 인해 LLM이 정확한 correction을 실패하는 문제를 inverse prompting 방법을 통해 해결한다. 이는 initially generated action으로 만들어진 generated state에 inverse action을 적용해 inverse state를 만들고, 이 inverse state가 initially action 수행 전의 original state로 restore되는지 검증한다. 이를 통해 , 다양한 현실 시나리오에서 더 성공적인 task completion을 해낸다.
+
+---
+
+
+
+## Understanding the Structure
+
+![Inverseprompt](images/Structure_self-corrective.png)
+
+
+---
+
+
+</details>
