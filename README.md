@@ -1730,6 +1730,27 @@ Score(skill) = Say(skill) × Can(skill)
 
 ---
 
+## PDDL / Task Planning Study
+
+- Blocksworld 예제를 통해 PDDL의 domain/problem 구조를 코랩을 통해 실습함.
+- domain.pddl에는 predicate, action, precondition, effect를 정의함.
+- problem.pddl에는 object, initial state, goal state를 정의함.
+- pyperplan을 사용해 초기 상태에서 목표 상태까지 도달하는 12-step action sequence를 생성함. => problem.pddl.soln 생성
+- 이를 통해 LLM-based task planning 논문을 읽을 때 필요한 symbolic state 표현, action sequence, precondition/effect 기반으로 실행 가능성 판단 방식을 이해함.
+
+### 용어정리
+
+- **PDDL**: Planning Domain Definition Language. planner가 현재 상태에서 목표 상태로 가는 action sequence를 찾을 수 있도록, 행동 규칙과 초기 상태 및 목표 상태를 기호로 표현하는 언어.
+- **Predicate**: PDDL에서 상태를 표현할 때 사용할 수 있는 술어의 형식. Ex) on(x, y), handempty()
+- **Preconditions**: Action을 적용하기 전에 반드시 만족되어야 하는 조건들
+- **Effects**: Action을 적용한 후 환경이 어떻게 변할 것인지에 대한 효과들
+- **Symbolic state**: 현실 세계의 상태를 predicate로 표현한 것.
+- **Action sequence**: 목표 상태에 도달하기 위해 planner가 만든 행동 순서
+- **Plan validation**: 생성된 계획이 각 단계에서 실행 가능한지 확인하는 것. 이번 실습에서는 직접 검증기를 구현한 것은 아니고, pyperplan이 domain.pddl에 적힌 precondition/effect 규칙을 바탕으로 가능한 action만 탐색해서 plan을 생성하였음.
+
+ ![blocksworld_initial_goal](images/PDDL_blocksworld_initial_goal_state.png)
+
+---
 
 
 ## Understanding the Structure
