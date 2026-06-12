@@ -1738,7 +1738,35 @@ Score(skill) = Say(skill) × Can(skill)
 - pyperplan을 사용해 초기 상태에서 목표 상태까지 도달하는 12-step action sequence를 생성함. => problem.pddl.soln 생성
 - 이를 통해 LLM-based task planning 논문을 읽을 때 필요한 symbolic state 표현, action sequence, precondition/effect 기반으로 실행 가능성 판단 방식을 이해함.
 
-### 용어정리
+---
+
+
+# Task Planning에서 탐색 알고리즘과 휴리스틱이 계획 품질에 어떤 영향을 주는지 알아보자
+
+## PDDL을 BFS, GBF_hFF로 나누어서 결과 학인
+- 파일 PDDL, PDDL_GBF_HFF 으로 확인
+- BFS는 휴리스틱 없이 가까운 깊이부터 모든 상태를 탐색하기 때문에 탐색 비용은 크지만, unit-cost 조건에서는 더 짧은 plan을 찾을 수 있었다. 반면 GBF_HFF는 hFF 휴리스틱을 사용해 목표에 가까워 보이는 상태를 우선 탐색하므로 탐색 노드 수와 시간이 크게 줄었지만, greedy한 선택 때문에 불필요한 중간 행동이 포함되어 plan length가 증가하였다. 
+
+
+## 자율적으로 움직이는 휴머노이드에 적용해본다면 
+**BFS는 고도화된 동작을 수행해야 하는 조건에서 쓰이면 좋지 않을까?**
+ - 컵 쌓기와 같은 한 번 실패했을 때 이전의 동작으로 쌓아온 effect가 무너질 수 있는 상황
+
+**GBF는 짧은 시간에 외부 변수가 빠르게 변화하는 조건에서 쓰이면 좋지 않을까?**
+ - 로봇이 주변을 걸어다닐 때, 사람이나 주변 객체의 위치가 계속 바뀌는 상황
+
+---
+
+### BFS, Breadth First Search
+- 시작 상태에서 가까운 깊이부터 차례대로 모든 상태를 탐색하는 방법
+### GBF, Greedy Best-First Search
+- 현재 후보들 중에서 목표에 가장 가까워 보이는 상태를 먼저 탐색하는 방법이다.
+### hFF, FF(Fast Foward) heuristic
+- planning 문제에서 현재 상태로부터 목표까지 가기 위해 필요한 행동 수를 FF 방식으로 추정하는 휴리스틱이다.
+
+
+
+## 용어정리
 
 - **PDDL**: Planning Domain Definition Language. planner가 현재 상태에서 목표 상태로 가는 action sequence를 찾을 수 있도록, 행동 규칙과 초기 상태 및 목표 상태를 기호로 표현하는 언어.
 - **Predicate**: PDDL에서 상태를 표현할 때 사용할 수 있는 술어의 형식. Ex) on(x, y), handempty()
@@ -1747,6 +1775,7 @@ Score(skill) = Say(skill) × Can(skill)
 - **Symbolic state**: 현실 세계의 상태를 predicate로 표현한 것.
 - **Action sequence**: 목표 상태에 도달하기 위해 planner가 만든 행동 순서
 - **Plan validation**: 생성된 계획이 각 단계에서 실행 가능한지 확인하는 것. 이번 실습에서는 직접 검증기를 구현한 것은 아니고, pyperplan이 domain.pddl에 적힌 precondition/effect 규칙을 바탕으로 가능한 action만 탐색해서 plan을 생성하였음.
+- **Heuristic**: 문제를 정확히 끝까지 풀어보지 않고, 어느 선택이 더 좋아 보이는지 빠르게 판단하기 위한 추정 기준.
 
  ![blocksworld_initial_goal](images/PDDL_blocksworld_initial_goal_state.png)
 
