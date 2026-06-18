@@ -1791,3 +1791,202 @@ Score(skill) = Say(skill) × Can(skill)
 
 
 </details>
+
+
+
+
+<details>
+<summary><b>23. A Survey on Vision-Language-Action Models for Embodied AI</b></summary>
+
+## Basic Information
+
+- **Title**: A Survey on Vision-Language-Action Models for Embodied AI
+- **Authors**: Yueen Ma, Zixing Song, Yuzheng Zhuang, Jianye Hao, Irwin King
+- **Conference / Journal**: IEEE Transactions on Neural Networks and Learning Systems
+- **Year**: 2026
+
+
+---
+
+## Reading now...
+
+읽으면서 정리 A Survey on Vision-Language-Action Models for Embodied AI
+*taxonomy, data sources, model design, action prediction, evaluation에 집중
+
+O. Abstract
+
+* 기존엔 LLM, VLM이 있다가 새로운 multimodal modes로 VLA가 나왔다. 이는 액션을 생성하기 위해 embodied AI에서 언어 조건의 로봇 업무를 다루기 위해 통합되었다.
+* 디테일한 vla의 분류로 세가지를 제안한다
+
+1. individual comonponets of VLA
+2. low-level actions에서의 VLA
+3. high-level task planners이 long-horizon tasks를 subtask의 sequence로 분해하도록 함. 덕분에 user instructions을 더 잘 따를 수 있음.
+4. 그리고 dataset, simulators, benchmark까지 요약을 제공한다
+5. 최종적으로 VLA이 직면한 문제와 embodied AI의 미래 방향성을 보여줄 것이다.
+
+I. Introduction
+
+* VLA는 multimodal modes at embodied AI이고 vision, language, action의 정보를 처리한다. language instructions을 이해하고, 시각적으로 환경을 인지하고, 적절한 행동을 생성하고, multimodal capabilties가 필요하다.
+
+* VLA란 용어는 RT-2에 의해서 최근에 명명되었다.
+
+* VLA는 초기의 RL에 비해서 복잡한 환경에서도 versatility, dextreity, generalizability를 가진다. 덕분에 controlled setting 에서 일상에서까지 적합하다.
+
+* 기존의 RL에의 현황을 설명-
+
+* multimodal은 VQA, image coptioning, txet-to-vide generation까지 하고 있다.
+
+* VLA도 LLM과 VLM에서와 마찬가지로 versatile myltitask policies가 필요해졌다.
+
+* 다만 learning a broader set of skills, adapting to diverse environments, 그리고 자연어 명령을 위해서는 language-conditioned robot policies의 개발을 필요하는 intuitive user-rovt interface가 수반된다.
+
+* VLA는 시각정보를 위해 PVR(Pretrained Visual Representations)를 vision encoder를 차용한다.
+
+* III A는 inidividuatl components of VLA: dynamics learning, world models and reasoning
+
+* III B는 low-level control policies: lanauage instructions, visual observations은 control policy(generate low level actions)에 쓰인다. 그래서 control policy의 이상적인 모델로 렌더링한다.
+
+* high-level task planner는 task 분해를 한다(IV). 얘는 long-horizion tasks를 sequece of subtasks로 분해한다. 그래서 high capacity를 가진 hierarchical framework를 채택한다. 왜냐 low-level control policy가 정확도와 스피드에 집중하는 반면에 말이다.
+
+*Taxonomy of VLA into two hierarchies
+
+1. low level control policy: based on specified language commands and the perceived environment
+2. high-level task planner: provide guidance to LLCP by decomposing long-horizon tasks into subtasks
+
+*Data sources(Resources)
+
+1. VLA를 훈련하고 평가하기 위한 필수 자원을 요약하였음. including recent datasets and benchmarks in real-world or simulated environments.
+2. 그리고 data scarcity and inconsistency에 대한 다양한 접근법을 논의한다.
+
+II. Related Works
+
+* Embodied AI는 다른 AI와 다르게 물리환경과 상호작용한다.
+* Embodied AI는 다양한 매체에 속하지만 그 중 로봇이 가장 저명한 매체이다.
+* Robot Learning은 강화학습 문제(MDP)로 프레임 씌어져왔다. TD learning and policy gradients도 이 문제이다.
+* 보상함수를 정의하기 어려운 경우에는, 모방학습이 action distribution을 모델링 하기 위해  보상이 없는 trajectories를 가지고 활용된다
+* 많은 multitask robot modes이 언어를 instructions(p)로 사용한다. 이는 어떤 task나 skill를 실행할지 알아내기 위해서이다. 그리고 이는 언어 조건부 로봇 정책의 개발을 이끌었다.
+  => 기존 Robot Learning은 상태를 보고 → 행동을 고르고 → 보상을 받는 문제로 봤다. 그런데 실제 로봇에서는 보상 설계가 어렵고, 사용자는 자연어로 명령한다. 그래서 이제는 언어 명령 + 시각 상태를 보고 → 적절한 행동을 출력하는 모델이 필요해졌다. 그게 VLA로 이어진다.
+  => 이 Background는 VLA를 이해하기 위한 robot learning의 기본 틀을 설명한다. 기존 robot learning은 상태, 행동, 보상으로 구성된 MDP/RL 문제로 볼 수 있으며, 정책은 현재 상태를 보고 적절한 행동을 출력한다. 그러나 실제 로봇 환경에서는 상태를 완전히 알기 어렵기 때문에 POMDP 관점이 필요하고, 보상함수를 설계하기 어려운 경우 imitation learning을 통해 사람의 demonstration에서 행동 분포를 학습한다. 이후 multitask robot에서는 어떤 작업을 수행할지 지정하기 위해 language instruction이 policy의 조건으로 들어가며, 이는 Vision과 Language를 입력받아 Action을 출력하는 VLA의 기본 구조로 이어진다.
+
+III. Vision-Language-Action Models
+
+* VLA=CV+NLP+RL
+
+1. Comnpnents of VLA
+   RL
+
+* DQN => the need for greater model capacity in end-to-end RL
+* RL trajectories => 트랜스포머 구조에 적합한 states, actions, rewards를 모델링 문제로 align한 sequences임. 이건 DT(Decision Transformer), TT(Trajectory Transformer)를 포함함.
+* Gato는 이 패러다임을 multimodal, multitask, multiembodient setting으로 확장하여 VLA이 RL로부터 경험을 학습하도록 사용했음.
+  => RL은 embodied AI와 robot policy 학습의 기반이다. DQN은 픽셀 입력에서 직접 policy를 학습할 수 있음을 보여주었고, RL trajectory는 state-action-reward의 순서 데이터이므로 Transformer 기반 sequence modeling과 잘 맞는다. 최근에는 RL과 LLM의 결합도 중요해졌는데, RLHF는 사람 피드백을 통해 모델을 선호·안전성에 맞추고, SEED는 sparse reward와 안전성 문제를 다루며, Reflexion은 언어적 피드백을 통해 의사결정을 개선하고, Eureka는 LLM으로 reward function을 설계하는 예시이다. 다만 이 Survey에서 이들은 VLA의 핵심 모델이라기보다 RL과 LLM이 결합되는 배경 사례로 이해하면 된다.
+
+2. PVR: Pretrained Visual Representation
+
+* vision encoder가 VLA의 성능에 직접적인 영향을 준다. 객체 분류, 위치, affordances와 같은 current state를 취급하는 중대한 정보를 제공하기 때문이다.
+* CLIP: text-image pair
+* R3M: time Constrastive Learning(CL) and video-language alignment
+* MVP: Masked AutoEncoder로 CV 에서 robotic dasets로 적용함
+* Voltron: a pretraining objective by incorporating langauge conditioning and language generation into the MAE objective. => language and vision modalities의 정렬을 강화해줌
+* VC-1:
+* DINOv2: teacher-student(encoded images를 가지고 정답을 지수로 올리는자-정답을 선형으로 제출하는자)로 self-supervised training paradigm을 제안함
+* I-JEPA: 'primitvie' internal world model 건설. masked patches를 사용
+* Theia: fusing diverse visual informaino(segamentation, depth, semantics) and 'less resources, better performance.'
+
+3. Video Representation
+
+* Videos는 이미지의 연속이라 볼 수 있고 이는 PVRs(위에서 언급된것들:CL, MAE)이라고도 볼 수 있다. 근데 이를 넘어서는 NeRF 같은게 있다
+* NeRF
+* F3RM
+* 3D-LLM
+* 3D Gaussian Splatting > NeRF
+* Audio도 robot policies에서 중요한 단서가 될 수 있음
+
+4. Dynamic Learning
+
+* =Foward + Inverse Dynamics,
+* Foward Dynamics: 현재 상태+현재 행동으로 다음 상태를 예측
+* Inverse Dynamics: 현재상태와 미래 상태를 비교해서 필요한 행동을 예측
+* Vi-PRoM
+* MIDAS
+* SMART
+* MaskDP
+* PACT
+* VPT
+* GR-1
+
+5. World Models
+
+* 세상의 common sense knowledge를 encode하고, 주어진 action에서 미래 상태를 예측한다. 실제 행동하기 전에 머릿속에서 여러 행동 후보를 시뮬레이션 하고, 그중 가장 나은 행동 순서를 고른다. foward dynamics와 유사하지만 action decoder의 학습 보조로 쓰이는 것이 아닌 standalone module을 가능케 한다.
+* Dreamer
+* DreamerV2
+* DreamerV3
+* DayDreamer
+* IRIS (with VQ-VAE)
+* TWM
+
+6. LLM-Induced World Models
+
+* DECKARD
+* LLM-DM: PDDL
+* RAP
+* LLM-MCTS
+
+7. Visual World Models
+
+* LLM world model(text기반)과 달리 images, videos, 3D scenes과 같이 현실세계와 더 가까운 것들을 생성한다.
+* Sora
+* Genie
+* 3D-VLA
+* UniSim
+* E2WM
+
+8. Reasoning
+
+* CoT로 소개되는 LLMS의 주요 능력이다. 연구자는 decision-making process를 잘 만들기 위해 CoT reasoning을 활용한다.
+* ThinkBot: CoT로 recover missing action descroption in sparse human instructions
+* ReAct: reasoning 흔적과 action을 삽입하여 action plans를 만들고, commonsense를 주입하고, 예외를 조절한다
+* RAT: CoT + RAG(Retrieval-Augmented Generation): 환각을 줄이고 planning능력을 올린다
+* Tree-Planner: a tree-of-thoughts apprach for task planning
+* ECoT: trains OpenVLA
+* CoT-VLA: visual CoT reasoning for VLAS
+
+9. Policy Steering
+
+* VLA performance를 비싼 재훈련없이 테스트 시간에 강화할 수 있다.
+* V-GPS: re-rank generated actions based on a learned value function
+* RoboMonkey: employs a VLM-based verifier to select the optimal action
+
+10. Strenghts and Limitations
+    a. PVRs
+
+* Time CL이나 CLIP은 image-level information을 잘 준다.
+* 하지만 pixel-level deatils(depth, object position, segmentation task)는 부족함
+* MAE는 이미지를 patch 단위로 가리고 복원하면서 학습해서 이미지의 세부 구조를 더 잘 배울 수 있음. DINOv2, I-JEPA, Theia가 이에 해당함.
+
+b. Foward & Inverse Dynamics
+
+* Foward dynamics learning이 inverse 보다 어려움. 미래 상태 예측이 과거 행동 예상보다 어렵기 때문임.
+* 결과적으로 foward dynamics가 크게 성능을 개선할 수 있음.
+* 하지만 inverse dynamics를 통해서는 상태만 있고 action label이 없는 데이터(유투브 영상, 로봇 조작 영상)가 있을 때 유용함.
+
+c. World Models & Reasoning
+
+* low-level control policies and high-level task planner에 다 적용할 수 있다. 근데 world model의 경우 low level control policies에 적합하다. 왜냐면 주어진 low-level actions에서 즉시 다음 상태를 생성하는contrl policies에 주로 사용되기 때문이다.
+* 반면에 CoT-based reasoning methods는 high-level- task planning에 집중한다. 왜냐하면 그들은 task plans이 text로 이루어져 있고, thought chains도 text로 쓰이기 때문이다.
+  => World Models<->low-level_control policies
+  => CoT-based Reasoning <->high-level_task planning
+
+
+
+---
+
+
+
+## Understanding the Structure
+
+
+
+---
+
+
+</details>
