@@ -1978,6 +1978,38 @@ c. World Models & Reasoning
 
 
 
+III. Vision-Language-Action Models
+B. Low-level Control Policies
+- action decoder=vision encoder + language encoder
+- VLA(control policiy) excute language instructions
+- low-level policy, low-level controller, action primitive로 불림.
+
+1. Non-Transformer Control Policies
+-CLIPort: CLIP with the Transporter network(two-stream architecture)
+-CLIP Vision encoder(semantic information from RGB image)+ Transpoter newtwork(spatioal information from RGB-D image)
+-BC-Z: process language instruction or human demonstration video
+-MCIL
+-HULC: a multimodal Transformer + discrete latent plans
+-HULC++
+-UniPi: treats the decision making porblem as a text-conditioned video generation promblem
+
+2. Transformer-Based Control Policies
+-Interactive Language는 로봇이 작업 중 사람의 언어 지시를 실시간으로 반영하도록 만든 시스템이고, 성능의 핵심 원인은 다양한 언어 지시가 포함된 대규모 데이터셋이다.
+-Hiveformer: for a language-conditioned policy, CLIPort와 BC-Z에 비해서 발전한 모델, transformor 구조를 일찍 도입한 모델
+-Gato: a model can play Atari games, captoin images, and stack blocks.
+=> 입출력 형식을 unified tokenization으로 통일해서, simultaneous training of different tasks가 가능해짐.
+-Astra: optimizes Gato via trajectory attention
+-RoboCat: Built upon the Gata + VQ-GAN image encoder
+=> predict next action, future observations
+-RT-1, similar with BC-Z, employs a vision encoder(EfficientNet), replace the MLP action decoder in BC-Z with a transformer decoder, prouding discretized actions
+-Q-Transformer: extends RT-1 by introducing autoregressive
+-RT-Trajectory: adopts trajectory sketchs as policy conditions
+-trajectory sketches consist of curves that delineate the intended trajectory or the robot end-effctor to follow
+
+구간 + 핵심 흐름만 정리하는 게 좋겠다
+구간:Transformer-Based Control Policies
+핵심 흐름: 로봇 control policy가 Transformer 기반 sequence modeling 구조로 발전하는 흐름. 이미지, 언어, 과거 관찰, action sequence를 함께 처리하려는 방향이다.
+
 ---
 
 
