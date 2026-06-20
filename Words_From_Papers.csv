@@ -193,5 +193,11 @@ standalnone, 독립형, stand-alone model,
 prompt, 지시하다, DECKARD [59] prompts an LLM to generate abstract,
 incrementally, 점진적으로, incrementally refining the plan through feedback,
 interleave,백지를 삽입하다,ReAct interleaves reasoning traces,
-
-
+culminate, 절정에 달하다,culminates in a final plan,
+converge, 한 점에 모이다,plans converge to a final solution,
+magnitude,크기,an order of magnitude in scale
+meticulously,세심하게, a meticulously collected dataset
+iteratively,반복적으로,iteratively refining the plan through feedback,
+comprehensive,포괄적인,comprehensive evaluation,
+autoregressive,자기 회귀적인,autoregressive decoding,
+delineate, 윤곽을 그리다, delineate the plan into discrete steps,
