@@ -2010,6 +2010,92 @@ B. Low-level Control Policies
 구간:Transformer-Based Control Policies
 핵심 흐름: 로봇 control policy가 Transformer 기반 sequence modeling 구조로 발전하는 흐름. 이미지, 언어, 과거 관찰, action sequence를 함께 처리하려는 방향이다.
 
+
+3. Control Policies for Multimodal Instructions
+=>multimodal instruction enables new ways to specify tasks, such as through demonstratinons, by naming novel objects, or by pointing with a finger or muse click
+
+* VIMA
+* MOO: leveraging the backbone of RT-1
+
+4. Control Policies with 3D Vision
+   => assume that 3D vision provides richer information than 2D images
+   => voxel representation
+
+* VER
+* PerAct
+* RoboUniView
+* Act3D
+* RVT, RVT-2
+
+5. Diffusion-Based Control Policies
+   => Diffusion based action generation leverages the success for diffusion models in the field of CV
+   =>Diffusion Policy formulates a robot policy as a DDPM
+   => incorporates a variety of techniques, receding horizion control, visual conditioning, and the time-series diffusion Transformer.
+
+* SUDD
+* Octo
+* MDT
+* RDT-1B
+
+6. Diffusion-Based Control Policies with 3D vision
+   => Several works have proposed combining 3D vision with diffusion-based policies.
+   => DP3 introduces 3D point cloud inputs to a diffusion policy
+
+7. Control Policies for Motion Planning
+   => involves decomposing movement tasks into discrete waypoints while satisfying constraints such as obstacle avoidance and kinematic limits
+   => The language conts framework presents a novel apporoach to robot correction using natural language for Human-in-the-loop control
+
+* VoxPoser: dose not require any training, it directly connects LLMs and VLMs for motion planning
+* RoboTAP: uses theTAPIRalgorithmtodetect active
+  points that track the relevant object fromthe source to the target pose.
+
+8. Control Policies with Point-Based Actions
+
+* PIVOT: iteratively prompted to refine keypoints on images until the best option is identified
+* RoboPoint: fintunes a VLM on the task of spatial affrodance prediction
+* ReKep
+
+9. Large VLA(*RT 모델이 되게 중요한거 같은데?)
+   => Large VLA is analogous to the distinction between LLMs and general language models
+
+* RT-2: co-fine-tuning strategy, jointly training the model on Internet-scale VQA data and robot data
+* RT-H
+* RT-X: RT-1+RT-2+OXE(Open X-Embodiment)
+* OpenVLA: an open-source counterpart to RT-2-X, and efficient finetuning methods including LoRA and model quantization
+* OpenVLA-OFT: OFT(Optimized Fine-Tuning( recipe for improved efficiency and performance.
+* TraceVLA: finetynes OpenVLA to enable visual trace prompting(spatial-temproal awareness)
+* π0: a flow-matching architecture for transforming VLMs into VLAs.
+* RoboMamba: Mamba state space model featuring linear inference complexity
+* SpatialVLA
+* LAPA: the first unsupervised pretraining method for VLAs based on latent acitions
+  => employs a three-stage process to learn form Internet-scale unlabeled videos.
+* TinyVLA: leverages Diffusion Policy, while CogACT utilizes a DiT action diffusion module.
+* DexVLA
+* HybirdVLA: integrates diffusion with the autogressive pradigm to fully leverage VLMSs' reasoning capabilities
+* GR00T N1: introduces a dual-system architecture to build a robot foundation model for humanoid robots
+* NORA-1.5: unifies a VLA with a world model through reward-guided post-training
+* Genie Envisioner: a world foundation platform that intergrates a world model and a VLA within a single video-genarative framework
+* Visual autogressive(VAR) modeling
+* WorldVLA and UniVLA: advance this direction by integrating VLAs with world models.
+  => all modalities(action, text, image generation) can be modeled autoregressively
+
+10. Strengths and Limitations
+
+a) Architecture
+=> VLA architecture는 시각·언어·행동 정보를 어떻게 결합하느냐가 핵심이다. RT-1 계열은 FiLM을 사용했고, cross-attention은 작은 모델에서 효율적일 수 있으며, concatenation은 단순하지만 큰 모델에서는 충분히 좋은 성능을 낼 수 있다. Quantization은 image/language/action 같은 multimodal 정보를 공통 token vocabulary로 통합해 world model과 연결하기 쉽게 만든다. 또한 LLM의 tool-use 방식도 로봇 task에 적용될 수 있다.
+
+b) Action Types and Their Traning Objectives
+=> VLA/control policy에서 action을 학습하는 방식은 action 표현 방식에 따라 달라진다. 연속 action은 expert action과 예측 action의 숫자 차이를 줄이기 위해 MSE를 쓰고, discrete action은 action token을 맞히기 위해 CE를 쓴다. Diffusion policy는 노이즈가 섞인 action을 복원하는 DDPM objective를 사용한다. 한편 SE(2) action은 pick pose와 place pose만 예측해도 되는 단순 tabletop manipulation에 적합하지만, 물 붓기 같은 복잡한 작업에는 더 많은 자유도인 SE(3) action이 필요할 수 있다. Point-based action은 다소 거칠지만 VLM으로부터 zero-shot으로 얻기 쉽다는 장점이 있다.
+
+c) RT series
+
+d) LVLA vs. Generalized VLA
+=> LVLA는 사용자 의도를 더 잘 해석해 instruction-following 능력을 높일 수 있지만, 큰 모델이기 때문에 학습 비용과 배포 시 추론 속도 문제가 있다. 늦게 추론하면 주변 환경이 급변할 수 있으므로 효율성이 올리는 것이 중요하다. ex) TinyVLA, DeeR-VLA
+
+e) Scaling Laws
+=> 모델과 데이터가 커질수록 성능이 좋아지는 경향이 로보틱스/VLA에도 나타난다
+
+
 ---
 
 

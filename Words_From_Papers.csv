@@ -201,3 +201,31 @@ iteratively,반복적으로,iteratively refining the plan through feedback,
 comprehensive,포괄적인,comprehensive evaluation,
 autoregressive,자기 회귀적인,autoregressive decoding,
 delineate, 윤곽을 그리다, delineate the plan into discrete steps,
+intricate, 복잡한, intricate reasoning traces,
+infeasible, 실행 불가능한, infeasible plans,
+coarse, 조잡한, coarse plans,
+bimanual, 양손의, bimanual manipulation,
+heterogeneous, 여러 종류로 이뤄진_이질적인, heterogeneous tasks,
+rectified, 수정된, rectified plans,
+kinematic, 운동학적인, kinematic constraints,
+intuitive, 직관적인, intuitive feedback,
+invoke, 호출하다, invoke the LLM to generate a plan,
+coordinate, 좌표, object coordinate,
+cast, 처리하다, PIVOT casts robotic tasks
+iteratively, 반복적으로, iteratively refining the plan through feedback,
+equivalent, 동등한, equivalent to the original plan,
+terminology, 용어, This terminology is analogus to the distinction
+analogus, 유사한, This terminology is analogus to the distinction
+emergent, 새롭게 나타나는, emergent behaviors,
+counterpart, 대응물, counterpart to RT-2-X,
+inherit, 상속하다, inherit RT-2-X’s ability to perform zero-shot task planning,
+devise, 고안하다, devise a novel method to enhance RT-2-X’s performance,
+progressively, 점진적으로, progressively refine the plan through feedback,
+post, ~후, post training,
+autoregressive, 자기 회귀적인, autoregressive decoding,
+constitute, 구성하다, constitute a significant advancement,
+fine-grained, 세밀한, fine-grained motion,
+impose, 부과하다, impose limitations
+parse, 분석하다, parse the user’s instructions,
+
+
