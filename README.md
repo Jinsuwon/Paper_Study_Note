@@ -2096,6 +2096,46 @@ e) Scaling Laws
 => 모델과 데이터가 커질수록 성능이 좋아지는 경향이 로보틱스/VLA에도 나타난다
 
 
+IV. Task Planners
+=> high-level task planner aims to decompose a complex task l into a sequence of subtasks(task plan)
+=> This process is sometimes referred to as task or subgoal decomposition
+=> closely related to task and motion planning(TAMP) and embodied decision making
+
+A. Monolithic Task Planners
+1) End-to-End Task Planners
+=> Similar to LVLAs
+=> task planners can be implemented as end-to-end MLLMs, leveraging their internet-scale knowledge for task planning
+- PaLM-E: ViT+PaLM, create an embodied MLLM, performing high-level embodied reasoning tasks.
+=> generates a text plan, serving as instructions for low-level robotic policies
+=> In a mobile manipulation environment, generated plan is mapped to executable low-level instructins using SayCan.
+=> As low-level policy executes actions, PaLM-E can also replan based on changes in the environment
+=> Can handle VQA tasks
+- Embodied GPT: vision encoder embeddings + embodied planning information, provided by an LLM.
+=> outputs task-relevant instance-level features
+
+2) End-to-End Task Planners with 3D vision: explore the use of 3D vision
+=> majority of current MLLMs deal with images as visual inputs
+- LEO: two-stage training strategy, 1: focus on 3D vision-language alignment, 2: 3D vision-language-action instruction tuning
+=> 3D question-answering tasks in manipulation, navigation, task planning
+- 3D-LLM: injects 3D information into LLMs and empowers them to perform 3D tasks
+- MultiPLY : object-centric embodied LLM, including auto, tactile and thermal
+- ShapeLLM: is built on the novel 3D vison encoder ReCon++
+- ReCon++ with LLaMA, ShapeLLM: improves embodied interaction performance on 3D benchmark(3D MM-Vet)
+
+3) Grounded Task Planners
+=> Grounded task planning involves generating high-level actions while considering whether they can be executed by low-level control policies.
+- SayCan: high level LLM planners with low-level control policies
+=> task grounding: user's instruction -> says most probable next low-level skill
+=> world grounding: low-level policy provides the value function as the affordance function(probabilty that the policy can complete the skill)
+- Translated <LM>: two-step process to translate high-level instructions -> executable actions
+=> LLM is utilized for plan generation, breaking down the high-level instrucion -> next action expressed as a free-form language phrase -> a pretrained masked LLM is employed for action translantion(VirutalHome action) -> appended to the plan
+=> A 're-prompting' strategy: proposed to generate corrective action when the agent encounters precodition errors
+
+-(SL)^3: a learning algorithm that alternates between three steps, segmentation, labeling, parameter update
+=> enables a hierarchical policy to discover reusable skills with sparse natural language annotations
+
+
+
 ---
 
 
