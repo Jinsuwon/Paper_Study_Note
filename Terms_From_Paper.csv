@@ -74,5 +74,15 @@ TAMP, Task and Motion Planning_로봇이 task를 수행하기 위해 필요한 m
 Monolithic Task Planner, 하나로 통짜인 Task Planner_모든 task를 하나의 planner가 처리하는 방식,,
 Hierarchical Task Planner, 계층적 Task Planner_high-level planner가 subtask로 나누고 low-level policy가 각 subtask를 실행,,
 instance-level feature, 장면 안의 특정 개별 객체 하나하나를 뜻한다_toy car1 toy car2 이런식으로,,
+off-the-shelf, 새로 만들거나 학습하지 않고 기존에 있는 모델/도구를 바로 가져다 쓰는 것,,
+medium, 정보를 전달하는 매개체/수단/형식,,
+pseudocode, 의사코드_실제 프로그래밍 언어 문법은 아니지만 코드처럼 절차를 구조화해서 쓴 표현,,
+a few-shot manner, 많은 추가 학습없이 프롬프트 안에 몇 개의 예시만 주고 새로운 작업을 수행하게 하는 방식,,
+normal, (surface) normal 표면의 방향_즉 각 픽셀 또는 3D 표면이 어느 방향을 향하고 있는지 나타내는 벡터 정보,,
+egocentric perspective, 사람이 직접 보고 있는 1인칭 시점,,
+third-person perspective, 사람 바깥에서 촬영한 3인칭 시점,,
+RLHF, Reinforcement Learning from Human Feedback_사람의 피드백을 이용해 모델이 더 바람직한 행동을 하도록 학습시키는 방식,,
+AGI, Artificial General Intelligence_특정 작업에 국한되지 않고 인간과 유사한 수준의 지능을 가진 AI,,
+
 
 
