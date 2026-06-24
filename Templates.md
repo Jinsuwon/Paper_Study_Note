@@ -28,8 +28,9 @@ A repository for organizing and summarizing papers I have read.
 
 ## Understanding the Structure
 
+---
 
-
+![image introduction](images/file.png)
 ---
 
 
