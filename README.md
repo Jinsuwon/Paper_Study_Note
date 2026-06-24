@@ -43,10 +43,10 @@ A repository for organizing and summarizing papers I have read.
 
 - 기존의 로봇 데이터셋의 경우 현실적인 어려움이 많았다. 그런데 RDMM 데이터셋을 오픈 소스 LLM에 학습시켰을 때 성능 테스트를 로보컵에서 입증하였다. RDMM으로 생성된 데이터셋으로 학습한 언어 모델은 구조적 행동 시퀀스 정확도 측면에서 기존 프롬프트 기반 방법보다 더 안정적이고 일관된 성능을 보였다.
 - 난이도: 중상
+
 ---
 
 </details>
-
 
 <details>
 <summary><b>3. ANUBIS: a Compact, Low-Cost, Compliant Humanoid Mobile Manipulation Robot</b></summary>
@@ -64,10 +64,10 @@ A repository for organizing and summarizing papers I have read.
 
 - 아누비스라는 로봇 발명품에 대한 전반적으로 설명하는 논문이다. 6-DOF-arm 형태로 각 관절의 역할에 맞게 감속비와 같은 특성을 맞춤 고려하여 최적의 로봇 행동을 구현하였다. 또한 인간과 상호작용하기 위한 객체인식과 소통 인식을 하기 위한 기능을 설계하였고, 다양한 실험 환경에서 성능을 입증하였다. 연구의 목적을 둔 논문보다는 발명품 소개에 가까운 논문이었다. 앞선 2개의 논문들보다 읽기 쉬웠고, 로봇 제작에 관한 글과 영상들을 동시에 보다보니 재미가 크게 들었다.
 - 난이도: 하
+
 ---
 
 </details>
-
 
 <details>
 <summary><b>4. Dexterous Ungrasping Manipulation in Three Dimensions</b></summary>
@@ -85,9 +85,8 @@ A repository for organizing and summarizing papers I have read.
 
 - 이 논문은 기존의 파지 이론으로는 불안정하다고 여겨졌던 공선(collinear)·슬라이딩 접촉 조건에서도, 정교한 ungrasping 과정에서 3차원 안정성이 성립할 수 있음을 보이고, 이를 기반으로 3차원 ungrasping을 2차원 문제로 환원하는 계획 및 제어 구조를 제안한다. 이를 토대로, antipodal grasp를 이용해 조작 평면을 안정적으로 고정하고, 해당 평면에서 기존의 2차원 ungrasping 방법을 적용한 뒤 실제 로봇은 3차원으로 실행하는 방법을 제시하였다. 마지막으로, 실제 로봇 실험을 통해 얇고 미끄럽거나 취성인 물체에 대해서도 안정적인 ungrasping과 정밀 배치가 가능함을 보였으며, 퍼즐 타일링과 같은 연속 작업에서도 높은 성공률을 통해 제안한 접근법의 실효성과 강인성을 검증하였다
 - 난이도: 중상(처음 이론 부분이 어려웠고, 실험부터는 읽을만함.)
+
 ---
-
-
 
 ## Understanding the Structure
 
@@ -102,13 +101,13 @@ A repository for organizing and summarizing papers I have read.
 - 기존 grasping 이론에서는 안정적인 파지를 위해 충분한 접촉 힘과 force closure 조건이 중요하다고 가정함.
 - 하지만 본 논문에서는 접촉이 공선(collinear) 상태이거나 일부 접촉에서 미끄러짐이 발생하더라도 물체가 안정적으로 유지될 수 있음을 보임.
 - 즉 기존 grasp stability 규칙이 완전히 만족되지 않는 상황에서도, 특정 조건에서는 안정적인 ungrasping이 가능함을 설명함.
-
 - 현재 이해한 핵심:
+
   - 기존 grasping은 “완전히 안정적으로 잡기”에 초점이 있음.
   - 반면 이 논문은 일부러 접촉을 느슨하게 만들고 미끄러지게 하면서도 물체를 제어하는 방향임.
   - 따라서 grasp stability를 유지하는 것이 아니라, controlled instability를 활용하는 접근으로 볼 수 있음.
-
 - 질문:
+
   - 왜 미끄러져도 안정하다고 말할 수 있는가?
     - 물체 전체가 떨어지거나 uncontrolled motion을 하지 않고, 원하는 방향으로 제한된 움직임만 발생하기 때문으로 보임.
     - 즉 완전 고정이 아니라, 의도된 자유도만 허용하는 상태로 이해할 수 있음.
@@ -119,8 +118,8 @@ A repository for organizing and summarizing papers I have read.
 - 이후 antipodal grasp를 활용하여 원래의 3차원 문제를 2차원 문제로 단순화함.
 - 이를 통해 planning과 control 계산을 더 단순하게 수행함.
 - 다만 실제 로봇은 최종적으로 3차원 공간에서 움직이며, 2차원 기반 계획을 실제 3차원 motion으로 확장하여 적용함.
-
 - 핵심 아이디어:
+
   - 실제 문제는 3D이지만, 직접 3D planning을 수행하면 계산이 복잡해짐.
   - 따라서 특정 평면으로 문제를 제한하여 reduced-order problem처럼 다룸.
   - 이후 실제 로봇 motion은 다시 3D로 실행함.
@@ -130,11 +129,10 @@ A repository for organizing and summarizing papers I have read.
 - 제안한 ungrasping 구조를 실제 로봇 시스템에 구현하여 실험함.
 - 접촉 면이 점(point)이 아니라 선(edge)인 경우를 다룸.
 - 특히 엄지 접촉 부분에서만 미끄러짐이 발생하도록 설계하면서도, 물체를 안정적으로 ungrasping할 수 있음을 보임.
-
 - 정밀 배치 실험과 퍼즐 타일링 실험을 수행함.
 - 실험 결과 높은 성공률을 기록함.
-
 - 실험의 핵심 의미:
+
   - 단순히 물체를 놓는 수준이 아니라,
   - 미끄러짐을 의도적으로 활용하여 정밀하게 배치할 수 있음을 보여줌.
   - 즉 grasp 유지보다 dexterous release 자체를 manipulation skill로 사용함.
@@ -144,8 +142,8 @@ A repository for organizing and summarizing papers I have read.
 - 정교한 ungrasping을 위한 planning 및 control 방법을 제안함.
 - 실제 로봇 실험을 통해 이를 검증함.
 - 향후에는 기존 picking 방식과 논문에서 제안한 placing 방식을 결합하여, 더욱 일반적인 pick-and-place manipulation 능력을 달성하고자 함.
-
 - 현재 논문의 방향성:
+
   - 기존 연구:
     - “어떻게 안정적으로 잡을 것인가?”
   - 본 논문:
@@ -154,7 +152,6 @@ A repository for organizing and summarizing papers I have read.
 ---
 
 </details>
-
 
 <details>
 <summary><b>5. PICaSo: A Collaborative Robotics System for Inpainting on Physical Canvas using Marker and Erase</b></summary>
@@ -172,10 +169,10 @@ A repository for organizing and summarizing papers I have read.
 
 - 본 논문은 자연어 입력과 사용자 지정 마스크를 기반으로, 로봇이 실제 캔버스 위에서 그림을 생성하고 특정 영역을 선택적으로 지우고 다시 그릴 수 있는 협업형 물리적 인페인팅 시스템 PICaSo를 제안한다. 텍스트-이미지 생성 모델을 로봇 드로잉에 적합한 스타일로 미세 조정하고, 이미지에서 웨이포인트를 추출해 실제 로봇 동작으로 변환함으로써, 다중 사용자가 하나의 캔버스에서 순차적으로 편집·창작할 수 있는 환경을 구현하였다. 실험과 사용자 평가를 통해 제안한 시스템이 기존 모델 대비 의미 보존, 미적 품질, 협업 확장성 측면에서 우수함을 보였으며, 이를 통해 인간–로봇 협업 기반의 새로운 예술 창작 가능성을 제시한다.
 - 난이도: 중
+
 ---
 
 ## Understanding the Structure
-
 
 ### I. Introduction
 
@@ -229,9 +226,8 @@ A repository for organizing and summarizing papers I have read.
 - 다중 사용자 실험을 통해 시스템의 실효성을 검증함.
 
 ---
+
 </details>
-
-
 
 <details>
 <summary><b>6. LIPCPM_A_Novel_Model_for_Anti-Sloshing_and_Stable_Bipedal_Robot_Locomotion</b></summary>
@@ -249,6 +245,7 @@ A repository for organizing and summarizing papers I have read.
 
 - 액체카트를 운반하는 이족로봇의 새로운 모델을 제안하였음. 기존의 이족 로봇 모델의 경우보다 액체의 움직임을 병합한 모델을 통해 액체 카트의 오차를 크게 감소시켰다. 액체 카트를 스프링-댐퍼모델로 이론화시키고 k,c를 새로운 방식으로 산출하여 실험모델(엑체카트)를 구현하였음. 이족 로봇의 오차는 늘어나긴 했으나, 다양한 경우에서 비슷한 양상을 보이고 액체 카트의 오차가 크게 감소하였기에 득이 더 많은 모델임을 보여주었다
 - 난이도: 중
+
 ---
 
 ## Understanding the Structure
@@ -293,10 +290,10 @@ A repository for organizing and summarizing papers I have read.
 
 - 논문의 결론을 제시함.
 - 향후 연구에서는 실제 액체 용기를 운반하는 다족 로봇 시스템에 모델을 적용할 예정임.
+
 ---
+
 </details>
-
-
 
 <details>
 <summary><b>7. AI and Digital Twin Federation based Flexible Safety Control for Human-Robot Collaborative Work Cell</b></summary>
@@ -314,11 +311,10 @@ A repository for organizing and summarizing papers I have read.
 
 - 디지털 트윈 방식을 통해 실시간으로 작업자와 로봇의 위치를 계산해내는 시스템 모델을 제안함. 기존 모델은 사람을 아예 배제하는 방식으로 하지만 이는 사람과 로봇이 협동할 때 고려해야 하는 사전 충돌 방지 방법을 제시하였다.
 - 난이도: 상
+
 ---
 
-
 </details>
-
 
 <details>
 <summary><b>8. Artificial neural network-based ground reaction force estimation and learning for dynamic-legged robot systems</b></summary>
@@ -389,10 +385,10 @@ A repository for organizing and summarizing papers I have read.
 - 제안 방법은 데이터 수집 시간이 짧고, 로봇 하드웨어에 주는 부담이 적어 비용 효율적임.
 - 다만 현재 방법은 평면 발 로봇에 적용되는 한계를 가짐.
 - 향후에는 다족 로봇 및 floating-base robot에 적용하여 제안 방법의 실현 가능성을 검증할 계획임.
+
 ---
+
 </details>
-
-
 
 <details>
 <summary><b>9. Detecting Usable Planar Regions for Legged Robot Locomotion</b></summary>
@@ -415,8 +411,6 @@ A repository for organizing and summarizing papers I have read.
 
 </details>
 
-
-
 <details>
 <summary><b>10. Implementation of a Gait Phase Informed Sensorless Collision Detector for Legged Robots</b></summary>
 
@@ -433,6 +427,7 @@ A repository for organizing and summarizing papers I have read.
 
 - 사족 보행 로봇에서 추가 센서 없이 충돌을 감지하기 위해 일반화 모멘텀 관측기(momentum observer) 와 보행 위상(gait phase) 정보를 결합한 센서리스 충돌 검출 방법을 제안하며, 관절에 발생하는 비정상 토크를 잔차(residual)로 계산해 충돌 여부를 판단하고, 각 다리를 독립적인 3자유도 체인(hip roll, hip pitch, knee pitch)으로 단순화하여 어느 다리·어느 링크에서 충돌이 발생했는지까지 식별할 수 있도록 설계하였다; 특히 스윙 구간과 지면 접촉 구간을 구분해 접촉력과 장애물 충돌을 구별하는 것이 핵심이며, 시뮬레이션과 실제 Canine 로봇 실험을 통해 충돌 검출 가능성을 검증했지만, 실제 환경에서는 마찰·구동계 관성·모델 불일치로 인해 잔차 노이즈와 관절 간 결합 현상이 나타나 향후 모델 개선과 추가 정보 활용의 필요성을 제시한다.
 - 난이도: 중
+
 ---
 
 ## Understanding the Structure
@@ -470,9 +465,10 @@ A repository for organizing and summarizing papers I have read.
 - 실제 환경에서는 모델링되지 않은 요소들로 인해 큰 오차가 발생함.
 - 특히 hip-knee pitch가 하나의 관절처럼 나타나는 현상은 추가적인 분석이 필요함.
 - 그럼에도 별도의 충돌 센서 없이 충돌 토크를 검출할 수 있다는 점이 중요한 의미를 가짐.
----
-</details>
 
+---
+
+</details>
 
 <details>
 <summary><b>11. Learning-Based Force Control of Twisted String Actuators Using a Neural Network-Based Inverse Model</b></summary>
@@ -490,6 +486,7 @@ A repository for organizing and summarizing papers I have read.
 
 - 본 논문에서는 신경망 기반 역모델과 직접 제어 방식을 이용한 TSA의 학습 기반 힘 제어기를 제안하였다. 학습 기반 힘 제어기를 설계하기 위해 역모델의 입력과 출력을 선정하였다. 또한 학습 기반 힘 제어기의 성능에 영향을 미치는 TSA 입력을 제안하고, 각 입력에 대한 데이터 수집 방법을 설명하였다. 수집된 입력 및 출력 데이터를 사용하여 학습 기반 힘 제어기를 설계하고 실험 시스템에 구현하였다. 이후 각 입력에 대해 학습된 DNN 기반 역모델의 학습 결과 및 제어 성능을 비교하였다. 그 결과, 가장 낮은 비용 함수 값과 가장 높은 힘 추종 성능을 보이는 입력 형태를 도출하였다. 해당 입력으로 수집된 데이터로 학습된 학습 기반 힘 제어기는 PID 제어 및 피드백 선형화 방식보다 우수한 힘 추종 성능을 실험적으로 입증하였다.
 - 난이도: 중하
+
 ---
 
 ## Understanding the Structure
@@ -503,20 +500,20 @@ A repository for organizing and summarizing papers I have read.
 
 - 직접 제어 방식으로 사용하는 힘 제어기, 즉 신경망 기반 inverse model을 설명함.
 - 제어 성능 향상을 위해 세 가지 입력 데이터 유형을 제안함.
-
 - 첫 번째 유형:
+
   - 입력: 전기 모터 전압
   - 출력: 꼬인 끈의 힘 `F`
   - 매개변수: 모터 각도 `θ`
   - 이 세 요소를 상태방정식 형태로 표현함.
-
 - 두 번째 유형:
+
   - 심층 신경망(DNN)을 이용하여 inverse model을 학습함.
-
 - 세 번째 유형:
-  - step 함수, sine 함수, linear 함수 기반으로 데이터를 수집함.
 
+  - step 함수, sine 함수, linear 함수 기반으로 데이터를 수집함.
 - 최종 inverse model의 구조:
+
   - 입력: 회전 각도, 힘
   - 출력: 모터 전압
 
@@ -530,45 +527,43 @@ A repository for organizing and summarizing papers I have read.
 
 - 입력 함수 유형별 학습 성능을 비교함.
 - linear 함수 기반 데이터로 학습한 힘 제어기가 sine wave tracking 실험에서 가장 우수한 성능을 보임.
-
 - 첫 번째 실험:
+
   - 0.1Hz 및 0.5Hz sine wave 힘 추종 성능 테스트를 수행함.
   - linear 함수 기반 데이터가 가장 좋은 성능을 보임.
-
 - 두 번째 실험:
+
   - PID 제어기 및 feedback linearization 방식과 비교함.
   - step response 실험과 sine wave force tracking 실험을 수행함.
   - linear 방식이 가장 작은 RMSE를 보이며 가장 우수한 성능을 나타냄.
-
 - 추가적으로 안정성 조건도 만족함을 확인함.
 
 ### V. Discussion
 
 - linear 함수는 짧은 시간 구간에서는 빠르게 변화하므로 step 함수와 유사한 특성을 가짐.
 - 반대로 긴 시간 구간에서는 부드럽게 변화하므로 sine 함수와 유사한 특성을 가짐.
-
 - 기준 sine wave의 주파수가 높을 경우:
+
   - 진폭 변화율이 커짐.
   - 따라서 sine 함수보다 step 함수 기반 학습이 더 유리함.
-
 - 기준 sine wave의 주파수가 낮을 경우:
+
   - 진폭 변화율이 작아짐.
   - 따라서 step 함수보다 sine 함수 기반 학습이 더 유리함.
-
 - 결과적으로:
+
   - step, sine, linear 함수 중 linear 함수 기반 데이터가 가장 낮은 RMSE를 보임.
   - 즉 제어 성능이 가장 우수함.
-
 - 또한 학습 기반 힘 제어기는 PID 및 feedback linearization 방식보다:
+
   - 더 빠른 힘 제어 성능을 보였고,
   - 더 작은 RMSE를 기록함.
 - 따라서 가장 우수한 force tracking 성능을 보였음.
 - 다만 학습 기반 제어에서는 고품질 데이터셋 구축이 매우 중요함.
 
-
 ---
-</details>
 
+</details>
 
 <details>
 <summary><b>12. Design of Humanoid Robot Foot to Absorb Ground Reaction Force by Mimicking Longitudinal Arch and Transverse Arch of Human Foot</b></summary>
@@ -586,6 +581,7 @@ A repository for organizing and summarizing papers I have read.
 
 - 이 논문은 휴머노이드 로봇이 불균일 지면을 보행할 때 발생하는 과도한 지면 반력(GRF)으로부터 발에 장착된 힘/토크(F/T) 센서를 보호하고 보행 안정성을 향상시키기 위해, 인간 발의 종아치(longitudinal arch) 와 횡아치(transverse arch) 구조를 모사한 이중 아치 로봇 발 DARFT-1을 제안한다.  실험에서는 DARFT-1을 휴머노이드 로봇 DRC-HUBO+에 장착하여 전방 및 측면 장애물 환경에서 GRF와 ZMP를 측정하였으며, 기존 발 대비 GRF를 평균 약 10% 감소시키고 GRF 변화율을 줄여 기계적 필터로서의 효과를 확인하였다. 또한 ZMP 최대 오차가 크게 감소하여 보행 안정성이 향상됨을 실험적으로 검증하였고, 이를 통해 DARFT-1이 불균일 지면에서 휴머노이드 로봇의 안정적인 보행을 위한 효과적인 발 구조임을 입증하였다.
 - 난이도: 하
+
 ---
 
 ## Understanding the Structure
@@ -612,7 +608,6 @@ A repository for organizing and summarizing papers I have read.
 - GRF 측정 실험에서는 기존 발에 무게추를 추가하여 DARFT-1과 무게를 맞춘 뒤 비교함.
 - 전방 및 측면 장애물 조건에서 DARFT-1은 GRF를 약 10% 감소시킴.
 - 이를 통해 DARFT-1이 기계적 필터로서 충격을 완화하는 효과가 있음을 확인함.
-
 - ZMP 측정 실험에서는 고정 장치를 모두 제거한 상태에서 측정함.
 - 전방 및 측면에 장애물을 배치하고, DSP에서 SSP로 전환될 때 ZMP를 측정함.
 - DARFT-1에서 ZMP 오차가 더 작게 나타남.
@@ -632,8 +627,8 @@ A repository for organizing and summarizing papers I have read.
 - 향후에는 댐퍼를 추가하여 진동을 억제하는 방향으로 확장할 계획임.
 
 ---
-</details>
 
+</details>
 
 <details>
 <summary><b>13. CusADi: A GPU Parallelization Framework for Symbolic Expressions and Optimal Control</b></summary>
@@ -651,6 +646,7 @@ A repository for organizing and summarizing papers I have read.
 
 - CusADi 논문은 CasADi 기반의 기호적(symbolic) 수식과 최적제어 문제를 GPU에서 대규모 병렬로 계산할 수 있게 하는 프레임워크를 제안한다. 기존 CasADi는 CPU에서만 동작하여 수천 개 환경을 동시에 다루는 강화학습(RL)이나 병렬 시뮬레이션에 한계가 있었는데, 이 논문은 CasADi의 기호 표현 그래프를 CUDA 커널로 코드 생성하여 임의의 닫힌형식(closed-form) 수식을 GPU에서 SIMD 방식으로 병렬 평가할 수 있도록 확장한다. 또한 분기 없는 고정 연산 수의 최적제어 문제(OCP 근사 해법)를 제안해, MPC를 수천 개 환경에서 동시에 실행 가능하게 하였고, 이를 통해 휴머노이드 로봇의 MPC 병렬 실행, centroidal momentum 기반 RL 학습 보조, 쿼드콥터의 흡인 영역·민감도 분석 등 다양한 로보틱스 응용에서 CPU 대비 수십~수백 배의 속도 향상을 보였다. 결과적으로 CusADi는 모델 기반 최적제어와 강화학습을 GPU 상에서 효율적으로 결합할 수 있는 핵심 연결 도구임을 입증한다
 - 난이도: 상
+
 ---
 
 ## Understanding the Structure
@@ -668,7 +664,6 @@ A repository for organizing and summarizing papers I have read.
 - MX는 SX의 일반화된 형태로, SX만으로 표현하기 어려운 연산 시퀀스를 다룰 수 있음.
 - Opti stack은 최적 제어 문제에서 변수와 파라미터를 쉽게 정의할 수 있도록 도와줌.
 - CasADi는 기존 로보틱스 툴박스와 이미 많이 호환되어 있음.
-
 - GPU 병렬 계산은 SIMD, 즉 single instruction multiple data 구조를 통해 동일한 연산을 여러 데이터에 동시에 적용함.
 - 이를 통해 대규모 batch 연산에서 계산 효율이 크게 증가함.
 - 본 논문은 optimal control과 SQP를 활용하여 표준 비선형 계획 문제(NLP)를 GPU에서 병렬화할 수 있는 방향을 제시함.
@@ -678,13 +673,11 @@ A repository for organizing and summarizing papers I have read.
 - CusADi는 CUDA kernel과 CasADi function을 결합한 프레임워크임.
 - 임의의 symbolic expression을 CUDA 기반으로 병렬 계산할 수 있도록 함.
 - 기존 CasADi의 원자적 연산 시퀀스를 스칼라 단위가 아니라 벡터화된 방식으로 처리할 수 있음.
-
 - CasADi function의 중간 계산값은 work vector에 저장되며, 함수는 여러 instruction, 즉 연산 시퀀스로 구성됨.
 - 일반 CasADi는 연산의 종류, 입력, 출력을 순회하면서 각각의 연산을 수행함.
 - 반면 CusADi는 단순히 순회하는 대신, 각 반복마다 해당 연산에 대응하는 CUDA code string을 생성함.
 - 이를 위해 CUDA kernel과 CasADi function 사이의 mapping을 정의함.
 - 생성된 라이브러리는 CUDA를 지원하는 환경에서 호출할 수 있으며, 저수준 CUDA kernel 수준의 빠른 실행 속도를 제공함.
-
 - 생성된 CUDA kernel을 관리하기 위해 PyTorch를 interface로 사용함.
 - PyTorch를 사용하면 GPU memory 위의 데이터 할당과 관리가 용이함.
 
@@ -723,8 +716,8 @@ A repository for organizing and summarizing papers I have read.
 - 학습된 value function은 MPC의 terminal cost로도 활용될 수 있음.
 
 ---
-</details>
 
+</details>
 
 <details>
 <summary><b>14. Residual MPC: Blending Reinforcement Learning with GPU-Parallelized Model Predictive Control</b></summary>
@@ -739,8 +732,10 @@ A repository for organizing and summarizing papers I have read.
 ---
 
 ## One-line Summary
+
 - 이 논문은 모델 예측 제어(MPC)의 해석 가능성과 물리적 제약 처리 능력에 강화학습(RL)의 강건성과 적응성을 결합하기 위해, GPU 병렬화된 MPC 위에 잔차(residual) 정책을 토크 수준에서 결합하는 제어 아키텍처(Residual MPC)를 제안합니다. 핵심은 MPC를 “모방 대상”이 아니라 강력한 제어 기준선(prior)으로 두고, RL 정책이 모델 불일치·접촉 불확실성·비미분/희소 제약 등 MPC가 다루기 어려운 요소만 국소적으로 보정하도록 학습시키는 것입니다. 이를 위해 MPC를 GPU에서 대규모 병렬로 고주파(100 Hz) 평가하여 RL 루프 안에 직접 포함시키고, 잔차 정책은 MPC 출력에 작은 토크 보정을 더해 성능을 향상시킵니다. 실험 결과, 제안 방식은 순수 MPC나 종단 간 RL 대비 샘플 효율과 최종 성능이 우수하며, 보상 설계 부담을 줄이면서도 더 넓은 속도 명령 범위, 미학습 보행/지형에 대한 제로샷 적응, 그리고 하드웨어 전이 가능성을 입증합니다
 - 난이도: 최상
+
 ---
 
 ## Understanding the Structure
@@ -805,12 +800,10 @@ A repository for organizing and summarizing papers I have read.
 - MPC 단독은 학습 과정이 없기 때문에 성능이 고정됨.
 - end-to-end learning은 학습은 가능하지만, residual policy보다 더 느리게 수렴하고 안정성이 낮음.
 - residual policy는 end-to-end learning보다 더 빠르게 높은 reward에 도달함.
-
 - end-to-end learning은 발목을 고속 진동시켜 미끄러지듯 이동하는 행동을 보임.
 - 이는 시뮬레이션에서는 가능할 수 있지만 실제 하드웨어에서는 위험한 행동임.
 - 반면 residual policy는 MPC의 보행 패턴을 유지함.
 - 동시에 관절 속도, 토크, 파워, 지면반력 측면에서 더 작고 안정적인 값을 보임.
-
 - UMAP 분석에서 end-to-end policy는 초기 MPC 분포와 다른 영역으로 수렴함.
 - 반면 residual policy는 학습 전반에 걸쳐 MPC 분포 근처에 머무름.
 - 이는 residual structure가 MPC를 warm start처럼 사용하여, RL이 물리적으로 타당한 제어 공간 안에서 학습하도록 유도함을 보여줌.
@@ -821,12 +814,10 @@ A repository for organizing and summarizing papers I have read.
 - 전진 속도, 측면 속도, yaw angular velocity가 증가함.
 - MPC에는 self-collision 항이 없어 큰 회전 명령에서 무릎 충돌이 발생함.
 - residual policy는 이러한 무릎 충돌을 완전히 회피함.
-
 - gait에 double support와 flight phase가 포함되도록 변경했을 때, MPC 단독은 실패함.
 - 반면 residual policy는 추가 학습 없이 즉시 적용됨.
 - 비평탄 지형에서도 residual policy는 안정적으로 주행함.
 - 학습은 평지에서만 수행되었지만, 지면 높이 오차가 발생하는 환경에서도 domain randomization이나 fine-tuning 없이 성공함.
-
 - 실제 하드웨어에서는 안전 문제로 실험 범위가 제한되었고, 일부 sim-to-real gap이 존재함.
 - 그럼에도 residual structure는 안정적으로 작동함.
 - 종합하면 residual policy는 MPC의 물리적 기준선을 유지하면서, MPC가 표현하지 못하는 제약, 환경 변화, 모델 불일치를 학습으로 보완함.
@@ -839,11 +830,9 @@ A repository for organizing and summarizing papers I have read.
 - 이때 residual policy는 base height를 올리고 swing trajectory를 수정하여 무릎 충돌을 회피함.
 - 발이 지면에 닿기 직전에도 residual 비중이 증가함.
 - 이는 RL 기반 보행 정책들이 접촉 타이밍 근처에서 강한 이유와 유사한 현상으로 해석할 수 있음.
-
 - residual과 MPC의 유사도를 cosine similarity로 계산함.
 - 접촉 전환 근처에서 유사도가 -1에 가까워짐.
 - 이는 residual이 MPC의 실수를 상쇄하는 방향으로 작동한다고 볼 수 있음.
-
 - 실제 동작에서도 울퉁불퉁한 지형에서 MPC 단독은 곧바로 보행이 불안정해짐.
 - 반면 residual policy를 사용하면 heel-toe contact이 자연스럽게 발생함.
 - 이는 residual policy가 보행 안정성을 높이는 데 기여함을 시사함.
@@ -854,9 +843,10 @@ A repository for organizing and summarizing papers I have read.
 - 분석을 통해 MPC prior가 학습 과정을 어떻게 형성하고 유도하는지 보임.
 - 또한 residual policy가 불확실한 환경에서 MPC 출력을 어떻게 보정하고 강건성을 향상시키는지 분석함.
 - 마지막으로 제안한 보행 제어기를 MIT Humanoid에 적용하여 실제 성능을 검증함.
----
-</details>
 
+---
+
+</details>
 
 <details>
 <summary><b>15. LAMP: Implicit Language Map for Robot Navigation</b></summary>
@@ -874,10 +864,10 @@ A repository for organizing and summarizing papers I have read.
 
 - 본 논문은 RGB 이미지 만을 사용해 대규모 환경에서 제로샷 내비게이션을 수행하는 암묵적 언어 지도 기법 LAMP를 제안한다. LAMP는 언어 정보를 연속적인 신경망 필드로 표현하고 희소한 위상 그래프와 결합하여, 언어 임베딩을 명시적으로 저장하지 않으면서도 메모리 효율적인 전역 경로 탐색과 연속 최적화를 통한 세밀한 목표 도달을 가능하게 한다. 또한 베이지안 불확실성 모델링과 시점 커버리지·의미 민감도를 고려한 노드 샘플링을 통해 대규모 환경에서도 강건한 계획 성능을 달성하며, 시뮬레이션과 실제 로봇 실험에서 기존 격자·노드 기반 방법보다 적은 메모리로 높은 내비게이션 정확도를 보임을 입증한다.
 - 난이도: 상
+
 ---
 
 ## Understanding the Structure
-
 
 ### 0. Abstract
 
@@ -891,10 +881,8 @@ A repository for organizing and summarizing papers I have read.
 - 기존 grid-based map은 해상도 한계와 대규모 환경에서의 높은 메모리 사용 문제가 있음.
 - 기존 node-based map은 node density에 따라 목표 인식과 정밀한 경로 계획 성능이 제한될 수 있음.
 - LAMP는 이러한 한계를 줄이기 위해 공간을 암묵적 함수로 표현하여, 메모리 효율성과 세밀한 지도 표현을 동시에 달성하고자 함.
-
 - 하지만 camera pose에서 language vector로의 mapping은 매우 비선형적임.
 - 또한 CLIP vector는 한 장면 안의 여러 객체 정보를 동시에 포함하기 때문에 language embedding에 noise가 섞일 수 있음.
-
 - 이를 해결하기 위해 aleatoric uncertainty를 고려한 Bayesian loss function을 도입함.
 - 이를 통해 학습되지 않은 pose에 대한 일반화 성능을 높임.
 - 또한 대규모 환경에서 효율적인 node selection을 위해 uncertainty와 gradient 정보를 활용한 graph sampling strategy를 적용함.
@@ -906,11 +894,10 @@ A repository for organizing and summarizing papers I have read.
 - 그러나 이러한 방식은 저수준 표현에 가깝고, 추가 정보 없이는 사람이 해석하기 어려움.
 - 이를 보완하기 위해 semantic label을 추가하여 human-friendly map을 만들려는 시도가 있었음.
 - 하지만 학습되지 않은 long-tail object나 새로운 대상에 대해 일반화가 어렵다는 한계가 있음.
-
 - language-based mapping 접근법에서는 자연어 지시, 2D grid, topological graph node 등을 활용하여 목표에 도달하는 방법들이 제안됨.
 - 그러나 기존 language-based map은 높은 메모리 요구량 때문에 대규모 환경으로 확장하기 어려움.
-
 - 본 논문은 이러한 문제를 해결하기 위해 메모리 효율적이면서도 세밀한 경로 생성을 가능하게 하는 implicit spatial representation 기반 접근법을 제안함.
+
 ### III. Method
 
 #### A. Navigation Problem Definition
@@ -1021,10 +1008,8 @@ A repository for organizing and summarizing papers I have read.
 - 시뮬레이션과 실제 환경 실험에서 기존 grid-based 및 node-based 방식보다 더 나은 성능을 보임.
 
 ---
+
 </details>
-
-
-
 
 <details>
 <summary><b>16. LUOR: A Framework for Language Understanding in Object Retrieval and Grasping</b></summary>
@@ -1042,6 +1027,7 @@ A repository for organizing and summarizing papers I have read.
 
 - 본 논문은 로봇이 명시적 뿐만 아니라 암묵적 자연어 명령까지 이해하여 적절한 객체를 검색하고 파지할 수 있도록 하는 LUOR(Language Understanding Object Retrieval) 프레임워크를 제안한다. 이를 위해 CLIP의 이미지 인코더는 고정하고 텍스트 인코더만 미세조정하여 객체의 이름뿐 아니라 어포던스 기반 의미를 학습하도록 하였으며, 동사–객체 관계를 포함한 새로운 데이터셋을 구축해 학습·평가를 수행하였다. 또한 YOLOv3 기반 다중 작업 탐지 모듈(MTD)과 통합하여 객체 검출과 파지 자세 추정을 동시에 수행하도록 설계하였고, 실험 결과 LUOR는 기존 CLIP 및 RNN 기반 방법 대비 특히 암묵 명령에서 우수한 검색 성능을 보였으며, 실제 Franka Panda 로봇 실험을 통해 실환경 적용 가능성을 검증하였다.
 - 난이도: 중
+
 ---
 
 ## Understanding the Structure
@@ -1054,15 +1040,14 @@ A repository for organizing and summarizing papers I have read.
 
 - GPT-4를 사용하여 동사-객체 쌍의 데이터셋을 구축하고, 다양한 명령에 대해 다양한 객체를 식별할 수 있도록 함.
 - YOLOv3 모델을 클래스 비의존 방식으로 사용하여 객체 탐지와 파지 자세 탐지를 각각 수행함.
-
 - 예:
-“닦을 수 있는 것”
-이 경우:
-class 정보가 결정적이지 않음
-여러 클래스가 후보
-그래서:
-먼저 물체들만 검출
-LUOR가 의미적으로 선택
+  “닦을 수 있는 것”
+  이 경우:
+  class 정보가 결정적이지 않음
+  여러 클래스가 후보
+  그래서:
+  먼저 물체들만 검출
+  LUOR가 의미적으로 선택
 
 ### III. Method
 
@@ -1083,21 +1068,22 @@ LUOR가 의미적으로 선택
 - RNN이 가장 낮은 성능을 보임.
 - 명시적 명령에서는 LUOR 외의 방법들도 비교적 좋은 성능을 보임.
 - 암묵적 명령에서는 LUOR가 가장 우수한 성능을 보임.
+
   - 암묵적 명령은 어포던스, 즉 사용 목적만 주어지는 경우가 많음.
   - LUOR는 객체 class 분류 과정을 직접 거치지 않고 의미 기반으로 객체를 선택하기 때문에 암묵적 명령에서 강점을 보임.
 - 계산 비용이 낮고, 평균 학습 시간과 추론 속도가 빠름.
-
 - 다양한 학습 세트와 파라미터에 대한 분석을 수행함.
+
   - 암묵적 언어 명령에서는 V-유형 중심 학습이 가장 지배적임.
   - O-유형 중심 학습은 가장 낮은 성능을 보임.
   - 명시적 언어 명령에서는 V, O 유형 간 차이가 크지 않고 전반적으로 잘 수행됨.
   - 부정 샘플 수는 30개 수준에서 성능이 포화되는 양상을 보임.
-
 - 분류 문제에서 LUOR를 평가했을 때, CLIP과 LUOR의 성능 차이는 매우 작음.
-  - 이를 통해 LUOR가 과제 비의존적 특성을 어느 정도 유지한다고 볼 수 있음.
 
+  - 이를 통해 LUOR가 과제 비의존적 특성을 어느 정도 유지한다고 볼 수 있음.
 - 실제 로봇 실험에서는 MTD가 탐지한 파지 자세로 목표 객체를 3초 동안 안정적으로 들어 올리면 성공으로 판단함.
 - 실험은 검색, 계획, 실행 세 항목으로 나누어 분석함.
+
   - 검색: 암묵적 명령과 명시적 명령 모두에서 높은 객체 인식 성공률을 보임.
   - 계획: 투명 객체의 깊이 정보 부족으로 실패하는 경우가 있었음.
   - 실행: 미끄러짐, 그리퍼 폭의 한계로 인해 실패하는 경우가 있었음.
@@ -1109,9 +1095,7 @@ LUOR가 의미적으로 선택
 - 이를 위해 CLIP의 텍스트 인코더를 미세 조정하고, 새로운 동사-객체 데이터셋을 구축함.
 - 또한 객체를 직접 class로 분류하지 않는 MTD 방식을 활용하여, 기존 방법보다 암묵적 명령에서 객체 식별 및 파지 성능이 향상됨을 4자유도 로봇 실험을 통해 입증함.
 
-
 ![Structure](images/Structure_LUOR.png)
-
 
 ---
 
@@ -1120,8 +1104,8 @@ LUOR가 의미적으로 선택
 ### Object Selection in Usage-Based Retrieval
 
 - 같은 용도의 물체이지만 속성이 다르다면 모델은 어떤 객체를 선택해야 하는가?
-
 - 예를 들어:
+
   - 플라스틱 숟가락 vs 쇠숟가락
   - 빈 물통 vs 물이 가득 찬 물통
 
@@ -1132,10 +1116,9 @@ LUOR가 의미적으로 선택
 ### Affordance and Current Object State
 
 - 언어 명령이 주어졌을 때, 객체의 affordance뿐만 아니라 현재 상태까지 반영하여 task에 적합한 객체를 선택할 수 있는가?
-
 - 또한 명령에 직접 명시되지 않은 객체 속성까지 추론하여 객체 선택 과정에 반영할 수 있는가?
-
 - 예를 들어 다음과 같은 속성들:
+
   - material
   - fill-level
   - weight
@@ -1144,9 +1127,8 @@ LUOR가 의미적으로 선택
   이 retrieval 과정에 함께 고려될 수 있는지 궁금했다.
 
 ---
+
 </details>
-
-
 
 <details>
 <summary><b>17. Task-Aware Semantic Map++: Cost-Efficient Task Assignment With Advanced Benchmark</b></summary>
@@ -1164,10 +1146,10 @@ LUOR가 의미적으로 선택
 
 - 이 논문은 로봇이 가정 환경에서 객체의 상태와 주변 문맥을 고려하여 적절한 작업을 할당할 수 있도록 하는 Task-Aware Semantic Map++ (TASMap++) 프레임워크를 제안한다. 기존 장면 표현 방식은 객체 라벨이나 시각 정보와 같은 정적 특징에 의존하여 문맥 기반 행동을 추론하는 데 한계가 있었으며, 기존 TASMap 역시 단일 프레임 분석으로 인해 객체 상태를 충분히 반영하지 못하고 계산 비용이 증가하는 문제가 있었다. 이를 해결하기 위해 TASMap++은 다중 시점(multi-view) 정보를 통합하여 객체 상태를 더 정확히 파악하고 MM-LLM을 통해 객체별 작업을 할당하는 방식을 사용하며, 또한 여러 사람의 주석을 기반으로 한 새로운 task-assignment 벤치마크를 구축하여 평가 편향을 줄였다. 실험 결과 TASMap++은 기존 방법들보다 더 높은 작업 할당 성능과 계산 효율을 보였으며, 추가적으로 문맥 인식 객체 그라운딩(context-aware grounding) 문제를 제시하고 TASMap++을 활용하여 이를 효과적으로 해결할 수 있음을 보였다.
 - 난이도: 상
+
 ---
 
 ## Understanding the Structure
-
 
 ### 0. Abstract
 
@@ -1177,14 +1159,15 @@ LUOR가 의미적으로 선택
 - TASMap++는 multi-view analysis pipeline을 통해 이 문제를 해결함.
 - TASMap++ 평가의 편향을 줄이기 위해 새로운 benchmark를 구축함.
 - 마지막으로 context-aware grounding을 소개함.
+
   - 이는 기존 방식이 visual attribute와 spatial attribute에 의존하던 한계를 보완함.
   - 이를 입증하기 위해 실제 세계를 포함한 3D 실내 데이터셋에서 실험을 수행함.
-
 - 질문: 왜 benchmark를 만들었다는 점을 강조하는가?
+
   - 기존 평가 방식에 편향이 있거나, task-aware scene representation을 평가하기 위한 적절한 기준이 부족했기 때문으로 보임.
   - 다만 개인이 만든 benchmark는 객관성 문제가 생길 수 있으므로, 데이터 구성 방식과 평가 기준이 얼마나 공개적이고 재현 가능한지가 중요함.
-
 - 질문: Clio, ScanNet, Replica 같은 데이터셋은 어떻게 저명해졌는가?
+
   - 데이터 규모, 품질, 공개성, 재현성, 후속 연구에서의 반복 사용이 누적되면서 benchmark로 자리 잡은 것으로 이해할 수 있음.
   - 즉 데이터셋 자체가 유명해지는 것이 아니라, 여러 연구가 동일한 기준으로 비교하기 위해 반복적으로 사용하면서 표준화됨.
 
@@ -1193,21 +1176,19 @@ LUOR가 의미적으로 선택
 - 기존 방법은 객체 label이나 room name과 같은 low-level semantic information에 의존했음.
 - 이러한 방식은 로봇이 복잡한 context-aware action을 추론하고 수행하는 데 비효율적임.
 - 기존 방법들은 명확한 명령에만 의존할 수 있어서, 각 객체의 상태를 추론하고 구체적인 task를 배정하는 능력이 부족했음.
-
 - 기존 TASMap은 명확한 명령이 없어도 task를 배정하도록 설계되었음.
 - 하지만 single-image frame 기반 접근에는 두 가지 치명적인 한계가 있음.
+
   - 첫째, 객체가 부분적으로만 관측되면 부적절한 task가 배정될 수 있음.
   - 둘째, 매 frame을 모두 사용하기 때문에 계산 비용이 증가함.
-
 - 새로 제안된 TASMap++는 물체의 기하학적 구조를 캡처하고, 물체의 전체 상태를 대표할 수 있는 view를 선택함.
 - 이를 통해 single-frame 기반 TASMap의 두 가지 한계를 완화함.
 - 또한 편향된 평가를 피하기 위해 task assignment benchmark를 새로 구축함.
 - TASMap++는 계산 비용을 낮추고 처리 속도를 높이는 성능을 보임.
-
 - TASMap++의 context-aware grounding은 객체의 맥락과 환경을 분석하고, 사용자의 암시적 query를 추론함.
 - TASMap++의 정확도를 검증하기 위해 실제 3D 실내 데이터셋에서 실험을 수행함.
-
 - 본 논문의 주요 기여는 다음과 같음.
+
   - 다양한 환경에서 효율적으로 동작하는 high-level, task-aware scene representation을 제안함.
   - task assignment benchmark를 구축함.
   - 암묵적 명령에서도 context-aware grounding을 수행할 수 있는 TASMap++ 방법을 제안함.
@@ -1216,29 +1197,26 @@ LUOR가 의미적으로 선택
 
 - 관련 연구에서는 각 객체에 task를 직접 배정하기보다는, 3D primitives를 조건부 지시에 따라 그룹화하는 방향에 초점이 맞춰져 있음.
 - 반면 TASMap++는 적절한 task를 결정하기 위해 각 객체의 문맥적 상태를 분석함.
-
 - 현재 공개 데이터셋에는 객체 상태나 실제 시나리오에서 나타나는 어수선한 분포를 충분히 반영한 데이터셋이 부족함.
 - 따라서 기존 데이터셋만으로는 TASMap++의 성능을 평가하기에 적절하지 않음.
 - 이를 보완하기 위해 실제 어수선한 장면을 반영한 신뢰 가능한 benchmark를 구축함.
-
 - LLM을 활용하면 3D 장면을 문맥적 표현이나 symbolic representation으로 변환할 수 있음.
 - 하지만 기존 LLM 기반 방법들은 객체와 주변 환경의 문맥을 분석하거나, 사용자의 암묵적 의도가 포함된 query를 처리하는 데 한계가 있음.
 
 ### III. Task-Aware Semantic Map++: TASMap++
 
 - TASMap++는 집 정리 상황에서 각 객체에 적절한 task를 배정하는 방법임.
-
 - 기존 3D 실내 데이터셋은 지나치게 깔끔하고 정적이어서, 실제 생활공간에서 나타나는 어수선한 패턴을 충분히 반영하지 못함.
 - 기존 TASMap에서는 한 명의 주석자가 annotation을 수행했기 때문에 개인의 preference가 반영될 가능성이 있었음.
 - TASMap++는 최소 두 명 이상의 주석자를 활용하여 개인 preference를 줄이고, 실제 세계의 상황을 더 잘 반영하고자 함.
-
 - 도표 해석:
+
   - 각 객체는 평균적으로 약 1.3개의 task를 배정받음.
   - 표준편차는 약 0.5개임.
   - 이는 주석자들이 객체의 상태를 단순히 임의로 해석한 것이 아니라, 객체 표현 간의 구분성과 유사성을 비교적 일관되게 반영했음을 보여줌.
 - 세 개의 행렬을 비교했을 때, TASMap++는 사람의 선호에 대해 비교적 견고하고 일관된 결과를 보임.
-
 - 질문: 각 객체에 평균 1.3개의 task가 배정되고 표준편차가 0.5인 것이 왜 현실적이라고 볼 수 있는가?
+
   - 집 정리 상황에서 하나의 객체는 보통 하나의 주된 task를 가지지만, 상태에 따라 여러 task 후보를 가질 수도 있음.
   - 예를 들어 널브러진 컵은 `Relocate`, `Reorient`, `Dispose`가 모두 후보가 될 수 있음.
   - 비워진 쓰레기통은 `Leave as it is` 또는 `Empty`가 후보가 될 수 있음.
@@ -1281,6 +1259,7 @@ LUOR가 의미적으로 선택
 - TASMap++에 압축된 semantic 정보와 geometric 정보를 활용하여 context-aware grounding 문제를 다룸.
 - TASMap++에서 얻은 context-aware grounding 정보와 사용자의 language query를 함께 LLM에 입력함.
 - LLM은 이를 바탕으로 추론을 수행하고, 최종적으로 선택해야 할 객체 또는 task를 나타내는 특정 ID를 반환함.
+
 ### VI. Experiments
 
 #### A. Quantitative Evaluation
@@ -1334,9 +1313,7 @@ LUOR가 의미적으로 선택
 
 ## 한장 요약
 
-
 ![Structure](images/Structure_TASMap.png)
-
 
 ---
 
@@ -1345,7 +1322,6 @@ LUOR가 의미적으로 선택
 ### Scene Representation for Task Assignment
 
 - 같은 환경이지만 다른 장소에서도 로봇은 객체를 올바르게 파악할 수 있는가?
-
 - 예를 들어, 기존에 학습된 환경과 비교했을 때 인테리어 또는 물체의 색깔이 바뀐 상황에서도 객체를 올바르게 인식할 수 있는가?
 
 ---
@@ -1353,8 +1329,8 @@ LUOR가 의미적으로 선택
 ### Generalization to Different Environments
 
 - 학습된 데이터와 다른 환경에서도 로봇은 객체를 올바르게 파악하고 업무를 배정할 수 있는가?
-
 - 특히 다음과 같은 변화가 있을 때 객체 인식 및 task assignment 성능은 어떻게 변화하는가?
+
   - 객체 주변 환경의 색깔 변화
   - 객체 자체의 색깔 변화
 
@@ -1367,8 +1343,6 @@ LUOR가 의미적으로 선택
 ---
 
 </details>
-
-
 
 <details>
 <summary><b>18. Task Planning for Long-Horizon Cooking Tasks Based on Large Language Models</b></summary>
@@ -1386,6 +1360,7 @@ LUOR가 의미적으로 선택
 
 - 이 논문은 요리와 같은 장기 작업에서 기존 symbolic task planner가 unseen object에 약한 문제를, LLM 기반 semantic feature과 encoder-decoder 구조를 이용해 object-oriented subgoal을 생성하는 방식으로 해결한다.
 - 난이도: 중
+
 ---
 
 ## Understanding the Structure
@@ -1395,10 +1370,11 @@ LUOR가 의미적으로 선택
 #### A. Problem Statement
 
 - **Task planner**
+
   - **Input**: target recipe name, 재료명
   - **Output**: generate object-oriented sub-goals
-
 - **3-prediction**
+
   - Robot action
   - Objects involved action
   - Inter-relationship between objects
@@ -1417,9 +1393,9 @@ LUOR가 의미적으로 선택
 ##### 1. Linguistic Encoder
 
 - CLIP, latent embeddings
+
   - **CLIP**: pretrained text encoder
   - **Latent embeddings**: compose rich semantic feature from annotations
-
 - 재료목록 `r_ing`, 타겟 레시피 `r_tgt`의 토큰을 CLIP 또는 BERT에서 받아와 각 단어를 잠재적 embedding으로 표현함.
 
 ---
@@ -1427,21 +1403,18 @@ LUOR가 의미적으로 선택
 ##### 2. Object Encoder
 
 - `e_tgt` 생성
+
   - 재료목록 + 레시피가 포괄적으로 표현됨
-
 - LLM 구조를 건드리는 것 같음.
-  - 다만 내가 LLM 구조에 약해서 LLM 구조 공부가 필요함.
 
+  - 다만 내가 LLM 구조에 약해서 LLM 구조 공부가 필요함.
 - Generate a sequence of subgoals with various ingredients
+
   - Grasp the individual essence of ingredients
   - Understand their synergistic interactions
-
 - Transformer-based encoder에 각 재료의 semantic features와 레시피의 관계가 수식 `r_in`으로 표현됨.
-
 - `E`식은 multi-head attention layer에서 query, key, value inputs를 활용하여 BERT 방식으로 special class token으로 semantic features를 잡아냄.
-
 - Encoder의 마지막 input인 `r_tgt`를 final vector로 채용함.
-
 - 이렇게 나온 `e_tgt`는 재료와 레시피 간의 종합적인 표현을 포함함.
 
 ---
@@ -1449,34 +1422,24 @@ LUOR가 의미적으로 선택
 ##### 3. Sequential Decoder
 
 - `e_tgt`를 input으로 각 환경과 진행상황에 맞는 sub-goals를 생성함.
-
 - 이를 위해 novel transformer인 external memory와 결합함.
-
 - External memory는 과거의 특징과 현재 상태를 고려하여 새로운 특징을 업데이트함.
-
 - Cross-attention으로 표현:
+
   - `h_t`
   - `m_t`
   - `M_t`
-
 - `h_t`에 MHA를 적용할 때, `e_tgt`와 external memory인 `M_t-1`이 key와 value로 제공됨.
-
 - 특히 previous stage를 활용한 `M_t-1`은 gradient vanishing을 방지해줌.
-
 - 이러한 과정을 통한 축적은 subsequent tasks를 이해하는 데 있어 계산 비효율과 관련 없는 정보를 유발함.
-
 - 이를 해결하기 위해 gating mechanism을 통해 external memory에서 non-essential elements는 지우고, crucial feature만 얻도록 함.
-
 - 결과적으로 external memory에는 indispensable sequential information만 남음.
-
 - Fully connected layer에 action, object, relation별로 각각 sub-goals를 뽑아내기 위해 입력함.
-
 - `y_obj`, `y_act`, `y_rel`은 time step `t`별로 최적의 선택을 하는 가능성을 표현함.
-
 - Planner는 다음 loss를 줄이도록 end-to-end로 훈련됨.
+
   - Action prediction: binary cross entropy loss
   - Object and relation prediction: log-likelihood loss
-
 - 각 객체에 대해 여러 행동이 발생할 수 있기 때문에 action prediction을 multi-label classification으로 표현함.
 
 ---
@@ -1486,17 +1449,11 @@ LUOR가 의미적으로 선택
 #### C. LLM-Driven Data Generation
 
 - Propose a strategy to utilize recursive LLM, GPT-3.
-
 - LLM이 real-world natural language descriptions를 object-oriented format으로 바꿔줌.
-
 - 이 방법은 unseen knowledge를 배우게 해주는 pseudo dataset을 생성함.
-
 - 훈련 데이터셋의 사이즈 한계로 인해 unfamiliar recipe를 마주할 수 있기 때문에, 1M+ dataset을 학습함.
-
 - 초기에 저장된 레시피의 제목을 framework를 훈련하는 데 사용함.
-
 - 초기에 저장된 레시피와 1M+ dataset 사이의 semantic similarity를 측정함.
-
 - 이 중 unseen recipes는 predefined threshold 아래의 cosine similarity score를 가진 것들로 식별함.
 
 ---
@@ -1504,17 +1461,13 @@ LUOR가 의미적으로 선택
 ##### Unseen Recipe Description Selection
 
 - 추가로 unseen recipe descriptions를 선택함.
-
 - 선택된 recipes는 robot의 capabilities와 constraints를 반영하는 in-context prompts와 함께 사용됨.
-
 - 이 prompts는 GPT-3가 language를 object-oriented structures로 번역하도록 함.
-
 - 이 중 기준에 맞지 않는 것은 제외됨.
+
   - Impractical objects
   - Incomplete structure
-
 - Viable output이 얻어질 때까지 unseen recipe 선택과정이 반복됨.
-
 - 이렇게 pseudo dataset을 생성함.
 
 ## 한장 요약
@@ -1528,7 +1481,6 @@ LUOR가 의미적으로 선택
 ### Planner and Object State Change
 
 - 로봇이 동작하는 도중 객체의 상태가 바뀌었을 때 planner는 어떻게 대응할 것인가?
-
 - 예를 들어, 물이 담긴 접시를 옮기다가 접시가 깨지고 물이 쏟아졌다면 기존 subgoal을 유지해야 하는가, 아니면 새로운 subgoal을 생성해야 하는가?
 
 ---
@@ -1536,12 +1488,12 @@ LUOR가 의미적으로 선택
 ### Subgoal Reassignment
 
 - 모델의 동작으로 인해 객체의 상태가 변화했을 때, subgoal은 어떤 과정으로 재배정되어야 하는가?
-
 - 객체가 `a → a-1, a-2`처럼 분리되었을 때:
+
   - 기존 객체 `a`의 subgoal을 `a-1`, `a-2`에 그대로 이어서 배정할 수 있는가?
   - 아니면 새로운 객체 상태로 인식하고 새로운 subgoal을 생성해야 하는가?
-
 - 예를 들어:
+
   - 양파처럼 형태를 유지한 채 두 조각으로 나뉜 경우에는 기존 cooking subgoal을 이어서 사용할 수 있을 수 있음.
   - 반면 카레 소스가 담긴 그릇이 엎어진 경우에는 카메라 상에서는 객체가 존재하더라도 실제 task 수행에는 사용할 수 없는 상태가 될 수 있음.
   - 이 경우 planner는 기존 cooking task 대신 `wipe`, `clean`과 같은 새로운 subgoal을 생성해야 하지 않을까?
@@ -1551,20 +1503,17 @@ LUOR가 의미적으로 선택
 ### Affordance and State Transition
 
 - 객체 상태 변화가 발생했을 때, 해당 변화가 task 수행 가능성(affordance)에 미치는 영향을 기반으로:
+
   - 기존 subgoal을 유지할지,
   - subgoal을 분해할지,
   - 혹은 새로운 goal로 전환할지를
 
   어떤 기준으로 결정하는가?
-
 - 특히 planner가 객체 상태 변화를 어느 시점에서 인식하고 subgoal을 재구성하는지도 궁금했다.
 
 ---
 
 </details>
-
-
-
 
 <details>
 <summary><b>19. Do As I Can, Not As I Say: Grounding Language in Robotic Affordances </b></summary>
@@ -1575,7 +1524,6 @@ LUOR가 의미적으로 선택
 - **Authors**: Michael Ahn, Anthony Brohan, Noah Brown, et al.
 - **Conference / Journal**: arXiv
 - **Year**: 2022
-
 
 ---
 
@@ -1606,14 +1554,15 @@ Robot Execution
 ## Main Idea
 
 - **Say-LLM**
+
   - Describes the probability that each skill contributes to completing the instruction.
   - 즉, LLM이 현재 명령을 수행하는 데 어떤 skill이 적절한지 판단한다.
-
 - **Can-Affordance Function**
+
   - Describes the probability that each skill succeeds.
   - 즉, 로봇이 현재 환경에서 해당 skill을 실제로 수행할 수 있는지 판단한다.
-
 - **SayCan**
+
   - `Say` 점수와 `Can` 점수를 결합하여, 의미적으로 적절하면서도 실제로 실행 가능한 행동을 선택한다.
 
 ---
@@ -1621,11 +1570,8 @@ Robot Execution
 ## Method
 
 - A robot’s performance can be improved simply by enhancing the underlying language model.
-
 - LLM은 task completion 관점에서 어떤 skill이 적절한지 평가한다.
-
 - Affordance function은 로봇의 현재 상태와 환경에서 해당 skill이 성공할 수 있는지를 평가한다.
-
 - 최종적으로 두 점수를 결합해 다음 행동을 선택한다.
 
 ```text
@@ -1649,8 +1595,6 @@ Score(skill) = Say(skill) × Can(skill)
 
 </details>
 
-
-
 <details>
 <summary><b>20. Robot Object Retrieval with Contextual Natural Language Queries </b></summary>
 
@@ -1660,7 +1604,6 @@ Score(skill) = Say(skill) × Can(skill)
 - **Authors**: Thao Nguyen, Nakul Gopalan, Roma Patel, et al.
 - **Conference / Journal**: arXiv
 - **Year**: 2020
-
 
 ---
 
@@ -1678,7 +1621,6 @@ Score(skill) = Say(skill) × Can(skill)
 
 </details>
 
-
 <details>
 <summary><b>21. LightSplat: Fast and Memory-Efficient Open-Vocabulary 3D Scene Understanding in Five Seconds</b></summary>
 
@@ -1689,7 +1631,6 @@ Score(skill) = Say(skill) × Can(skill)
 - **Conference / Journal**: CVRP
 - **Year**: 2026
 
-
 ---
 
 ## One-line Summary
@@ -1698,18 +1639,15 @@ Score(skill) = Say(skill) × Can(skill)
 
 ---
 
-
 ![2D semantics extraction](images/2D_semantics_extraction_Lightsplat.PNG)
 
 ![3D representation background](images/3D_representation_background_Lightsplat.PNG)
 
 ## comment
+
 - 아직 논문에서 나온 전체 개념은 습득하지 못했음.
 
-
 </details>
-
-
 
 <details>
 <summary><b>22. Self-Corrective Task Planning by Inverse Prompting with Large Language Models</b></summary>
@@ -1720,7 +1658,6 @@ Score(skill) = Say(skill) × Can(skill)
 - **Authors**: Jiho Lee, Hayun Lee, Jonghyeon Kim, Kyungjae Lee, Eunwoo Kim
 - **Conference / Journal**: IEEE International Conference on Robotics and Automation (ICRA)
 - **Year**: 2025
-
 
 ---
 
@@ -1740,31 +1677,36 @@ Score(skill) = Say(skill) × Can(skill)
 
 ---
 
-
 # Task Planning에서 탐색 알고리즘과 휴리스틱이 계획 품질에 어떤 영향을 주는지 알아보자
 
 ## PDDL을 BFS, GBF_hFF로 나누어서 결과 학인
+
 - 파일 PDDL, PDDL_GBF_HFF 으로 확인
-- BFS는 휴리스틱 없이 가까운 깊이부터 모든 상태를 탐색하기 때문에 탐색 비용은 크지만, unit-cost 조건에서는 더 짧은 plan을 찾을 수 있었다. 반면 GBF_HFF는 hFF 휴리스틱을 사용해 목표에 가까워 보이는 상태를 우선 탐색하므로 탐색 노드 수와 시간이 크게 줄었지만, greedy한 선택 때문에 불필요한 중간 행동이 포함되어 plan length가 증가하였다. 
+- BFS는 휴리스틱 없이 가까운 깊이부터 모든 상태를 탐색하기 때문에 탐색 비용은 크지만, unit-cost 조건에서는 더 짧은 plan을 찾을 수 있었다. 반면 GBF_HFF는 hFF 휴리스틱을 사용해 목표에 가까워 보이는 상태를 우선 탐색하므로 탐색 노드 수와 시간이 크게 줄었지만, greedy한 선택 때문에 불필요한 중간 행동이 포함되어 plan length가 증가하였다.
 
+## 자율적으로 움직이는 휴머노이드에 적용해본다면
 
-## 자율적으로 움직이는 휴머노이드에 적용해본다면 
 **BFS는 고도화된 동작을 수행해야 하는 조건에서 쓰이면 좋지 않을까?**
- - 컵 쌓기와 같은 한 번 실패했을 때 이전의 동작으로 쌓아온 effect가 무너질 수 있는 상황
+
+- 컵 쌓기와 같은 한 번 실패했을 때 이전의 동작으로 쌓아온 effect가 무너질 수 있는 상황
 
 **GBF는 짧은 시간에 외부 변수가 빠르게 변화하는 조건에서 쓰이면 좋지 않을까?**
- - 로봇이 주변을 걸어다닐 때, 사람이나 주변 객체의 위치가 계속 바뀌는 상황
+
+- 로봇이 주변을 걸어다닐 때, 사람이나 주변 객체의 위치가 계속 바뀌는 상황
 
 ---
 
 ### BFS, Breadth First Search
+
 - 시작 상태에서 가까운 깊이부터 차례대로 모든 상태를 탐색하는 방법
+
 ### GBF, Greedy Best-First Search
+
 - 현재 후보들 중에서 목표에 가장 가까워 보이는 상태를 먼저 탐색하는 방법이다.
+
 ### hFF, FF(Fast Foward) heuristic
+
 - planning 문제에서 현재 상태로부터 목표까지 가기 위해 필요한 행동 수를 FF 방식으로 추정하는 휴리스틱이다.
-
-
 
 ## 용어정리
 
@@ -1781,19 +1723,13 @@ Score(skill) = Say(skill) × Can(skill)
 
 ---
 
-
 ## Understanding the Structure
 
 ![Inverseprompt](images/Structure_self-corrective.png)
 
-
 ---
 
-
 </details>
-
-
-
 
 <details>
 <summary><b>23. A Survey on Vision-Language-Action Models for Embodied AI</b></summary>
@@ -1805,9 +1741,7 @@ Score(skill) = Say(skill) × Can(skill)
 - **Conference / Journal**: IEEE Transactions on Neural Networks and Learning Systems
 - **Year**: 2026
 
-
 ---
-
 
 <details>
 <summary><b>Written Memo</b></summary>
@@ -1829,25 +1763,15 @@ O. Abstract
 I. Introduction
 
 * VLA는 multimodal modes at embodied AI이고 vision, language, action의 정보를 처리한다. language instructions을 이해하고, 시각적으로 환경을 인지하고, 적절한 행동을 생성하고, multimodal capabilties가 필요하다.
-
 * VLA란 용어는 RT-2에 의해서 최근에 명명되었다.
-
 * VLA는 초기의 RL에 비해서 복잡한 환경에서도 versatility, dextreity, generalizability를 가진다. 덕분에 controlled setting 에서 일상에서까지 적합하다.
-
 * 기존의 RL에의 현황을 설명-
-
 * multimodal은 VQA, image coptioning, txet-to-vide generation까지 하고 있다.
-
 * VLA도 LLM과 VLM에서와 마찬가지로 versatile myltitask policies가 필요해졌다.
-
 * 다만 learning a broader set of skills, adapting to diverse environments, 그리고 자연어 명령을 위해서는 language-conditioned robot policies의 개발을 필요하는 intuitive user-rovt interface가 수반된다.
-
 * VLA는 시각정보를 위해 PVR(Pretrained Visual Representations)를 vision encoder를 차용한다.
-
 * III A는 inidividuatl components of VLA: dynamics learning, world models and reasoning
-
 * III B는 low-level control policies: lanauage instructions, visual observations은 control policy(generate low level actions)에 쓰인다. 그래서 control policy의 이상적인 모델로 렌더링한다.
-
 * high-level task planner는 task 분해를 한다(IV). 얘는 long-horizion tasks를 sequece of subtasks로 분해한다. 그래서 high capacity를 가진 hierarchical framework를 채택한다. 왜냐 low-level control policy가 정확도와 스피드에 집중하는 반면에 말이다.
 
 *Taxonomy of VLA into two hierarchies
@@ -1978,43 +1902,40 @@ c. World Models & Reasoning
   => World Models<->low-level_control policies
   => CoT-based Reasoning <->high-level_task planning
 
-
-
 III. Vision-Language-Action Models
 B. Low-level Control Policies
+
 - action decoder=vision encoder + language encoder
 - VLA(control policiy) excute language instructions
 - low-level policy, low-level controller, action primitive로 불림.
 
 1. Non-Transformer Control Policies
--CLIPort: CLIP with the Transporter network(two-stream architecture)
--CLIP Vision encoder(semantic information from RGB image)+ Transpoter newtwork(spatioal information from RGB-D image)
--BC-Z: process language instruction or human demonstration video
--MCIL
--HULC: a multimodal Transformer + discrete latent plans
--HULC++
--UniPi: treats the decision making porblem as a text-conditioned video generation promblem
-
+   -CLIPort: CLIP with the Transporter network(two-stream architecture)
+   -CLIP Vision encoder(semantic information from RGB image)+ Transpoter newtwork(spatioal information from RGB-D image)
+   -BC-Z: process language instruction or human demonstration video
+   -MCIL
+   -HULC: a multimodal Transformer + discrete latent plans
+   -HULC++
+   -UniPi: treats the decision making porblem as a text-conditioned video generation promblem
 2. Transformer-Based Control Policies
--Interactive Language는 로봇이 작업 중 사람의 언어 지시를 실시간으로 반영하도록 만든 시스템이고, 성능의 핵심 원인은 다양한 언어 지시가 포함된 대규모 데이터셋이다.
--Hiveformer: for a language-conditioned policy, CLIPort와 BC-Z에 비해서 발전한 모델, transformor 구조를 일찍 도입한 모델
--Gato: a model can play Atari games, captoin images, and stack blocks.
-=> 입출력 형식을 unified tokenization으로 통일해서, simultaneous training of different tasks가 가능해짐.
--Astra: optimizes Gato via trajectory attention
--RoboCat: Built upon the Gata + VQ-GAN image encoder
-=> predict next action, future observations
--RT-1, similar with BC-Z, employs a vision encoder(EfficientNet), replace the MLP action decoder in BC-Z with a transformer decoder, prouding discretized actions
--Q-Transformer: extends RT-1 by introducing autoregressive
--RT-Trajectory: adopts trajectory sketchs as policy conditions
--trajectory sketches consist of curves that delineate the intended trajectory or the robot end-effctor to follow
+   -Interactive Language는 로봇이 작업 중 사람의 언어 지시를 실시간으로 반영하도록 만든 시스템이고, 성능의 핵심 원인은 다양한 언어 지시가 포함된 대규모 데이터셋이다.
+   -Hiveformer: for a language-conditioned policy, CLIPort와 BC-Z에 비해서 발전한 모델, transformor 구조를 일찍 도입한 모델
+   -Gato: a model can play Atari games, captoin images, and stack blocks.
+   => 입출력 형식을 unified tokenization으로 통일해서, simultaneous training of different tasks가 가능해짐.
+   -Astra: optimizes Gato via trajectory attention
+   -RoboCat: Built upon the Gata + VQ-GAN image encoder
+   => predict next action, future observations
+   -RT-1, similar with BC-Z, employs a vision encoder(EfficientNet), replace the MLP action decoder in BC-Z with a transformer decoder, prouding discretized actions
+   -Q-Transformer: extends RT-1 by introducing autoregressive
+   -RT-Trajectory: adopts trajectory sketchs as policy conditions
+   -trajectory sketches consist of curves that delineate the intended trajectory or the robot end-effctor to follow
 
 구간 + 핵심 흐름만 정리하는 게 좋겠다
 구간:Transformer-Based Control Policies
 핵심 흐름: 로봇 control policy가 Transformer 기반 sequence modeling 구조로 발전하는 흐름. 이미지, 언어, 과거 관찰, action sequence를 함께 처리하려는 방향이다.
 
-
 3. Control Policies for Multimodal Instructions
-=>multimodal instruction enables new ways to specify tasks, such as through demonstratinons, by naming novel objects, or by pointing with a finger or muse click
+   =>multimodal instruction enables new ways to specify tasks, such as through demonstratinons, by naming novel objects, or by pointing with a finger or muse click
 
 * VIMA
 * MOO: leveraging the backbone of RT-1
@@ -2042,7 +1963,6 @@ B. Low-level Control Policies
 6. Diffusion-Based Control Policies with 3D vision
    => Several works have proposed combining 3D vision with diffusion-based policies.
    => DP3 introduces 3D point cloud inputs to a diffusion policy
-
 7. Control Policies for Motion Planning
    => involves decomposing movement tasks into discrete waypoints while satisfying constraints such as obstacle avoidance and kinematic limits
    => The language conts framework presents a novel apporoach to robot correction using natural language for Human-in-the-loop control
@@ -2097,48 +2017,51 @@ d) LVLA vs. Generalized VLA
 e) Scaling Laws
 => 모델과 데이터가 커질수록 성능이 좋아지는 경향이 로보틱스/VLA에도 나타난다
 
-
 IV. Task Planners
 => high-level task planner aims to decompose a complex task l into a sequence of subtasks(task plan)
 => This process is sometimes referred to as task or subgoal decomposition
 => closely related to task and motion planning(TAMP) and embodied decision making
 
 A. Monolithic Task Planners
+
 1) End-to-End Task Planners
-=> Similar to LVLAs
-=> task planners can be implemented as end-to-end MLLMs, leveraging their internet-scale knowledge for task planning
+   => Similar to LVLAs
+   => task planners can be implemented as end-to-end MLLMs, leveraging their internet-scale knowledge for task planning
+
 - PaLM-E: ViT+PaLM, create an embodied MLLM, performing high-level embodied reasoning tasks.
-=> generates a text plan, serving as instructions for low-level robotic policies
-=> In a mobile manipulation environment, generated plan is mapped to executable low-level instructins using SayCan.
-=> As low-level policy executes actions, PaLM-E can also replan based on changes in the environment
-=> Can handle VQA tasks
+  => generates a text plan, serving as instructions for low-level robotic policies
+  => In a mobile manipulation environment, generated plan is mapped to executable low-level instructins using SayCan.
+  => As low-level policy executes actions, PaLM-E can also replan based on changes in the environment
+  => Can handle VQA tasks
 - Embodied GPT: vision encoder embeddings + embodied planning information, provided by an LLM.
-=> outputs task-relevant instance-level features
+  => outputs task-relevant instance-level features
 
 2) End-to-End Task Planners with 3D vision: explore the use of 3D vision
-=> majority of current MLLMs deal with images as visual inputs
+   => majority of current MLLMs deal with images as visual inputs
+
 - LEO: two-stage training strategy, 1: focus on 3D vision-language alignment, 2: 3D vision-language-action instruction tuning
-=> 3D question-answering tasks in manipulation, navigation, task planning
+  => 3D question-answering tasks in manipulation, navigation, task planning
 - 3D-LLM: injects 3D information into LLMs and empowers them to perform 3D tasks
 - MultiPLY : object-centric embodied LLM, including auto, tactile and thermal
 - ShapeLLM: is built on the novel 3D vison encoder ReCon++
 - ReCon++ with LLaMA, ShapeLLM: improves embodied interaction performance on 3D benchmark(3D MM-Vet)
 
 3) Grounded Task Planners
-=> Grounded task planning involves generating high-level actions while considering whether they can be executed by low-level control policies.
+   => Grounded task planning involves generating high-level actions while considering whether they can be executed by low-level control policies.
+
 - SayCan: high level LLM planners with low-level control policies
-=> task grounding: user's instruction -> says most probable next low-level skill
-=> world grounding: low-level policy provides the value function as the affordance function(probabilty that the policy can complete the skill)
-- Translated <LM>: two-step process to translate high-level instructions -> executable actions
-=> LLM is utilized for plan generation, breaking down the high-level instrucion -> next action expressed as a free-form language phrase -> a pretrained masked LLM is employed for action translantion(VirutalHome action) -> appended to the plan
-=> A 're-prompting' strategy: proposed to generate corrective action when the agent encounters precodition errors
+  => task grounding: user's instruction -> says most probable next low-level skill
+  => world grounding: low-level policy provides the value function as the affordance function(probabilty that the policy can complete the skill)
+- Translated `<LM>`: two-step process to translate high-level instructions -> executable actions
+  => LLM is utilized for plan generation, breaking down the high-level instrucion -> next action expressed as a free-form language phrase -> a pretrained masked LLM is employed for action translantion(VirutalHome action) -> appended to the plan
+  => A 're-prompting' strategy: proposed to generate corrective action when the agent encounters precodition errors
 
 -(SL)^3: a learning algorithm that alternates between three steps, segmentation, labeling, parameter update
 => enables a hierarchical policy to discover reusable skills with sparse natural language annotations
 
 ---
-</details>
 
+</details>
 
 ## Understanding the Structure
 
@@ -2153,6 +2076,7 @@ A. Monolithic Task Planners
 ---
 
 ## I. Introduction
+
 ---
 
 ![General Architecture of VLA models](images\Fig.1_A_survey_VLA.png)
@@ -2164,6 +2088,7 @@ A. Monolithic Task Planners
 * 다만 로봇은 실제 세계에서 움직이기 때문에, VLA는 model architecture뿐 아니라 data collection, action prediction, safety, evaluation 문제까지 함께 다뤄야 한다.
 
 ### A. Related Work
+
 ![Venn diagram and Timelines of VLA](images\Fig.2_A_survey_VLA.png)
 
 * 기존 연구들은 embodied AI, robot learning, multimodal learning, vision-language models, task planning 등 여러 관점에서 VLA와 관련된 흐름을 다뤄왔다.
@@ -2255,6 +2180,9 @@ A. Monolithic Task Planners
 * Dynamics와 world model은 planning과 미래 상태 예측에 유리하지만 정확한 예측이 어렵고, CoT 기반 reasoning은 high-level task planning에는 적합하지만 low-level control signal과 직접 연결하기에는 한계가 있다.
 
 ---
+
+![a hierarchichal robot policy](images\Fig.4_A_survey_VLA.png)
+![Representive architectures of VLA models](images\Fig.5_A_survey_VLA.png)
 
 ### B. Low-level Control Policy
 
@@ -2358,7 +2286,9 @@ A. Monolithic Task Planners
 ---
 
 ## IV. Task Planners
+
 ![Illustration of a hierarchical robot policy](images\Fig.4_A_survey_VLA.png)
+![Language-based and Code-based modualr task planners](images\Fig.6_A_survey_VLA.png)
 
 * High-level task planner는 복잡한 long-horizon task를 여러 개의 subtask sequence로 분해하는 역할을 한다.
 * 이 과정은 task decomposition 또는 subgoal decomposition이라고도 불리며, 로봇이 긴 명령을 한 번에 수행하기 어렵기 때문에 중간 목표 단위로 나누는 것이 핵심이다.
@@ -2506,8 +2436,6 @@ A. Monolithic Task Planners
 * 또한 각 흐름의 technical details를 model architectures, training strategies, individual modules 관점에서 분석하고 비교한다.
 * 추가로 VLA를 학습하고 평가하는 데 필요한 datasets, simulators, benchmarks와 같은 essential resources를 정리한다.
 
-
 ---
-
 
 </details>
