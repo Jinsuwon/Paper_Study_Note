@@ -2212,10 +2212,10 @@ A. Monolithic Task Planners
 
 ---
 
-![a hierarchichal robot policy](images/Fig.4_A_survey_VLA.png)
-![Representive architectures of VLA models](images/Fig.5_A_survey_VLA.png)
 
 ### B. Low-level Control Policies
+![a hierarchichal robot policy](images/Fig.4_A_survey_VLA.png)
+![Representive architectures of VLA models](images/Fig.5_A_survey_VLA.png)
 
 * Low-level control policy는 language instructions와 visual observations를 입력으로 받아 low-level actions를 생성하는 VLA의 한 축이다.
 * 일반적으로 vision encoder와 language encoder가 입력 정보를 표현하고, action decoder가 이를 바탕으로 low-level action을 생성한다.
