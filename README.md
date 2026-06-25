@@ -1743,6 +1743,18 @@ Score(skill) = Say(skill) × Can(skill)
 
 ---
 
+## One-line Summary
+
+* 이 논문은 Vision-Language-Action(VLA) 모델을 embodied AI 관점에서 정리한 survey로, VLA를 구성요소, low-level control policy, high-level task planner, datasets/benchmarks, future directions로 나누어 설명한다.
+
+---
+
+## Why I Read This Paper
+
+* VLA 분야의 전체 구조를 파악하기 위해 읽었다.
+* 특히 reasoning-centric VLA로 넘어가기 전에, VLA의 taxonomy, data sources, model design, action prediction, evaluation 기준을 잡는 것이 목적이었다.
+
+---
 <details>
 <summary><b>Written Memo</b></summary>
 
@@ -2079,7 +2091,7 @@ A. Monolithic Task Planners
 
 ---
 
-![General Architecture of VLA models](images\Fig.1_A_survey_VLA.png)
+![General Architecture of VLA models](images/Fig.1_A_survey_VLA.png)
 
 * Embodied AI는 실제 환경과 상호작용해야 하기 때문에, 단순히 텍스트나 이미지를 이해하는 것만으로는 충분하지 않다.
 * 로봇은 사용자의 language instruction을 이해하고, vision을 통해 주변 환경과 객체를 인식하며, 그 결과를 실제 action으로 변환해야 한다.
@@ -2089,270 +2101,378 @@ A. Monolithic Task Planners
 
 ### A. Related Work
 
-![Venn diagram and Timelines of VLA](images\Fig.2_A_survey_VLA.png)
+![Venn diagram and Timelines of VLA](images/Fig.2_A_survey_VLA.png)
 
 * 기존 연구들은 embodied AI, robot learning, multimodal learning, vision-language models, task planning 등 여러 관점에서 VLA와 관련된 흐름을 다뤄왔다.
 * Robot learning은 전통적으로 RL, imitation learning, MDP/POMDP 관점에서 로봇의 policy 학습을 설명해왔다.
 * Multimodal learning과 VLM 연구는 image captioning, VQA, text-to-video generation처럼 vision과 language를 연결하는 능력을 발전시켰다.
-* 그러나 VLA는 여기서 한 단계 더 나아가, vision-language understanding을 실제 robot action generation과 연결해야 한다.
-* 따라서 VLA는 기존의 LLM, VLM, robot learning, task planning 연구가 만나는 교차점에 있는 분야로 볼 수 있다.
+* VLA는 vision, language, action을 통합하여 embodied agent가 physical world와 상호작용하고 user instruction을 수행할 수 있도록 하는 모델이다.
+* 이 논문은 VLA를 key components, control policies, task planners라는 세 가지 연구 흐름으로 나누어 정리한다.
 
 ### B. Contributions
 
-* 이 survey의 첫 번째 기여는 VLA를 체계적으로 분류하는 taxonomy를 제시한 점이다.
-* 저자들은 VLA를 components of VLA, low-level control policies, high-level task planners라는 세 축으로 나누어 정리한다.
-* 두 번째 기여는 VLA 학습과 평가에 필요한 real-world datasets, simulation datasets, human datasets, benchmarks를 함께 정리한 점이다.
-* 세 번째 기여는 각 접근법의 strengths and limitations를 비교하고, safety, generalization, multimodality, long-horizon tasks, real-time responsiveness 같은 future directions를 제시한 점이다.
-* 이 논문의 핵심 가치는 개별 모델의 성능 비교보다, VLA 분야가 어떤 구조로 발전하고 있으며 어떤 문제가 아직 남아 있는지를 정리해준다는 데 있다.
+* 이 survey는 VLA 분야를 체계적으로 정리하기 위해 taxonomy를 제시한다.
+* 저자들은 VLA 연구를 key components, control policies, task planners라는 세 가지 주요 흐름으로 나누어 설명한다.
+* 또한 각 흐름에 해당하는 model architectures, training strategies, individual modules를 분석하고 비교한다.
+* 추가로 VLA를 학습하고 평가하는 데 필요한 datasets, simulators, benchmarks와 같은 essential resources를 정리한다.
+* 마지막으로 VLA와 embodied AI 분야의 challenges와 future research directions를 논의한다.
 
 ---
-
 ## II. Background
 
-![Taxonomy of VLA models](images\Fig.3_A_survey_VLA.png)
+![Taxonomy of VLA models](images/Fig.3_A_survey_VLA.png)
 
-* VLA를 이해하기 위해서는 embodied AI, robot learning, multimodal learning, language-conditioned policy의 기본 흐름을 먼저 이해해야 한다.
-* Embodied AI는 단순히 텍스트나 이미지만 처리하는 AI와 달리, 실제 또는 시뮬레이션 환경 안에서 관찰하고 행동하며 환경과 상호작용하는 AI를 의미한다.
-* Robot learning은 로봇이 상태를 관찰하고 action을 선택하며, 그 결과를 바탕으로 policy를 학습하는 문제로 볼 수 있다.
-* 전통적인 robot learning은 RL과 imitation learning을 중심으로 발전했지만, 실제 환경에서는 reward design이 어렵고 다양한 task를 모두 명시적으로 설계하기 어렵다.
-* 이 때문에 자연어 명령을 조건으로 받아 어떤 task를 수행할지 결정하는 language-conditioned robot policy가 중요해졌다.
-* VLA는 이러한 흐름을 확장해, vision으로 환경을 인식하고, language로 사용자의 의도를 이해하며, action으로 실제 행동을 생성하는 통합 구조를 지향한다.
-* 따라서 VLA의 핵심 배경은 robot learning의 policy 학습, VLM의 vision-language understanding, 그리고 embodied AI의 real-world interaction이 결합되는 과정이라고 볼 수 있다.
+* VLA는 embodied AI, robot learning, multimodal learning의 흐름 위에서 발전한 vision-language-action 기반 모델이다.
+* Embodied AI는 agent가 환경을 인식하고 행동하며, 물리적 또는 시뮬레이션 환경과 상호작용하는 문제를 다룬다.
+* Robot learning에서는 로봇이 observation을 바탕으로 action을 선택하고, task 수행을 위한 policy를 학습한다.
+* 기존 robot learning은 reinforcement learning과 imitation learning을 중심으로 발전했으며, Markov Decision Process(MDP)는 이러한 robot learning 문제를 표현하는 기본적인 수학적 틀로 사용된다.
+* 이후 많은 multitask robot models는 수행할 task나 skill을 지정하기 위해 language instruction을 활용했으며, 이는 language-conditioned robot policy 연구로 이어졌다.
+* Multimodal learning은 vision과 language 정보를 함께 처리하는 방향으로 발전해왔고, VLA는 이러한 multimodal understanding을 robot action generation과 연결한다.
+* 따라서 VLA는 visual observation, language instruction, action generation을 함께 다루는 embodied AI 모델로 정리할 수 있다.
 
 ---
+
 
 ## III. Vision-Language-Action Models
 
-* VLA는 Computer Vision, Natural Language Processing, Reinforcement Learning이 결합된 embodied AI 모델로, 시각 정보와 언어 명령을 바탕으로 로봇의 행동을 생성하는 구조이다.
+* VLA는 embodied AI에서 vision, language, action 정보를 함께 처리하는 multimodal model이다.
+* 이 장에서는 VLA를 구성하는 key components와 low-level control policies를 중심으로 정리한다.
 
 ---
 
 ### A. Components of VLA
 
-#### 1. RL
+#### 1. Reinforcement Learning
 
-* Reinforcement Learning은 로봇이 현재 상태를 관찰하고 행동을 선택한 뒤 보상을 통해 policy를 학습하는 기본 틀이다.
-* VLA 이전의 robot policy 학습은 주로 RL과 imitation learning을 중심으로 발전했으며, state-action-reward로 구성된 trajectory는 Transformer 기반 sequence modeling과 연결될 수 있다.
+* Reinforcement Learning은 robot policy learning의 중요한 기반이며, robot learning 문제는 주로 Markov Decision Process(MDP) 관점에서 다루어져 왔다.
+* RL trajectories는 states, actions, rewards로 이루어진 sequence이기 때문에 Transformer 기반 sequence modeling과 연결될 수 있다.
+* Decision Transformer와 Trajectory Transformer는 trajectory를 sequence modeling 문제로 다루는 대표적인 예시이며, Gato는 이러한 흐름을 multimodal, multitask, multi-embodiment setting으로 확장한 사례이다.
 
-#### 2. PVR
+#### 2. Pretrained Visual Representation
 
-* Pretrained Visual Representation은 로봇이 시각 정보를 더 잘 이해하기 위해 사전학습된 vision encoder를 활용하는 흐름이다.
-* CLIP이나 R3M 계열은 image-level semantics를 잘 포착하는 반면, MAE, DINOv2, I-JEPA, Theia 계열은 object position, depth, segmentation과 같은 pixel-level details를 보완하는 방향으로 이해할 수 있다.
+* Pretrained Visual Representation은 VLA에서 visual observation을 표현하기 위해 사용되는 vision encoder와 관련된다.
+* Vision encoder는 object classes, locations, affordances 등 current state에 대한 중요한 정보를 제공하므로 VLA 성능에 직접적인 영향을 준다.
+* CLIP과 R3M은 image-level information을 제공하는 데 유용하지만, depth, object position, segmentation task와 같은 pixel-level details에는 한계가 있을 수 있다.
+* MAE, DINOv2, I-JEPA, Theia와 같은 방법은 이러한 pixel-level visual information을 보완하는 방향으로 활용된다.
 
 #### 3. Video Representation
 
-* Video representation은 단일 이미지보다 시간에 따른 상태 변화와 행동 흐름을 포함하기 때문에 robot policy 학습에 유용하다.
-* 특히 영상은 행동 전후의 변화를 담고 있어 dynamics learning이나 world model과 연결될 수 있으며, NeRF나 3D representation처럼 더 풍부한 공간 표현으로 확장될 수 있다.
+* Video representation은 image sequence를 활용하여 visual representation을 학습하는 흐름이다.
+* Video는 시간에 따른 상태 변화와 행동 정보를 포함하므로 robot policy learning에 활용될 수 있다.
+* 이 흐름은 NeRF, 3D representation, audio information 등 더 다양한 representation으로 확장된다.
 
-#### 4. Dynamics
+#### 4. Dynamics Learning
 
-* Dynamics learning은 로봇의 행동이 환경 상태를 어떻게 변화시키는지 학습하는 흐름이다.
-* Forward dynamics는 현재 상태와 행동을 바탕으로 다음 상태를 예측하고, inverse dynamics는 현재 상태와 다음 상태를 비교해 그 사이에 필요한 행동을 추정한다.
+* Dynamics learning은 forward dynamics와 inverse dynamics를 포함한다.
+* Forward dynamics는 현재 상태와 현재 action을 바탕으로 다음 상태를 예측한다.
+* Inverse dynamics는 현재 상태와 미래 상태를 바탕으로 그 사이에 필요한 action을 예측한다.
+* 이러한 dynamics learning은 action label이 부족한 video data나 robot interaction data를 활용하는 데 중요하게 사용될 수 있다.
 
-#### 5. World Model
+#### 5. World Models
 
-* World model은 로봇이 실제 행동을 실행하기 전에 가능한 미래 상태를 예측하는 내부 시뮬레이션 모델에 가깝다.
-* Forward dynamics와 유사하지만, 단순히 action decoder를 보조하는 학습 요소를 넘어 planning에 직접 활용될 수 있는 standalone module로 볼 수 있다.
+* World model은 common-sense knowledge를 encode하고, 주어진 action에 따른 미래 상태를 예측하는 모델이다.
+* World model은 forward dynamics와 유사하지만, 단순히 action decoder 학습을 보조하는 요소를 넘어 standalone module로 활용될 수 있다.
+* Dreamer 계열, IRIS, TWM 등이 world model 기반 접근으로 언급된다.
 
 #### 6. LLM-Induced World Models
 
-* LLM-induced world model은 LLM의 commonsense reasoning, PDDL 생성, abstract world model 구성, search tree 탐색 능력을 활용해 task planning을 돕는 흐름이다.
-* 이는 로봇이 실제 행동을 수행하기 전에 텍스트 또는 symbolic representation 기반으로 가능한 계획과 상태 변화를 추론하게 한다.
+* LLM-induced world model은 LLM을 활용하여 abstract world model, PDDL representation, search tree 등을 구성하는 접근이다.
+* DECKARD, LLM-DM, RAP, LLM-MCTS와 같은 방법은 LLM의 reasoning 능력을 task planning과 decision making에 활용한다.
+* 이 흐름은 language 또는 symbolic representation을 통해 가능한 상태 변화와 계획을 추론하는 방향으로 이해할 수 있다.
 
 #### 7. Visual World Models
 
-* Visual world model은 텍스트가 아니라 image, video, 3D scene과 같은 시각적 형태로 미래 상태를 예측하는 흐름이다.
-* 이는 로봇이 특정 행동을 수행했을 때 환경이 어떻게 변할지 실제 세계와 더 가까운 형태로 예측하는 데 도움을 준다.
+* Visual world model은 text 기반 world model과 달리 image, video, 3D scene과 같은 visual modality로 미래 상태를 예측하거나 생성한다.
+* Sora, Genie, 3D-VLA, UniSim, E2WM 등이 visual world model 관련 흐름으로 언급된다.
+* 이 접근은 실제 세계와 더 가까운 형태의 visual prediction을 활용하려는 방향이다.
 
 #### 8. Reasoning
 
-* Reasoning은 CoT, ReAct, Tree-of-Thoughts와 같은 방식을 통해 로봇의 계획 생성과 의사결정 과정을 더 명시적으로 만드는 흐름이다.
+* Reasoning은 LLM의 Chain-of-Thought(CoT) 능력과 관련되며, decision-making process를 더 명시적으로 구성하기 위해 활용된다.
+* ReAct는 reasoning traces와 actions를 결합해 action plan을 생성하고, commonsense knowledge와 exception handling을 포함할 수 있도록 한다.
+* Tree-Planner, ECoT, CoT-VLA와 같은 방법은 reasoning을 task planning 또는 VLA의 action generation 과정에 활용하는 사례이다.
 * 특히 long-horizon task에서는 단순히 action을 바로 출력하는 것보다, 중간 reasoning 과정을 통해 subgoal을 설정하고 실패 상황에서 replanning하는 능력이 중요하다.
 
 #### 9. Policy Steering
 
-* Policy steering은 VLA를 다시 학습하지 않고도 test-time에서 action 선택을 개선하는 방법이다.
-* 생성된 action 후보를 value function이나 VLM-based verifier로 다시 평가하고, 그중 더 안전하거나 성공 가능성이 높은 action을 선택하는 방식으로 이해할 수 있다.
+* Policy steering은 costly retraining 없이 test-time에서 VLA performance를 개선하려는 접근이다.
+* V-GPS는 learned value function을 사용해 generated actions를 re-rank한다.
+* RoboMonkey는 VLM-based verifier를 사용해 optimal action을 선택한다.
+* 생성된 action 후보를 value function이나 VLM-based verifier로 다시 평가하고, 그중 더 안전하거나 성공 가능성이 높은 action을 선택하는 방식으로 이해할 수 있다
+
+.
 
 #### 10. Strengths and Limitations
 
-* PVR은 시각 표현 학습에 강하지만 세밀한 조작에 필요한 위치, 깊이, segmentation 정보는 부족할 수 있다.
-* Dynamics와 world model은 planning과 미래 상태 예측에 유리하지만 정확한 예측이 어렵고, CoT 기반 reasoning은 high-level task planning에는 적합하지만 low-level control signal과 직접 연결하기에는 한계가 있다.
+* CLIP이나 time contrastive learning 기반 representation은 image-level information을 제공하는 데 유용하지만, depth, object position, segmentation과 같은 pixel-level details에는 한계가 있다.
+* Forward dynamics는 미래 상태를 예측해야 하므로 inverse dynamics보다 학습이 어려울 수 있지만, 성능 향상에 크게 기여할 수 있다.
+* Inverse dynamics는 action label이 없는 video data에서 필요한 action을 추정하는 데 유용하다.
+* World model은 low-level control policy와 high-level task planner 모두에 적용될 수 있지만, 주로 low-level action에 따른 즉각적인 다음 상태 생성을 다루기 때문에 low-level control policy와 더 밀접하게 연결된다.
+* 반면 CoT-based reasoning methods는 text-based task plan과 thought chain을 사용하기 때문에 high-level task planning과 더 밀접하게 연결된다.
 
 ---
 
-![a hierarchichal robot policy](images\Fig.4_A_survey_VLA.png)
-![Representive architectures of VLA models](images\Fig.5_A_survey_VLA.png)
+![a hierarchichal robot policy](images/Fig.4_A_survey_VLA.png)
+![Representive architectures of VLA models](images/Fig.5_A_survey_VLA.png)
 
-### B. Low-level Control Policy
+### B. Low-level Control Policies
 
-* Low-level control policy는 시각 정보와 언어 명령을 받아 로봇이 실제로 수행할 수 있는 action을 출력하는 모델이다.
+* Low-level control policy는 language instructions와 visual observations를 입력으로 받아 low-level actions를 생성하는 VLA의 한 축이다.
 * 일반적으로 vision encoder와 language encoder가 입력 정보를 표현하고, action decoder가 이를 바탕으로 low-level action을 생성한다.
 * VLA에서 control policy는 language instruction을 실행 가능한 robot action으로 변환하는 핵심 구성요소이며, low-level policy, low-level controller, action primitive 등으로도 불린다.
 
 #### 1. Non-Transformer Control Policies
 
-* Non-transformer control policy는 Transformer 기반 구조가 본격적으로 사용되기 전, vision-language representation을 robot action으로 연결하려는 초기 흐름이다.
-* CLIPort와 BC-Z 같은 모델은 시각 정보와 언어 명령을 결합해 물체 조작 행동을 생성하려는 대표적인 예시로 볼 수 있다.
+* Non-transformer control policies는 Transformer 기반 VLA가 본격적으로 등장하기 전의 language-conditioned robot policy 흐름이다.
+* CLIPort는 CLIP과 Transporter Network를 결합한 two-stream architecture를 사용하여 RGB image의 semantic information과 RGB-D image의 spatial information을 함께 활용한다.
+* BC-Z는 language instruction 또는 human demonstration video를 조건으로 받아 다양한 manipulation task를 수행하는 policy를 학습한다.
+* MCIL, HULC, HULC++, UniPi 등도 Transformer 이전 또는 비-Transformer 중심의 control policy 흐름으로 언급된다.
 * 이 시기의 모델들은 VLA가 본격적으로 대형화되기 전, language-conditioned robot policy의 기본 구조를 형성했다는 점에서 의미가 있다.
 
 #### 2. Transformer-Based Control Policies
 
-* Transformer-based control policy는 이미지, 언어 명령, 과거 관찰, action history를 sequence로 처리하려는 흐름이다.
-* RT-1과 Gato는 이러한 방향의 대표적인 예시이며, Transformer 구조를 통해 다양한 task와 observation-action sequence를 함께 학습할 수 있게 했다.
+* Transformer-based control policies는 robot control policy에 Transformer 구조와 sequence modeling을 적용하는 흐름이다.
+* Hiveformer는 language-conditioned policy에 Transformer 구조를 도입한 초기 사례 중 하나이다.
+* Gato는 다양한 task의 입력과 출력을 unified tokenization으로 처리하여 Atari game, image captioning, block stacking 등을 하나의 모델에서 다룬다.
+* RT-1은 EfficientNet 기반 vision encoder와 Transformer decoder를 사용하며, action을 discretized action token으로 출력한다.
+* Q-Transformer, RT-Trajectory, Astra, RoboCat 등은 Transformer 기반 control policy를 확장한 사례로 정리된다.
 * 이 흐름은 robot policy가 단일 이미지에만 반응하는 것이 아니라, 시간에 따른 관찰과 행동 맥락을 함께 고려하는 방향으로 발전했음을 보여준다.
 
 #### 3. Control Policies for Multimodal Instructions
 
-* Multimodal instruction 기반 control policy는 task specification이 자연어 명령에만 머무르지 않고, demonstration, pointing, mouse click, novel object naming 등으로 확장되는 흐름이다.
+* Multimodal instruction은 task specification을 language instruction에만 제한하지 않고, demonstration, novel object naming, finger pointing, mouse click 등으로 확장한다.
+* VIMA는 multimodal prompt를 활용하여 다양한 object manipulation task를 수행하는 대표적인 예시이다.
+* MOO는 RT-1 backbone을 활용하여 multimodal instruction 기반 control policy를 구성한다.
 * 이는 사용자가 로봇에게 작업을 지시하는 방식이 더 다양해질 수 있음을 보여준다.
 * 따라서 VLA는 단순히 언어를 이해하는 것을 넘어, 여러 형태의 지시 신호를 action generation에 연결해야 한다.
 
 #### 4. Control Policies with 3D Vision
 
-* 3D vision 기반 control policy는 2D image보다 풍부한 공간 정보를 활용해 로봇 조작 성능을 높이려는 흐름이다.
-* Point cloud, voxel, multi-view RGB-D 같은 3D 정보는 객체의 위치, 깊이, 공간 관계를 더 명확하게 표현할 수 있다.
+* Control policies with 3D vision은 2D image보다 3D vision이 더 풍부한 공간 정보를 제공할 수 있다는 전제에서 출발한다.
+* Point cloud, voxel, multi-view RGB-D와 같은 3D representation은 manipulation task에서 공간 구조를 더 명확하게 표현하는 데 활용된다.
+* VER, PerAct, RoboUniView, Act3D, RVT, RVT-2 등이 3D vision 기반 control policy로 언급된다.
 * 특히 manipulation task에서는 물체의 3D 구조와 주변 환경의 공간 관계를 이해하는 것이 중요하기 때문에, 3D vision은 low-level action prediction에 유용할 수 있다.
 
 #### 5. Diffusion-Based Control Policies
 
-* Diffusion-based control policy는 diffusion model을 robot action generation에 적용하는 흐름이다.
-* Diffusion Policy처럼 action trajectory를 점진적으로 생성하거나 복원하는 방식은 복잡하고 다양한 action distribution을 다루는 데 유리하다.
+* Diffusion-based control policies는 computer vision 분야에서 성공한 diffusion model을 robot action generation에 적용하는 흐름이다.
+* Diffusion Policy는 robot policy를 DDPM 형태로 정식화하고, receding horizon control, visual conditioning, time-series diffusion Transformer 등을 결합한다.
+* SUDD, Octo, MDT, RDT-1B 등이 diffusion-based control policy 흐름으로 언급된다.
 * 특히 하나의 상황에서 가능한 행동이 여러 개 존재하는 manipulation task에서 diffusion 기반 policy가 강점을 가질 수 있다.
 
 #### 6. Diffusion-Based Control Policies with 3D Vision
 
-* Diffusion-based control policy with 3D vision은 3D point cloud나 voxel input을 diffusion 기반 action generation과 결합하는 흐름이다.
+* Diffusion-based control policies with 3D vision은 diffusion 기반 action generation에 3D vision input을 결합하는 접근이다.
+* DP3는 diffusion policy에 3D point cloud input을 도입한 대표적인 예시이다.
 * 3D 정보는 객체의 위치와 형상을 더 정확히 제공하고, diffusion policy는 이를 바탕으로 더 정교한 action trajectory를 생성할 수 있다.
 * 따라서 이 방향은 복잡한 manipulation task에서 공간 이해와 action generation을 함께 강화하려는 시도로 볼 수 있다.
 
 #### 7. Control Policies for Motion Planning
 
-* Motion planning 기반 control policy는 로봇의 움직임을 discrete waypoint나 trajectory로 나누어 계획하는 흐름이다.
-* 이 과정에서는 obstacle avoidance, kinematic limits, collision constraints 같은 제약을 만족해야 한다.
+* Control policies for motion planning은 movement task를 discrete waypoints로 분해하고, obstacle avoidance와 kinematic limits 같은 constraints를 만족하도록 계획하는 흐름이다.
+* Natural language를 활용한 robot correction이나 human-in-the-loop control도 이 범주에서 다루어진다.
+* VoxPoser는 별도의 training 없이 LLM과 VLM을 motion planning에 직접 연결하는 방법으로 소개된다.
+* RoboTAP은 TAPIR algorithm을 사용해 source pose에서 target pose까지 관련 object를 추적하는 active points를 탐지한다.
 * 언어 명령을 motion planning과 연결하면, 사용자의 자연어 지시를 실제 이동 경로나 조작 경로로 변환할 수 있다.
 
 #### 8. Control Policies with Point-Based Actions
 
-* Point-based action은 전체 low-level action을 직접 예측하기보다, 이미지나 3D 공간상의 keypoint 또는 affordance point를 중심으로 행동을 생성하는 방식이다.
+* Point-based action policy는 action을 직접 dense하게 예측하기보다 image 또는 3D space상의 point, keypoint, affordance point를 중심으로 action을 표현한다.
+* PIVOT은 image 위의 keypoint를 반복적으로 refine하여 적절한 option을 선택한다.
+* RoboPoint는 spatial affordance prediction task에 VLM을 fine-tuning한다.
+* ReKep도 point-based action 흐름에서 함께 언급된다.
 * VLM이 특정 물체의 중요한 위치나 조작 가능한 지점을 지정하고, control policy가 그 지점을 기준으로 action을 수행하는 구조로 이해할 수 있다.
 * 이 방식은 action 표현이 비교적 단순하지만, zero-shot으로 중요한 조작 위치를 얻기 쉽다는 장점이 있다.
 
 #### 9. Large VLA
 
-* Large VLA는 RT-2, OpenVLA처럼 대형 VLM 또는 LLM급 foundation model을 vision-language-action 구조로 확장하는 흐름이다.
+* Large VLA는 LLM과 general language model의 구분과 유사하게, 일반 VLA보다 더 큰 foundation model 기반의 VLA를 의미한다.
 * 일반적인 VLA보다 큰 모델과 대규모 데이터를 활용해 instruction following, semantic understanding, generalization 능력을 강화하려는 시도이다.
+* RT-2는 Internet-scale VQA data와 robot data를 함께 학습하는 co-fine-tuning strategy를 사용한다.
+* RT-X는 RT-1, RT-2, Open X-Embodiment data를 연결하는 흐름으로 볼 수 있다.
+* OpenVLA는 RT-2-X의 open-source counterpart로 소개되며, LoRA와 model quantization 같은 efficient fine-tuning 방법과 함께 다루어진다.
+* 이후 OpenVLA-OFT, TraceVLA, π0, RoboMamba, SpatialVLA, LAPA, TinyVLA, DexVLA, HybridVLA, GR00T N1, NORA-1.5, WorldVLA, UniVLA 등 다양한 LVLA 확장 모델이 등장한다.
 * 다만 모델 크기가 커질수록 학습 비용, 추론 속도, 실시간 배포 문제가 함께 커진다.
 
 #### 10. Strengths and Limitations
 
 * Low-level control policy는 vision-language input을 실제 robot action으로 연결한다는 점에서 VLA의 핵심 구성요소이다.
-* Architecture 관점에서는 FiLM, cross-attention, token concatenation 등으로 vision, language, action 정보를 결합하는 방식이 중요하다.
-* Action type 관점에서는 continuous action, discrete action, diffusion-based action, point-based action 등 action을 어떻게 표현하느냐에 따라 training objective와 성능 특성이 달라진다.
-* RT series는 VLA가 대규모 robot data와 internet-scale vision-language data를 함께 활용하는 방향으로 발전했음을 보여준다.
-* LVLA는 instruction following과 generalization에 유리하지만, 학습 비용과 추론 속도 문제가 있으며 실시간 환경에서는 responsiveness가 중요한 한계로 작용한다.
-* Scaling laws는 모델 크기, 데이터 규모, task diversity가 커질수록 성능이 향상될 수 있음을 시사하지만, 로봇 분야에서는 데이터 수집 비용과 embodiment 차이 때문에 LLM처럼 단순히 scale up하기 어렵다.
+* 이 절에서는 low-level control policy의 strengths and limitations를 architecture, action types and training objectives, RT series, LVLA vs. generalized VLA, scaling laws 관점에서 정리한다.
 
 ##### a) Architecture
 
 * VLA architecture의 핵심은 vision, language, action 정보를 어떤 방식으로 결합하느냐이다.
-* 작은 모델에서는 cross-attention처럼 modality 간 관계를 세밀하게 연결하는 구조가 중요할 수 있고, 큰 모델에서는 token concatenation처럼 단순한 구조도 충분한 성능을 낼 수 있다.
-* Quantization은 image, language, action을 공통 token vocabulary로 통합해 VLA와 world model을 연결하기 쉽게 만든다.
+* RT-1 계열은 FiLM을 사용하여 language instruction을 visual feature에 반영한다.
+* Cross-attention은 modality 간 관계를 세밀하게 연결할 수 있어 작은 모델에서 효과적일 수 있다.
+* Token concatenation은 구조가 단순하지만, 큰 모델에서는 충분히 좋은 성능을 낼 수 있다.
+* Quantization은 image, language, action과 같은 multimodal information을 common token vocabulary로 통합하여 VLA와 world model을 연결하기 쉽게 만든다.
+* LLM의 tool-use 방식도 robot task에 적용될 수 있는 architecture 방향으로 언급된다.
 
 ##### b) Action Types and Their Training Objectives
 
-* Action type은 low-level policy가 어떤 형태의 행동을 예측하는지를 의미한다.
-* Continuous action은 translation, rotation, joint command처럼 연속적인 값을 예측하고, discrete action은 action token을 분류하듯 예측한다.
-* Diffusion-based action은 노이즈가 섞인 action trajectory를 복원하는 방식으로 학습되며, point-based action은 keypoint나 affordance point를 중심으로 행동을 생성한다.
+* VLA control policy의 training objective는 action representation에 따라 달라진다.
+* Continuous action은 translation, rotation, joint command처럼 연속적인 값을 예측하며, expert action과 predicted action 사이의 numerical difference를 줄이기 위해 MSE objective를 사용할 수 있다.
+* Discrete action은 action을 token prediction 문제로 다루며, cross-entropy objective를 사용할 수 있다.
+* Diffusion-based action은 noisy action trajectory를 복원하는 방식으로 학습되며, DDPM objective를 사용한다.
+* SE(2) action은 pick-and-place와 같은 tabletop manipulation에 적합할 수 있지만, pouring과 같은 복잡한 manipulation task에는 SE(3) action이 필요할 수 있다.
+* Point-based action은 image 또는 3D space상의 keypoint나 affordance point를 중심으로 action을 표현한다.
+* Point-based action은 상대적으로 coarse할 수 있지만, VLM으로부터 zero-shot으로 얻기 쉽다는 장점이 있다.
 
 ##### c) RT Series
 
-* RT series는 language-conditioned robot policy가 대규모 데이터와 Transformer 기반 구조를 통해 발전한 대표적인 흐름이다.
-* RT-1은 robot trajectory data를 기반으로 instruction-following policy를 학습했고, RT-2는 internet-scale vision-language data와 robot data를 함께 활용해 VLA의 범위를 확장했다.
-* 이후 RT-X와 OpenVLA 계열은 cross-embodiment data와 open-source VLA 방향으로 이어졌다.
+* RT series는 VLA가 대규모 robot data와 internet-scale vision-language data를 함께 활용하는 방향으로 발전했음을 보여준다.
+* RT-1은 language-conditioned robot trajectory data를 사용하여 instruction-following policy를 학습한다.
+* RT-2는 internet-scale vision-language data와 robot data를 함께 학습하여 VLA의 generalization을 확장하려는 시도이다.
+* RT-X는 cross-embodiment data를 활용하여 다양한 robot embodiments와 tasks에 대한 일반화를 목표로 한다.
 
 ##### d) LVLA vs. Generalized VLA
 
-* LVLA는 대형 foundation model을 활용해 언어 이해와 일반화 능력을 강화하려는 VLA 흐름이다.
-* 그러나 모델이 커질수록 training cost와 inference latency가 증가하고, 실제 로봇 환경에서는 느린 추론이 obsolete action으로 이어질 수 있다.
-* Generalized VLA는 다양한 embodiment와 task에 적용되는 범용성을 목표로 하지만, 로봇 데이터의 다양성과 일관성 부족이 여전히 큰 한계이다.
+* LVLA는 대형 foundation model을 활용하기 때문에 user instruction을 더 잘 해석하고 instruction-following 및 generalization 능력을 높일 수 있다.
+* 그러나 모델 크기가 커질수록 training cost와 inference latency 문제가 발생할 수 있다.
+* 실제 로봇 환경에서는 inference가 늦어지면 환경 변화에 뒤처진 obsolete action이 생성될 수 있으므로 responsiveness와 efficiency가 중요한 한계로 작용한다.
+* TinyVLA와 DeeR-VLA는 이러한 efficiency 문제를 다루는 사례로 언급된다.
+* Generalized VLA는 다양한 robots, tasks, environments에 적용되는 범용성을 목표로 하지만, data inconsistency와 embodiment 차이가 여전히 중요한 한계로 남는다.
 
 ##### e) Scaling Laws
 
-* Scaling laws는 모델 크기, 데이터 크기, task 다양성이 커질수록 성능이 향상되는 경향을 의미한다.
-* VLA에서도 대규모 robot data와 vision-language data를 함께 활용하면 generalization이 좋아질 가능성이 있다.
-* 하지만 로봇 분야는 실제 데이터 수집 비용, embodiment 차이, safety 문제 때문에 NLP의 LLM처럼 단순한 대규모 확장이 어렵다.
+* Scaling laws는 model size, data size, task diversity가 커질수록 성능이 향상되는 경향을 설명한다.
+* VLA에서도 scaling law와 유사한 경향이 관찰되지만, robot data는 수집 비용이 높고 embodiment 간 차이가 크다.
+* 따라서 VLA는 NLP의 LLM처럼 단순히 model size와 data size를 키우는 방식만으로 scale up하기 어렵다.
 
 ---
 
 ## IV. Task Planners
+![Illustration of a hierarchical robot policy](images/Fig.4_A_survey_VLA.png)
+![Language-based and Code-based modualr task planners](images/Fig.6_A_survey_VLA.png)
 
-![Illustration of a hierarchical robot policy](images\Fig.4_A_survey_VLA.png)
-![Language-based and Code-based modualr task planners](images\Fig.6_A_survey_VLA.png)
-
-* High-level task planner는 복잡한 long-horizon task를 여러 개의 subtask sequence로 분해하는 역할을 한다.
-* 이 과정은 task decomposition 또는 subgoal decomposition이라고도 불리며, 로봇이 긴 명령을 한 번에 수행하기 어렵기 때문에 중간 목표 단위로 나누는 것이 핵심이다.
-* Task planner는 low-level control policy가 직접 처리하기 어려운 장기 계획, 순서 결정, 실패 복구, 환경 변화 대응을 담당한다.
-* 이 흐름은 Task and Motion Planning(TAMP), embodied decision making과 밀접하게 연결된다.
+* High-level task planner는 complex long-horizon task를 여러 개의 subtask sequence로 분해하는 역할을 한다.
+* 이 과정은 task decomposition 또는 subgoal decomposition으로 볼 수 있으며, low-level control policy가 한 번에 처리하기 어려운 긴 명령을 중간 단계로 나누는 데 사용된다.
+* Task planner는 task의 순서 결정, high-level reasoning, failure handling, replanning과 관련된다.
+* 이 흐름은 Task and Motion Planning(TAMP), embodied decision making과 연결된다.
 
 ### A. Monolithic Task Planner
 
 * Monolithic task planner는 하나의 큰 MLLM 또는 VLM 기반 모델이 high-level embodied reasoning과 task planning을 직접 수행하는 방식이다.
-* PaLM-E처럼 시각 정보와 언어 명령을 함께 입력받아 text plan을 생성하고, 이 plan이 low-level policy의 instruction으로 전달되는 구조가 대표적이다.
-* 이 방식은 모델 내부에 많은 지식과 추론 능력을 통합할 수 있지만, 학습 비용과 모델 크기가 커질 수 있다.
+* 이러한 접근은 perception, language understanding, reasoning, planning을 하나의 모델 안에서 처리하려는 방향으로 볼 수 있다.
+* Monolithic planner는 end-to-end fine-tuning을 통해 specialized embodied data를 활용할 수 있지만, training cost와 model size가 커질 수 있다.
 
 #### A-1. End-to-End Task Planners
 
-* End-to-end task planner는 인터넷 규모 지식과 visual input을 활용해 high-level embodied reasoning task를 수행하는 흐름이다.
-* 모델은 사용자의 자연어 명령과 관찰 정보를 바탕으로 task-relevant plan을 생성하고, 생성된 text plan은 low-level robotic policy가 실행할 수 있는 instruction으로 사용된다.
-* 이 방식은 perception, language understanding, planning을 하나의 큰 모델 안에서 연결하려는 시도라고 볼 수 있다.
-* 다만 실제 robot action까지 직접 안정적으로 연결하려면 low-level policy와의 grounding이 필요하다.
+* End-to-end task planner는 internet-scale knowledge와 visual input을 활용하여 high-level embodied reasoning task를 수행한다.
+* PaLM-E는 multimodal input을 받아 text output을 생성하고, generated text plan을 low-level robotic policy에 전달하는 구조로 소개된다.
+* 이 방식은 visual observation과 language instruction을 바탕으로 task-relevant plan을 생성하는 데 사용된다.
+* 다만 generated plan이 실제 low-level control policy로 안정적으로 실행되기 위해서는 grounding과 execution 가능성이 함께 고려되어야 한다.
 
 #### A-2. End-to-End Task Planners with 3D Vision
 
-* End-to-end task planner with 3D vision은 2D image만으로 부족한 공간 관계 이해를 보완하기 위해 3D 정보를 task planning에 활용하는 흐름이다.
-* 3D vision-language alignment나 3D vision-language-action instruction tuning을 통해 객체의 위치, 공간 관계, 장면 구조를 더 명확히 이해하려는 방향이다.
-* 이는 manipulation, navigation, 3D question answering처럼 공간 이해가 중요한 embodied task에서 유용하다.
-* 수원님 관심사인 object grounding과 spatial relation understanding과도 직접적으로 연결된다.
+* End-to-end task planners with 3D vision은 2D image만으로 부족한 spatial information을 보완하기 위해 3D visual information을 task planning에 활용한다.
+* 3D vision-language alignment와 3D vision-language-action instruction tuning은 객체 위치, 공간 관계, 장면 구조를 더 명확하게 반영하기 위한 방법으로 다루어진다.
+* 이러한 접근은 manipulation, navigation, 3D question answering처럼 spatial understanding이 중요한 embodied task와 연결된다.
 
 #### A-3. Grounded Task Planner
 
-* Grounded task planner는 LLM이 생성한 high-level plan이 실제 low-level control policy로 실행 가능한지를 함께 고려하는 방식이다.
-* SayCan은 LLM의 language likelihood와 low-level policy의 affordance 또는 value function을 결합해 다음 행동을 선택하는 대표적인 예시이다.
-* 핵심은 단순히 자연어상 그럴듯한 계획을 고르는 것이 아니라, 현재 환경에서 실제로 수행 가능한 계획을 선택하는 것이다.
-* 이 방식은 language-based planning과 executable robot action 사이의 간극을 줄이려는 시도라고 볼 수 있다.
+* Grounded task planner는 LLM이 생성한 high-level plan이 실제 환경에서 수행 가능한지를 함께 고려하는 방식이다.
+* SayCan은 LLM의 language likelihood와 low-level policy의 affordance 또는 value function을 결합하여 다음 action을 선택하는 대표적인 예시이다.
+* 이 방식은 자연어상 그럴듯한 plan뿐 아니라, 현재 환경에서 실행 가능한 action을 선택하는 데 초점을 둔다.
+* Grounded task planner는 language-based planning과 executable robot action 사이의 연결을 강화하는 접근으로 정리된다.
 
 ### B. Modular Task Planner
 
-* Modular task planner는 LLM, VLM, object detector, scene representation module, control policy 등을 조립해 task planning을 수행하는 방식이다.
-* 기존에 학습된 off-the-shelf model을 활용할 수 있기 때문에 새로 큰 모델을 학습하지 않아도 된다는 장점이 있다.
-* 그러나 plug-and-play 방식은 아니며, 각 모듈의 입력과 출력 형식을 맞추고, 필요한 기능을 API나 텍스트 표현으로 연결해야 한다.
-* 즉 학습 비용은 줄일 수 있지만, 시스템 설계와 모듈 간 연결 복잡도는 증가한다.
+* Modular task planner는 LLM, VLM, object detector, scene representation module, control policy 등 여러 module을 조합하여 task planning을 수행하는 방식이다.
+* 이 방식은 기존에 학습된 off-the-shelf models를 활용할 수 있으므로, 하나의 큰 모델을 새로 학습하지 않아도 된다는 장점이 있다.
+* 그러나 단순한 plug-and-play 방식은 아니며, 각 module의 input/output format을 맞추고 필요한 기능을 API나 text representation으로 연결해야 한다.
+* 따라서 training cost는 줄일 수 있지만, system design과 module integration의 복잡도는 증가할 수 있다.
 
 #### B-1. Language-based Task Planner
 
-* Language-based task planner는 자연어 description을 매개로 planning과 feedback을 수행하는 방식이다.
-* LLM이 natural language plan을 생성하고, object feedback, scene feedback, success feedback, human feedback 등을 텍스트 형태로 받아 replanning에 활용한다.
-* 이 방식은 LLM과 VLM이 자연어 공간에서 쉽게 연결될 수 있다는 장점이 있다.
-* 하지만 LLM이 만든 subtask가 실제 low-level control policy가 실행할 수 없는 행동일 수 있다는 한계가 있다.
-* 수원님 관심사 기준에서는 language instruction, scene understanding, subtask decomposition을 연결한다는 점에서 가장 직접적으로 중요한 흐름이다.
+* Language-based task planner는 natural language description을 중심으로 planning과 feedback을 수행하는 방식이다.
+* LLM은 natural language plan을 생성하고, object feedback, scene feedback, success feedback, human feedback 등을 text 형태로 받아 replanning에 활용할 수 있다.
+* 이 방식은 LLM과 VLM이 natural language space에서 비교적 쉽게 연결될 수 있다는 장점이 있다.
+* 하지만 generated subtask가 실제 low-level control policy로 실행 가능하지 않을 수 있다는 한계가 있다.
 
 #### B-2. Code-based Task Planner
 
-* Code-based task planner는 LLM이 API 호출이나 code/program 형태로 task plan을 생성하는 방식이다.
-* Object detector, grasp API, move API, control policy 등을 미리 함수 형태로 감싸두고, LLM이 이를 호출해 task를 수행한다.
-* 이 방식은 자연어 plan보다 구조화되어 있어 debugging과 controllability 측면에서 장점이 있다.
-* 하지만 각 모듈을 사람이 미리 API로 wrapping해야 하며, API 문서와 입력·출력 형식이 명확해야 한다.
-* 결국 code-based planner의 성능은 LLM의 coding ability와 사전에 준비된 API의 품질에 크게 의존한다.
+* Code-based task planner는 LLM이 API call이나 code/program 형태로 task plan을 생성하는 방식이다.
+* Object detector, grasp API, move API, control policy 등을 function 형태로 준비해두고, LLM이 이를 호출하여 task를 수행한다.
+* 이 방식은 natural language plan보다 structure가 명확하기 때문에 debugging과 controllability 측면에서 장점이 있다.
+* 하지만 각 module을 사람이 미리 API로 wrapping해야 하며, API documentation과 input/output format이 명확해야 한다.
+* Code-based planner의 성능은 LLM의 coding ability와 사전에 준비된 API의 품질에 영향을 받는다.
 
 ### C. Strengths and Limitations
 
-* Monolithic task planner는 end-to-end fine-tuning을 통해 perception, reasoning, planning을 하나의 모델 안에 통합할 수 있고, specialized embodied data로 성능을 높일 수 있다.
-* 그러나 큰 모델을 학습하거나 fine-tuning해야 하므로 training cost가 크고, LVLA와 유사한 구조를 함께 사용할 경우 계산 비용과 역할 중복 문제가 생길 수 있다.
-* Modular task planner는 off-the-shelf LLM, VLM, detector, control policy를 활용할 수 있어 상대적으로 배포가 쉽고 유연하다.
-* 하지만 language-based planner는 실행 불가능한 subtask를 생성할 수 있고, code-based planner는 각 모듈을 API로 미리 wrapping해야 하는 부담이 있다.
-* 따라서 task planner의 핵심 한계는 high-level plan을 low-level executable action과 안정적으로 연결하는 문제이다.
-* 이 한계는 long-horizon task를 language-based subtask plan으로 분해하고, 이를 실제 manipulator action과 연결하려는 수원님 연구 방향과 직접적으로 맞닿아 있다.
+* Monolithic task planner는 perception, reasoning, planning을 하나의 모델 안에 통합하고, end-to-end fine-tuning을 통해 specialized embodied task에 맞출 수 있다.
+* 그러나 큰 model을 학습하거나 fine-tuning해야 하므로 training cost가 크고, LVLA와 유사한 large model 구조를 함께 사용할 경우 계산 비용과 역할 중복 문제가 발생할 수 있다.
+* Modular task planner는 off-the-shelf LLM, VLM, detector, control policy를 활용할 수 있어 상대적으로 유연하게 구성할 수 있다.
+* 하지만 language-based planner는 실행 불가능한 subtask를 생성할 수 있고, code-based planner는 각 module을 API로 미리 wrapping해야 하는 부담이 있다.
+* 따라서 task planner의 중요한 한계는 high-level plan을 low-level executable action과 안정적으로 연결하는 문제이다.
+
+---
+
+## V. Datasets and Benchmarks
+
+* VLA를 학습하고 평가하기 위해서는 robot datasets, simulators, benchmarks가 필요하다.
+* 그러나 embodied AI에서는 실제 로봇 데이터 수집 비용, 다양한 robot embodiment, 평가 환경 재현성 등의 문제로 인해 데이터와 벤치마크 구성이 어렵다.
+* 이 절에서는 real-world robot datasets, simulated datasets, automated dataset collection, human datasets, task planning benchmarks, embodied question answering benchmarks를 정리한다.
+
+### A. Real-World Robot Datasets and Benchmarks
+
+* Embodied AI는 real-world robot data가 부족하다는 data scarcity 문제를 가진다.
+* 첫 번째 이유는 robot equipment를 준비하고, 실험 환경을 구성하며, expert policy 또는 human teleoperation을 통해 데이터를 수집하는 과정에 많은 비용과 시간이 필요하기 때문이다.
+* 두 번째 이유는 robot의 종류와 configuration이 다양하기 때문에 sensory data, control mode, gripper type 등에서 inconsistency가 발생하기 때문이다.
+* 세 번째 이유는 6D object pose를 정확히 측정하거나 실험 setup을 동일하게 재현하는 것이 어렵기 때문이다.
+* 또한 real-world benchmark는 사람의 평가가 필요한 경우가 많아, 자동화된 평가와 공정한 비교가 어렵다.
+
+### B. Simulators, Simulated Robot Datasets and Benchmarks
+
+* Real-world data collection의 어려움을 줄이기 위해 많은 연구는 simulated environments를 활용한다.
+* Simulation은 data collection을 확장하기 쉽고, 실험 setup을 재현할 수 있으며, 서로 다른 모델을 공정하게 비교하는 데 유용하다.
+* 또한 simulated environments는 automated evaluation metrics를 제공할 수 있고, failure cases를 재현하거나 digital twins를 구성하는 데 도움을 줄 수 있다.
+* 그러나 simulated data로 학습한 모델을 실제 환경에 적용할 때 sim-to-real gap이 발생할 수 있다.
+* 이 gap은 unrealistic rendering quality, physics simulation의 부정확성, object properties의 차이, robot motion planner의 차이와 같은 domain shift에서 비롯된다.
+* 특히 deformable objects나 liquids와 같은 대상은 simulation에서 정확히 다루기 어렵다.
+* 또한 새로운 object를 simulator에 추가하려면 3D scanning, mesh editing과 같은 추가 작업이 필요할 수 있다.
+* 따라서 simulation은 scalability와 reproducibility 측면에서 장점이 있지만, 실제 세계와의 차이를 줄이는 것이 중요한 과제로 남는다.
+
+### C. Automated Dataset Collection
+
+* Data scarcity 문제를 완화하기 위해 automated dataset collection을 활용하는 접근들이 제안되었다.
+* RoboGen은 generative simulation paradigm을 사용하여 흥미로운 skills를 제안하고, 해당 environment를 simulation하며, 그 skill을 학습하기 위한 적절한 learning approach를 선택한다.
+* AutoRT는 LLM 기반 robot orchestrator로 동작하며, task를 생성하고, affordance를 기준으로 filtering한 뒤, autonomous policy 또는 human teleoperator를 활용하여 데이터를 수집하고 평가한다.
+* DIAL은 기존 dataset의 language instructions를 VLM을 활용해 확장한다.
+* RoboPoint는 randomized 3D layouts, objects, camera viewpoints를 가진 scene을 procedural하게 생성한다.
+* 이러한 automated dataset collection 방식은 데이터 수집 규모를 키우는 데 도움을 줄 수 있지만, 생성된 데이터의 품질과 실제 환경과의 차이는 여전히 고려해야 한다.
+
+### D. Human Datasets
+
+* Real-world robot data 부족을 해결하기 위한 또 다른 방법은 human data를 활용하는 것이다.
+* Human data는 사람의 dexterity와 다양한 행동을 포함하기 때문에 robot policy 학습에 풍부한 guidance를 제공할 수 있다.
+* 그러나 human hand와 body motion을 robot embodiment로 옮기는 것은 어렵다.
+* 또한 human data는 egocentric perspective와 third-person perspective가 섞여 있는 등 data format과 viewpoint가 일관되지 않을 수 있다.
+* 유용한 정보를 추출하기 위해 human data를 filtering하는 과정도 많은 노동을 요구할 수 있다.
+* UMI는 hand-held gripper를 활용하여 human demonstration과 robot embodiment 사이의 차이를 줄이려는 방법으로 소개된다.
+
+### E. Task Planning Benchmarks
+
+* Task planning benchmark는 generated plan의 품질, 실행 가능성, replanning 능력 등을 평가하기 위해 사용된다.
+* EgoPlan-Bench는 human annotations를 활용하여 real-world task planning을 benchmark하는 데 초점을 둔다.
+* PlanBench는 cost optimality, plan verification, replanning 등 task planning ability의 여러 측면을 평가한다.
+* LoTa-Bench는 generated plan을 simulator에서 실행하고 success rate를 계산하여 task planning을 평가한다.
+* EAI, 즉 Embodied Agent Interface는 LLM-based module의 input-output을 decision making task에 맞게 formalize하여, success rate를 넘어서는 fine-grained metrics를 가능하게 한다.
+* 따라서 task planning benchmark는 task 성공 여부뿐 아니라 plan의 검증 가능성, 비용 효율성, 실패 후 재계획 능력 등을 함께 평가하려는 방향으로 발전하고 있다.
+
+### F. Embodied Question Answering Benchmarks
+
+* Embodied Question Answering, 즉 EQA benchmark는 embodied AI의 spatial reasoning, physics understanding, world knowledge와 같은 능력을 평가한다.
+* EQA는 manipulation이나 navigation 같은 robotic task를 직접 평가하기보다는, agent가 환경을 이해하고 질문에 답하는 능력을 평가한다.
+* 전통적인 VQA benchmark와 유사하지만, EQA에서는 agent가 답변하기 전에 환경을 능동적으로 탐색할 수 있다는 차이가 있다.
+* EmbodiedQA와 IQUAD는 이러한 benchmark를 초기에 제시한 대표적인 연구로 언급된다.
+* MT-EQA는 여러 target이 포함된 complex questions에 초점을 둔다.
+* MP3D-EQA는 기존 RGB input을 point cloud로 변환하여 3D perception 능력을 평가한다.
+* 다만 active exploration을 위해 simulator 접근이 필요하므로, real-world data 활용에는 제한이 생길 수 있다.
+* EgoVQA는 egocentric videos를 기반으로 VQA의 초점을 옮긴 benchmark이다.
+* EgoTaskQA는 spatial, temporal, causal relationship reasoning을 강조한다.
+* EQA-MX는 verbal utterances뿐 아니라 eye gaze, pointing과 같은 nonverbal gestures를 포함한 multimodal expressions를 다룬다.
+* OpenEQA는 functional reasoning과 world knowledge를 포함한 여러 category를 평가한다.
 
 ---
 
@@ -2360,81 +2480,81 @@ A. Monolithic Task Planners
 
 ### a) Safety First
 
-* VLA가 실제 로봇 행동으로 연결되기 위해서는 성능뿐 아니라 안전성이 핵심 문제가 된다.
-* 로봇이 위험한 행동을 실제로 수행하기 전에 계획이나 action을 평가하는 evaluation without execution은 safety risk를 낮추는 방법이 될 수 있다.
-* 또한 RLHF, safety validation, human feedback 등을 활용하면 모델이 위험하거나 부적절한 행동을 선택할 가능성을 줄일 수 있다.
-* 따라서 VLA의 안전성 문제는 단순히 action 성공률이 아니라, 실행 전 검증과 위험 행동 차단까지 포함하는 방향으로 다뤄져야 한다.
+* VLA가 실제 로봇 행동으로 연결되기 위해서는 성능뿐 아니라 safety가 중요한 문제로 다루어진다.
+* Evaluation without execution은 로봇이 실제 행동을 수행하기 전에 generated plan이나 action을 평가함으로써 safety risk를 낮추는 방법으로 제시된다.
+* RLHF, safety validation, human feedback 등은 모델이 위험하거나 부적절한 action을 선택할 가능성을 줄이는 데 활용될 수 있다.
+* 따라서 VLA의 safety 문제는 단순한 task success rate뿐 아니라, 실행 전 검증과 위험 행동 차단을 포함하는 방향으로 논의된다.
 
-### b) Datasets & Benchmarks
+### b) Datasets and Benchmarks
 
-* VLA 학습과 평가를 위해서는 다양한 skill, object, embodiment, environment를 포괄하는 dataset과 benchmark가 필요하다.
-* 하지만 현재 benchmark는 특정 환경이나 특정 task에 치우쳐 있어, 실제 환경에서의 generalization 능력을 충분히 평가하기 어렵다.
-* 또한 success rate만으로는 모델이 왜 실패했는지 세밀하게 파악하기 어렵기 때문에, fine-grained metrics가 필요하다.
-* Task planning에서는 plan verification, replanning, cost optimality, failure diagnosis 같은 평가 기준이 함께 고려되어야 한다.
+* VLA 학습과 평가를 위해서는 다양한 skills, objects, embodiments, environments를 포괄하는 datasets와 benchmarks가 필요하다.
+* 그러나 현재 benchmarks는 특정 환경이나 특정 task에 치우칠 수 있으며, 실제 환경에서의 generalization 능력을 충분히 평가하기 어렵다.
+* Success rate만으로는 모델이 왜 실패했는지 세밀하게 파악하기 어렵기 때문에 fine-grained metrics가 필요하다.
+* 특히 task planning에서는 plan verification, replanning, cost optimality, failure diagnosis와 같은 평가 기준이 함께 고려된다.
 
-### c) Foundation Models & Generalization
+### c) Foundation Models and Generalization
 
-* VLA foundation model 또는 robotic foundation model은 embodied AI에서 중요한 연구 방향이지만, 아직 open research topic으로 남아 있다.
+* VLA foundation model 또는 robotic foundation model은 embodied AI에서 중요한 연구 방향이지만, 여전히 open research topic으로 남아 있다.
 * VLA는 NLP 분야의 LLM처럼 강한 generalization capability를 아직 갖추지 못했다.
-* 그 이유는 로봇 분야가 embodiment, environment, task의 차이가 크고, 실제 robot data를 대규모로 수집하기 어렵기 때문이다.
-* 따라서 VLA의 generalization 문제는 단순히 모델 크기를 키우는 것만으로 해결되기 어렵고, 다양한 embodiment와 task를 포괄하는 데이터와 구조가 필요하다.
+* 이는 robot embodiment, environment, task의 차이가 크고, 실제 robot data를 대규모로 수집하기 어렵기 때문이다.
+* 따라서 VLA의 generalization 문제는 model size만 키우는 방식으로 해결되기 어렵고, 다양한 embodiments와 tasks를 포괄하는 data와 model design이 함께 필요하다.
 
 ### d) Multimodality
 
-* VLA는 기본적으로 vision, language, action을 중심으로 하지만, embodied AI에서는 audio, haptics, gaze 같은 추가 modality도 유용할 수 있다.
-* 특히 gaze data는 사람이 환경에서 중요하게 보는 위치를 알려주기 때문에, policy network의 성능을 높이는 데 활용될 수 있다.
-* 하지만 단순히 여러 modality를 하나의 embedding space에 정렬하는 것만으로 충분한지는 아직 논쟁 중이다.
-* 추가 modality를 넣으면 정보량은 늘어나지만, 동시에 model design과 데이터 처리의 복잡도도 증가한다.
+* VLA는 기본적으로 vision, language, action을 중심으로 하지만, embodied AI에서는 audio, haptics, gaze와 같은 추가 modality도 활용될 수 있다.
+* Gaze data는 사람이 환경에서 중요하게 보는 위치를 제공할 수 있기 때문에, policy network의 성능을 높이는 데 사용될 수 있다.
+* 하지만 여러 modality를 하나의 embedding space에 정렬하는 것만으로 충분한지는 여전히 논의가 필요하다.
+* 추가 modality는 더 많은 정보를 제공할 수 있지만, 동시에 model design과 data processing의 complexity를 증가시킨다.
 
 ### e) Framework for Long-Horizon Tasks
 
-* 현재 long-horizon task에는 high-level task planner와 low-level control policy를 나누는 hierarchical framework가 가장 현실적인 접근이다.
-* 하지만 hierarchical framework는 시스템 구조가 복잡해지고, 모듈 간 연결 지점이 많아지면서 failure point가 증가할 수 있다.
+* Long-horizon task에서는 high-level task planner와 low-level control policy를 나누는 hierarchical framework가 널리 사용된다.
+* 그러나 hierarchical framework는 system complexity를 증가시키고, 여러 module 사이의 연결 지점이 많아지면서 failure point가 늘어날 수 있다.
 * Task execution failure가 자주 발생하면 replanning이 반복되고, 이로 인해 latency가 커질 수 있다.
-* 또한 monolithic task planner와 LVLA를 동시에 사용하는 경우, 큰 모델 두 개를 함께 쓰는 구조가 되어 계산 비용과 역할 중복 문제가 생길 수 있다.
-* 따라서 long-horizon task를 low-level control signal로 직접 연결하는 unified framework는 앞으로 탐구할 가치가 있는 방향이다.
-* 이 문제는 long-horizon manipulation task를 language-based subtask plan으로 분해하고 executable low-level action과 연결하려는 내 관심사와 직접적으로 이어진다.
+* 또한 monolithic task planner와 LVLA를 함께 사용하는 경우, 두 개의 large model을 동시에 사용하는 구조가 되어 computation cost와 role redundancy 문제가 발생할 수 있다.
+* 따라서 long-horizon task를 low-level control signal로 직접 연결하는 unified framework는 앞으로 탐구할 가치가 있는 방향으로 제시된다.
 
 ### f) Real-Time Responsiveness
 
 * 실제 로봇 환경에서는 주변 상황이 계속 변하기 때문에 VLA는 real-time decision-making 능력이 필요하다.
-* 모델의 inference time이 환경 변화 속도를 따라가지 못하면, 이미 낡은 정보에 기반한 obsolete action을 반복 생성할 수 있다.
-* 특히 LVLA나 task planner처럼 큰 모델은 reasoning과 generalization에는 유리하지만, 추론 속도 측면에서는 한계가 생길 수 있다.
-* 따라서 VLA는 model capacity와 inference speed 사이의 trade-off를 해결해야 하며, 실제 배포를 위해서는 빠르고 안정적인 responsiveness가 중요하다.
+* Model inference time이 환경 변화 속도를 따라가지 못하면, 이미 낡은 정보에 기반한 obsolete action을 반복 생성할 수 있다.
+* 특히 LVLA나 task planner처럼 큰 모델은 reasoning과 generalization에는 유리할 수 있지만, inference latency 측면에서는 한계가 생길 수 있다.
+* 따라서 VLA는 model capacity와 inference speed 사이의 trade-off를 고려해야 하며, 실제 배포를 위해 responsiveness가 중요한 문제로 남는다.
 
 ### g) Multiagent Systems
 
-* Cooperative multiagent system은 여러 에이전트가 협력해 더 넓은 환경을 인식하고 작업을 분담할 수 있다는 장점이 있다.
-* Distributed perception은 여러 에이전트가 각자 다른 위치에서 얻은 정보를 합쳐 환경을 더 넓게 이해하는 방식이다.
-* Collaborative fault recovery는 한 에이전트가 실패했을 때 다른 에이전트가 이를 보완하거나 작업을 이어받는 구조이다.
-* 하지만 여러 에이전트가 함께 움직이려면 effective communication, coordinated dispatching, fleet heterogeneity, conflicting goals 문제가 발생한다.
-* 따라서 multiagent VLA는 개별 로봇의 성능뿐 아니라, 에이전트 간 조율과 협력 구조가 핵심 문제가 된다.
+* Cooperative multiagent system은 여러 agents가 협력하여 더 넓은 환경을 인식하고 작업을 분담할 수 있다는 장점이 있다.
+* Distributed perception은 여러 agents가 각자 다른 위치에서 얻은 정보를 결합하여 환경을 더 넓게 이해하는 방식이다.
+* Collaborative fault recovery는 한 agent가 실패했을 때 다른 agent가 이를 보완하거나 작업을 이어받는 구조이다.
+* 그러나 multiagent system에서는 effective communication, coordinated dispatching, fleet heterogeneity, conflicting goals와 같은 문제가 발생할 수 있다.
+* 따라서 multiagent VLA에서는 개별 agent의 성능뿐 아니라 agents 간 coordination과 collaboration이 중요한 과제로 다루어진다.
 
 ### h) Ethical and Societal Implications
 
-* 로봇 기술은 실제 사회와 사람 주변에서 작동하기 때문에 윤리적, 사회적, 법적 문제를 함께 고려해야 한다.
-* Privacy 문제는 로봇이 카메라, 마이크, 위치 정보 등을 수집하면서 개인의 사생활을 침해할 수 있다는 점과 관련된다.
+* 로봇 기술은 실제 사회와 사람 주변에서 작동하기 때문에 ethical, societal, legal issues를 함께 고려해야 한다.
+* Privacy 문제는 로봇이 camera, microphone, location information 등을 수집하면서 개인의 사생활을 침해할 수 있다는 점과 관련된다.
 * Job displacement는 로봇이 사람의 노동을 일부 대체하면서 일자리 구조에 영향을 줄 수 있다는 문제이다.
 * Decision-making bias는 AI나 로봇이 특정 사람이나 상황에 대해 편향된 판단을 내릴 가능성을 의미한다.
-* 또한 로봇은 social norms와 human relationships에도 영향을 줄 수 있으므로, 기술적 성능뿐 아니라 사회적 수용성과 책임 문제도 함께 다뤄야 한다.
+* 또한 로봇은 social norms와 human relationships에도 영향을 줄 수 있으므로, 기술적 성능뿐 아니라 사회적 수용성과 책임 문제도 함께 다루어져야 한다.
 
 ### i) Applications
 
-* 현재 대부분의 VLA는 household setting과 industrial setting에 집중되어 있지만, 앞으로 더 넓은 응용 분야로 확장될 수 있다.
+* 현재 대부분의 VLA는 household settings와 industrial settings에 집중되어 있지만, 앞으로 더 넓은 application domain으로 확장될 수 있다.
 * 가능한 응용 분야에는 virtual assistants, autonomous vehicles, agricultural robots, healthcare 등이 있다.
-* 또한 dexterous hands, drones, quadruped robots, humanoid robots처럼 다양한 embodiment에 맞춘 specialized VLA가 필요할 수 있다.
-* 특히 healthcare는 surgical robots와 care robots를 포함하는 중요한 응용 분야이다.
+* 또한 dexterous hands, drones, quadruped robots, humanoid robots처럼 다양한 embodiments에 맞춘 specialized VLA가 필요할 수 있다.
+* Healthcare는 surgical robots와 care robots를 포함하는 중요한 application domain으로 다루어진다.
 * Healthcare에서는 사람의 생명과 민감한 정보를 다루기 때문에 높은 safety와 privacy standard가 요구된다.
-* 이를 위해 human-in-the-loop control, federated learning, medical images에 특화된 specialized vision model이 필요할 수 있다.
+* 이를 위해 human-in-the-loop control, federated learning, medical images에 특화된 specialized vision model 등이 활용될 수 있다.
 
 ---
 
 ## VII. Conclusion
 
-* VLA models는 embodied agents가 물리 세계와 상호작용하고, 사용자의 지시를 수행할 수 있게 한다는 점에서 큰 가능성을 가진다.
-* 저자들은 VLA 연구를 key components, control policies, task planners라는 세 가지 주요 흐름으로 분류하는 taxonomy를 제시한다.
+* VLA models는 embodied agents가 physical world와 상호작용하고, user instructions를 수행할 수 있게 한다는 점에서 큰 가능성을 가진다.
+* 이 논문은 LVLA와 generalized VLA를 함께 다루는 survey로, VLA 연구를 key components, control policies, task planners라는 세 가지 주요 흐름으로 분류하는 taxonomy를 제시한다.
 * 또한 각 흐름의 technical details를 model architectures, training strategies, individual modules 관점에서 분석하고 비교한다.
 * 추가로 VLA를 학습하고 평가하는 데 필요한 datasets, simulators, benchmarks와 같은 essential resources를 정리한다.
+* 저자들은 이 survey가 빠르게 변화하는 embodied AI 분야의 흐름을 포착하고, future research에 참고가 되기를 기대한다고 마무리한다.
 
 ---
 
