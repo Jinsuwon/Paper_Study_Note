@@ -8,6 +8,7 @@ A repository for organizing and summarizing papers I have read.
 
 <details>
 <summary><b>1. paper title</b></summary>
+
 ## Basic Information
 
 - **Title**:
@@ -30,8 +31,10 @@ A repository for organizing and summarizing papers I have read.
 
 ---
 
-![image introduction](images/file.png)
 ---
 
 
 </details>
+
+
+![image introduction](images/file.png)
