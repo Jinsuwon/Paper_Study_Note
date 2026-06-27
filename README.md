@@ -2091,7 +2091,7 @@ A. Monolithic Task Planners
 
 ---
 
-![General Architecture of VLA models](images/Fig.1_A_survey_VLA.png)
+![General Architecture of VLA models](images/Fig_Survey_VLA/Fig.1_A_survey_VLA.png)
 
 * Embodied AI는 실제 환경과 상호작용해야 하기 때문에, 단순히 텍스트나 이미지를 이해하는 것만으로는 충분하지 않다.
 * 로봇은 사용자의 language instruction을 이해하고, vision을 통해 주변 환경과 객체를 인식하며, 그 결과를 실제 action으로 변환해야 한다.
@@ -2101,7 +2101,7 @@ A. Monolithic Task Planners
 
 ### A. Related Work
 
-![Venn diagram and Timelines of VLA](images/Fig.2_A_survey_VLA.png)
+![Venn diagram and Timelines of VLA](images/Fig_Survey_VLA/Fig.2_A_survey_VLA.png)
 
 * 기존 연구들은 embodied AI, robot learning, multimodal learning, vision-language models, task planning 등 여러 관점에서 VLA와 관련된 흐름을 다뤄왔다.
 * Robot learning은 전통적으로 RL, imitation learning, MDP/POMDP 관점에서 로봇의 policy 학습을 설명해왔다.
@@ -2120,7 +2120,7 @@ A. Monolithic Task Planners
 ---
 ## II. Background
 
-![Taxonomy of VLA models](images/Fig.3_A_survey_VLA.png)
+![Taxonomy of VLA models](images/Fig_Survey_VLA/Fig.3_A_survey_VLA.png)
 
 * VLA는 embodied AI, robot learning, multimodal learning의 흐름 위에서 발전한 vision-language-action 기반 모델이다.
 * Embodied AI는 agent가 환경을 인식하고 행동하며, 물리적 또는 시뮬레이션 환경과 상호작용하는 문제를 다룬다.
@@ -2214,8 +2214,8 @@ A. Monolithic Task Planners
 
 
 ### B. Low-level Control Policies
-![a hierarchichal robot policy](images/Fig.4_A_survey_VLA.png)
-![Representive architectures of VLA models](images/Fig.5_A_survey_VLA.png)
+![a hierarchichal robot policy](images/Fig_Survey_VLA/Fig.4_A_survey_VLA.png)
+![Representive architectures of VLA models](images/Fig_Survey_VLA/Fig.5_A_survey_VLA.png)
 
 * Low-level control policy는 language instructions와 visual observations를 입력으로 받아 low-level actions를 생성하는 VLA의 한 축이다.
 * 일반적으로 vision encoder와 language encoder가 입력 정보를 표현하고, action decoder가 이를 바탕으로 low-level action을 생성한다.
@@ -2342,8 +2342,8 @@ A. Monolithic Task Planners
 ---
 
 ## IV. Task Planners
-![Illustration of a hierarchical robot policy](images/Fig.4_A_survey_VLA.png)
-![Language-based and Code-based modualr task planners](images/Fig.6_A_survey_VLA.png)
+![Illustration of a hierarchical robot policy](images/Fig_Survey_VLA/Fig.4_A_survey_VLA.png)
+![Language-based and Code-based modualr task planners](images/Fig_Survey_VLA/Fig.6_A_survey_VLA.png)
 
 * High-level task planner는 complex long-horizon task를 여러 개의 subtask sequence로 분해하는 역할을 한다.
 * 이 과정은 task decomposition 또는 subgoal decomposition으로 볼 수 있으며, low-level control policy가 한 번에 처리하기 어려운 긴 명령을 중간 단계로 나누는 데 사용된다.
@@ -2557,5 +2557,510 @@ A. Monolithic Task Planners
 * 저자들은 이 survey가 빠르게 변화하는 embodied AI 분야의 흐름을 포착하고, future research에 참고가 되기를 기대한다고 마무리한다.
 
 ---
+
+</details>
+
+
+<details>
+<summary><b>24. OpenVLA: An Open-Source Vision-Language-Action Model</b></summary>
+
+## Basic Information
+
+- **Title**: OpenVLA: An Open-Source Vision-Language-Action Model
+- **Authors**: Moo Jin Kim, Karl Pertsch, Siddharth Karamcheti, Ted Xiao, Ashwin Balakrishna, Suraj Nair, Rafael Rafailov, Ethan Foster, Grace Lam, Pannag Sanketi, Quan Vuong, Thomas Kollar, Benjamin Burchfiel, Russ Tedrake, Dorsa Sadigh, Sergey Levine, Percy Liang, Chelsea Finn
+- **Conference / Journal**: Conference on Robot Learning, CoRL
+- **Year**: 2024
+
+---
+
+## Why I Read This Paper
+
+이 논문을 읽는 이유는 OpenVLA가 open-source VLA 연구에서 중요한 출발점이 되는 모델이기 때문이다.
+
+OpenVLA는 pretrained Vision-Language Model을 robot policy로 확장하는 대표적인 사례이다. 즉 image observation과 language instruction을 입력받아, language model이 robot action token을 예측하도록 fine-tuning하는 구조를 보여준다. 이를 통해 VLM에서 robot action까지 수행할 수 있는 VLA 모델의 배경지식 습득을 목표로 하였다.
+
+---
+
+## One-line Summary
+
+* OpenVLA는 image observation과 language instruction을 입력받아 7D robot action을 출력하는 7B-parameter open-source Vision-Language-Action model이다.
+* 기존 VLA 모델들이 대부분 closed-source였고 fine-tuning 방법이 충분히 다뤄지지 않았다는 문제를 해결하기 위해, Open X-Embodiment dataset의 970k robot demonstrations로 학습한 공개형 VLA 모델과 학습/배포 코드를 제시한다.
+
+---
+
+## Understanding the Structure
+
+
+
+## I. Introduction
+
+### a) Problem: 기존 robot manipulation policy의 일반화 한계
+
+* 기존 learned policy의 핵심 약점은 학습 데이터 밖의 상황에 대한 일반화 능력이 부족하다는 점이다.
+* 기존 policy는 object position이나 lighting 변화처럼 새로운 initial condition에는 어느 정도 행동을 extrapolate할 수 있다.
+* 그러나 scene distractor가 있거나 novel object가 등장하는 경우에는 robust하지 못하다.
+* 또한 학습 과정에서 보지 못한 task instruction을 수행하는 데 어려움을 겪는다.
+
+### b) Opportunity: Vision-Language Foundation Model 활용 가능성
+
+* CLIP, SigLIP, Llama 2와 같은 vision-language foundation model은 Internet-scale pretraining을 통해 높은 일반화 능력을 보인다.
+* 이러한 모델들은 object, scene, task에 대한 prior를 학습하고 있다.
+* 반면 robot manipulation dataset은 아직 Internet-scale 수준에 도달하지 못했다.
+* 논문은 이 차이에서 기존 vision-language foundation model을 robot policy 학습의 핵심 구성요소로 활용할 가능성을 제시한다.
+
+### c) Existing Direction: VLA를 통한 robot control
+
+* 기존 연구들은 pretrained language model과 vision-language model을 robot representation learning, task planning, execution 등에 활용해왔다.
+* 최근 연구들은 visually-conditioned language model을 직접 fine-tuning하여 robot control action을 생성하는 Vision-Language-Action model, VLA를 제안했다.
+* VLA는 pretrained vision-language foundation model을 robot policy에 직접 연결하는 방식이다.
+* RT-2와 같은 VLA는 novel object와 novel task에 대한 generalization을 보이며 generalist robot policy의 새로운 기준을 제시했다.
+
+### d) Limitation of Prior VLA Models
+
+* 기존 VLA 모델이 널리 활용되기 어려운 이유는 크게 두 가지이다.
+* 첫째, 기존 VLA 모델들은 대부분 closed-source이다.
+* 이로 인해 model architecture, training procedure, data mixture에 대한 접근성이 제한된다.
+* 둘째, 기존 연구들은 VLA를 새로운 robot, environment, task에 배포하고 적응시키기 위한 best practice를 충분히 제공하지 않았다.
+* 특히 consumer-grade GPU와 같은 일반적인 hardware 환경에서 VLA를 효율적으로 fine-tuning하는 방법은 충분히 다뤄지지 않았다.
+
+### e) Proposal: OpenVLA
+![OpenVLA Overview](images\Fig_OpenVLA\Fig.001_OpenVLA.png)
+
+* 논문은 이러한 문제를 해결하기 위해 OpenVLA를 제안한다.
+* OpenVLA는 7B-parameter open-source Vision-Language-Action model이다.
+* OpenVLA는 pretrained visually-conditioned language model backbone을 기반으로 한다.
+* OpenVLA는 Open X-Embodiment dataset에서 가져온 970k robot manipulation trajectories로 fine-tuning된다.
+* 이 dataset은 다양한 robot embodiment, task, scene을 포함한다.
+
+### f) Performance Claim
+
+* OpenVLA는 generalist robot manipulation policy에서 새로운 state-of-the-art 성능을 보였다고 보고된다.
+* OpenVLA는 WidowX와 Google Robot embodiment에서 29개 evaluation task를 기준으로 평가되었다.
+* 이 평가에서 OpenVLA는 기존 state-of-the-art VLA인 RT-2-X보다 absolute success rate 기준 16.5%p 높은 성능을 보였다.
+* OpenVLA는 RT-2-X보다 parameter 수가 약 7배 적다.
+
+### g) Fine-Tuning Study
+
+* 논문은 OpenVLA를 새로운 robot setup에 fine-tuning하는 방법도 함께 조사한다.
+* fine-tuning 실험은 object pick-and-place부터 table cleaning까지 다양한 manipulation task를 포함한다.
+* fine-tuned OpenVLA는 Octo와 같은 pretrained policy를 fine-tuning한 경우보다 높은 성능을 보였다.
+* 또한 multiple objects가 포함되고 language grounding이 필요한 multi-task setting에서 Diffusion Policy와 같은 from-scratch imitation learning method보다 높은 성능을 보였다.
+
+### h) Compute-Efficient Fine-Tuning and Inference
+
+* 논문은 OpenVLA를 더 효율적으로 fine-tuning하고 inference하는 방법도 탐구한다.
+* LoRA와 같은 low-rank adaptation 방법을 활용하여 consumer-grade GPU에서도 OpenVLA를 fine-tuning할 수 있음을 보인다.
+* quantization을 활용하면 downstream success rate 저하 없이 더 효율적인 inference가 가능하다고 보고한다.
+
+### i) Open-Source Release
+
+* 논문은 OpenVLA model checkpoint를 공개한다.
+* deployment notebook과 fine-tuning notebook을 공개한다.
+* Open X-Embodiment dataset을 활용해 VLA를 scale 있게 학습할 수 있는 PyTorch codebase도 공개한다.
+* 저자들은 이러한 공개 자료가 후속 VLA 연구와 adaptation 연구를 가능하게 하는 기반이 되기를 기대한다.
+
+
+## 2. Related Work
+
+### a) Visually-Conditioned Language Models
+
+* Visually-conditioned language model, VLM은 image와 language prompt를 입력으로 받아 natural language를 생성하도록 Internet-scale data로 학습된 모델이다.
+* VLM은 visual question answering, object localization 등 다양한 task에 활용되어 왔다.
+* 일반적으로 VLM은 pretrained vision encoder에서 나온 visual feature와 pretrained language model을 연결하는 구조를 가진다.
+* 초기 VLM 연구들은 vision feature와 language feature 사이의 cross-attention 구조를 다양하게 탐구했다.
+* 최근 open-source VLM들은 더 단순한 patch-as-token 접근으로 수렴하고 있다.
+* patch-as-token 방식에서는 pretrained visual transformer에서 나온 image patch feature를 token처럼 다룬다.
+* 이후 이 patch feature들은 language model의 input space로 projection된다.
+* 이러한 VLM 구조가 OpenVLA policy의 backbone을 구성한다.
+
+### b) Generalist Robot Policies
+
+* 최근 로보틱스 연구에서는 다양한 robot dataset을 활용하여 multi-task generalist robot policy를 학습하는 흐름이 나타나고 있다.
+* 이러한 dataset은 다양한 robot embodiment를 포함한다.
+* Octo는 여러 robot을 out-of-the-box로 제어할 수 있는 generalist policy를 학습한다.
+* 또한 Octo는 새로운 robot setup에 대해 flexible fine-tuning을 지원한다.
+* OpenVLA와 이러한 기존 generalist policy의 주요 차이는 model architecture에 있다.
+* Octo와 같은 기존 연구들은 pretrained language embedding이나 visual encoder를 사용하고, 여기에 scratch에서 초기화된 추가 model component를 결합한다.
+* 이 방식은 policy training 과정에서 pretrained component와 새로 추가된 component를 서로 맞춰 학습하는 구조이다.
+* 논문은 이를 “stitch” together라고 표현한다.
+* OpenVLA는 더 end-to-end한 접근을 사용한다.
+* OpenVLA는 visually-conditioned language model을 직접 fine-tuning하여 robot action을 생성한다.
+* 이때 robot action은 language model vocabulary 안의 token처럼 취급된다.
+* 논문은 이러한 단순하고 scalable한 pipeline이 기존 generalist policy보다 performance와 generalization ability를 크게 향상시킨다고 설명한다.
+
+### c) Vision-Language-Action Models
+
+* 여러 연구들은 VLM을 로보틱스에 활용하는 방법을 탐구해왔다.
+* VLM은 visual state representation, object detection, high-level planning, feedback signal 제공 등에 활용되었다.
+* 다른 연구들은 VLM을 end-to-end visuomotor manipulation policy에 직접 통합했다.
+* 그러나 이러한 연구들은 policy architecture 안에 상당한 구조를 추가하거나 calibrated camera를 필요로 했다.
+* 여러 연구들은 large pretrained VLM을 robot action prediction에 직접 fine-tuning했다.
+* 이러한 모델들은 robot control action을 VLM backbone 안에 직접 결합하기 때문에 Vision-Language-Action model, VLA라고 불린다.
+* 기존 VLA 연구들은 single robot setup이나 simulation setup에서 학습 및 평가되어 generality가 부족한 경우가 있었다.
+* 또는 closed-source이기 때문에 새로운 robot setup에 대한 efficient fine-tuning을 지원하지 않는 경우가 있었다.
+
+### d) Comparison with RT-2-X
+
+* OpenVLA와 가장 밀접하게 관련된 연구는 RT-2-X이다.
+* RT-2-X는 Open X-Embodiment dataset을 사용해 55B-parameter VLA policy를 학습했다.
+* RT-2-X는 state-of-the-art generalist manipulation policy 성능을 보였다.
+* 그러나 OpenVLA는 RT-2-X와 여러 측면에서 다르다.
+* 첫째, OpenVLA는 강한 open VLM backbone과 더 풍부한 robot pretraining dataset을 결합한다.
+* 이를 통해 OpenVLA는 실험에서 RT-2-X와 비슷하거나 더 높은 성능을 보이면서도, 모델 크기는 약 7배 작다.
+* 둘째, OpenVLA는 새로운 target setup에 대한 fine-tuning을 자세히 조사한다.
+* 반면 RT-2-X는 fine-tuning setting을 조사하지 않았다.
+* 셋째, OpenVLA는 VLA에 대해 parameter-efficient fine-tuning과 quantization approach의 효과를 보인다.
+* 넷째, OpenVLA는 open-source generalist VLA로서 VLA training, data mixture, objective, inference에 대한 후속 연구를 지원한다.
+
+## 3. The OpenVLA Model
+
+* OpenVLA는 Open X-Embodiment dataset의 970k robot demonstrations로 학습된 7B-parameter Vision-Language-Action model이다.
+* 이 section에서는 OpenVLA의 backbone이 되는 modern VLM의 기본 구조, OpenVLA training procedure, training dataset, 주요 design decisions를 설명한다.
+* training과 inference에 사용된 infrastructure 세부 내용은 Appendix C에 제시되어 있다.
+* codebase에 대한 설명은 Appendix D에 제시되어 있다.
+
+---
+
+## 3.1 Preliminaries: Vision-Language Models
+
+### a) VLM의 기본 구조
+
+![OpenVLA model architecture](images\Fig_OpenVLA\Fig.002_OpenVLA.png)
+
+* 최근 VLM architecture는 주로 세 가지 구성요소로 이루어진다.
+* 첫째, image input을 image patch embedding으로 변환하는 visual encoder가 있다.
+* 둘째, visual embedding을 large language model의 input space로 mapping하는 projector가 있다.
+* 셋째, language model backbone이 있다.
+* VLM training에서는 paired 또는 interleaved vision-language data를 사용한다.
+* 이 data는 다양한 Internet source에서 수집된다.
+* 모델은 end-to-end 방식으로 학습되며, next text token prediction objective를 사용한다.
+
+### b) Prismatic-7B VLM
+
+* OpenVLA는 Prismatic-7B VLM을 기반으로 한다.
+* Prismatic은 위에서 설명한 standard VLM architecture를 따른다.
+* Prismatic은 600M-parameter visual encoder, 작은 2-layer MLP projector, 7B-parameter Llama 2 language model backbone으로 구성된다.
+* Prismatic의 visual encoder는 두 부분으로 구성된다.
+* 하나는 pretrained SigLIP model이고, 다른 하나는 pretrained DinoV2 model이다.
+* input image patch는 SigLIP encoder와 DinoV2 encoder를 각각 통과한다.
+* 두 encoder에서 나온 feature vector는 channel-wise 방식으로 concatenation된다.
+* CLIP이나 SigLIP-only encoder와 같은 일반적인 vision encoder와 달리, DinoV2 feature를 추가하는 것은 improved spatial reasoning에 도움이 되는 것으로 보고되었다.
+
+---
+
+## 3.2 OpenVLA Training Procedure
+
+### a) Action Prediction as a Vision-Language Task
+
+* OpenVLA를 학습하기 위해 저자들은 pretrained Prismatic-7B VLM backbone을 robot action prediction에 맞게 fine-tuning한다.
+* OpenVLA는 action prediction 문제를 vision-language task로 구성한다.
+* 입력은 observation image와 natural language task instruction이다.
+* 출력은 predicted robot actions의 string이다.
+* 즉 image와 language instruction을 입력받아 robot action을 예측하는 구조이다.
+
+### b) Robot Action을 Token으로 표현
+
+* VLM의 language model backbone이 robot action을 예측할 수 있도록, continuous robot action을 discrete token으로 변환한다.
+* 이 discrete token은 language model tokenizer에서 사용하는 token 공간에 매핑된다.
+* 각 robot action dimension은 256개의 bin 중 하나로 discretization된다.
+* action dimension마다 training data에서 해당 action 값의 1st quantile과 99th quantile 사이 구간을 사용한다.
+* 이 구간을 256개의 bin으로 균등하게 나눈다.
+* min-max bound 대신 quantile을 사용하는 이유는 outlier action의 영향을 줄이기 위해서이다.
+* outlier action이 discretization interval을 지나치게 넓히면 action discretization의 effective granularity가 낮아질 수 있다.
+
+### c) Action Token Prediction Objective
+
+* N-dimensional robot action은 discretization을 거쳐 `[0...255]` 범위의 N개 discrete integer로 변환된다.
+* OpenVLA는 Llama tokenizer vocabulary에서 가장 적게 사용되는 256개 token을 action token으로 덮어쓴다.
+* 이 token들은 Llama tokenizer vocabulary의 마지막 256개 token에 해당한다.
+* OpenVLA는 standard next-token prediction objective로 학습된다.
+* cross-entropy loss는 predicted action tokens에 대해서만 계산된다.
+
+---
+
+## 3.3 Training Data
+
+### a) Dataset Construction Goal
+
+* OpenVLA training dataset의 목표는 다양한 robot embodiment, scene, task를 포함하는 것이다.
+* 이를 통해 최종 모델이 다양한 robot을 out-of-the-box로 제어할 수 있도록 한다.
+* 또한 새로운 robot setup에 대해 efficient fine-tuning이 가능하도록 한다.
+* 저자들은 Open X-Embodiment dataset, 즉 OpenX를 기반으로 training dataset을 구성한다.
+* OpenX 전체 dataset은 논문 작성 시점 기준으로 70개 이상의 individual robot dataset을 포함한다.
+* 또한 2M개 이상의 robot trajectories를 포함한다.
+* 이 dataset들은 community effort를 통해 coherent하고 easy-to-use한 data format으로 통합되었다.
+* 저자들은 이 raw dataset을 실제 학습에 사용하기 위해 여러 단계의 data curation을 적용한다.
+
+### b) Data Curation Goals
+
+* data curation의 첫 번째 목표는 모든 training dataset에서 coherent input and output space를 확보하는 것이다.
+* 두 번째 목표는 최종 training mixture에서 embodiment, task, scene의 균형을 맞추는 것이다.
+* 첫 번째 목표를 위해 저자들은 training dataset을 manipulation dataset으로 제한한다.
+* 또한 최소 하나의 3rd person camera를 포함하고, single-arm end-effector control을 사용하는 dataset만 포함한다.
+* 두 번째 목표를 위해 Octo의 data mixture weights를 활용한다.
+* Octo는 다양성이 낮은 dataset을 down-weight하거나 제거한다.
+* 반대로 task와 scene diversity가 큰 dataset은 up-weight한다.
+
+### c) Additional Dataset and DROID Handling
+
+* 저자들은 Octo release 이후 OpenX dataset에 추가된 여러 dataset도 training mixture에 포함한다.
+* 여기에는 DROID dataset도 포함된다.
+* 다만 DROID dataset은 conservative mixture weight인 10%로 포함된다.
+* 실제 학습에서 DROID의 action token accuracy는 학습 내내 낮게 유지되었다.
+* 이는 DROID를 fitting하기 위해 더 큰 mixture weight나 더 큰 model이 필요할 수 있음을 시사한다.
+* 최종 모델의 품질을 저해하지 않기 위해, 저자들은 final third of training에서 DROID를 data mix에서 제거했다.
+* 사용된 dataset과 mixture weight의 전체 목록은 Appendix A에 제시되어 있다.
+
+---
+
+## 3.4 OpenVLA Design Decisions
+
+* 저자들은 최종 OpenVLA model training run을 시작하기 전에 smaller-scale experiment에서 여러 design decision을 탐구했다.
+* 초기 실험에서는 full OpenX mixture 대신 BridgeData V2를 사용해 OpenVLA model을 학습하고 평가했다.
+* 이는 iteration speed를 높이고 computational cost를 줄이기 위한 선택이다.
+* 아래 항목들은 이러한 실험에서 얻은 key learnings이다.
+
+### a) VLM Backbone
+
+* 저자들은 처음에 여러 VLM backbone을 실험했다.
+* Prismatic 외에도 IDEFICS-1과 LLaVA를 robot action prediction에 fine-tuning하는 실험을 수행했다.
+* 초기 BridgeV2 evaluation에서는 세 모델 모두 VLA training에 적합한 backbone으로 나타났다.
+* 세 모델은 비슷한 downstream performance를 보였다.
+* 최종적으로는 SigLIP-DinoV2 backbone을 통한 improved spatial reasoning capability 때문에 Prismatic을 선택했다.
+
+### b) Image Resolution
+
+* input image resolution은 VLA training의 computational requirement에 큰 영향을 준다.
+* higher-resolution image는 더 많은 image patch token을 만든다.
+* 더 많은 image patch token은 더 긴 context length를 만든다.
+* context length가 길어지면 training compute가 quadratic하게 증가한다.
+* 저자들은 `224 × 224px` 입력과 `384 × 384px` 입력을 비교했다.
+* 평가 결과 성능 차이는 확인되지 않았다.
+* 반면 `384 × 384px` 입력은 학습 시간이 3배 더 오래 걸렸다.
+* 따라서 최종 OpenVLA model은 `224 × 224px` resolution을 사용한다.
+* 많은 VLM benchmark에서는 resolution 증가가 성능 향상으로 이어지는 경우가 있다.
+* 그러나 저자들은 VLA에서는 아직 이러한 경향을 확인하지 못했다고 설명한다.
+
+### c) Fine-Tuning Vision Encoder
+
+* 기존 VLM 연구에서는 VLM training 중 vision encoder를 freeze하는 것이 일반적으로 더 높은 성능으로 이어진다고 보고되었다.
+* 직관적으로, frozen vision encoder는 Internet-scale pretraining에서 학습한 robust feature를 더 잘 보존할 수 있다.
+* 그러나 저자들은 VLA training 중 vision encoder를 fine-tuning하는 것이 좋은 VLA performance에 중요하다고 확인했다.
+* 가능한 설명으로, pretrained vision backbone이 precise robotic control에 필요한 scene의 중요한 부분에 대한 fine-grained spatial detail을 충분히 포착하지 못할 수 있다고 제시한다.
+
+### d) Training Epochs
+
+* 일반적인 LLM 또는 VLM training run은 많아도 한두 epoch 정도를 수행한다.
+* 반면 저자들은 VLA training에서는 training dataset을 훨씬 더 여러 번 반복하는 것이 중요하다고 확인했다.
+* real robot performance는 training action token accuracy가 95%를 넘을 때까지 계속 증가했다.
+* 최종 training run은 training dataset에 대해 27 epochs를 수행했다.
+
+### e) Learning Rate
+
+* 저자들은 VLA training에서 learning rate를 여러 order of magnitude에 걸쳐 실험했다.
+* 가장 좋은 결과는 fixed learning rate `2e-5`를 사용했을 때 얻었다.
+* 이 learning rate는 VLM pretraining에서 사용된 learning rate와 동일하다.
+* learning rate warmup은 성능상 이점을 제공하지 않았다.
+
+---
+## 4. Experiments
+
+* 실험 평가의 목표는 OpenVLA가 여러 robot을 대상으로 out-of-the-box control policy로 작동할 수 있는지 확인하는 것이다.
+* 또한 OpenVLA가 새로운 robot task에 fine-tuning하기 좋은 initialization이 될 수 있는지도 평가한다.
+* 논문은 구체적으로 세 가지 질문에 답하고자 한다.
+* 첫째, OpenVLA가 여러 robot과 다양한 generalization setting에서 기존 generalist robot policy와 비교했을 때 어떤 성능을 보이는가.
+* 둘째, OpenVLA가 새로운 robot setup과 task에 효과적으로 fine-tuning될 수 있는가.
+* 또한 state-of-the-art data-efficient imitation learning approach와 비교했을 때 어떤 성능을 보이는가.
+* 셋째, parameter-efficient fine-tuning과 quantization을 사용해 OpenVLA의 training 및 inference 계산 요구량을 줄일 수 있는가.
+* 또한 이때 performance-compute trade-off가 어떻게 나타나는가를 평가한다.
+
+---
+
+## 4.1 Direct Evaluations on Multiple Robot Platforms
+
+### a) Robot Setups and Tasks
+![OpenVLA Overview](images\Fig_OpenVLA\Fig.003_OpenVLA.png)
+
+
+* OpenVLA의 out-of-the-box 성능은 두 가지 robot platform에서 평가된다.
+* 첫 번째는 Bridge Data V2 evaluation에서 사용된 WidowX robot이다.
+* 두 번째는 RT-1과 RT-2 evaluation에서 사용된 mobile manipulator, 즉 Google robot이다.
+* 각 환경에서 여러 generalization axis를 포함하는 evaluation task set을 정의한다.
+* visual generalization은 unseen background, distractor object, object color 및 appearance 변화를 포함한다.
+* motion generalization은 unseen object position과 orientation을 포함한다.
+* physical generalization은 unseen object size와 shape을 포함한다.
+* semantic generalization은 unseen target object, instruction, Internet concept을 포함한다.
+* 또한 multiple distractor object가 있는 scene에서 language conditioning ability도 평가한다.
+* 전체적으로 각 method는 Bridge V2에서 170 rollouts, Google robot에서 60 rollouts로 평가되었다.
+* 모든 평가는 A/B evaluation 방식으로 수행되었다.
+
+### b) Compared Methods
+![OpenVLA Overview](images\Fig_OpenVLA\Fig.004_OpenVLA.png)
+
+* OpenVLA는 기존 generalist manipulation policy 세 가지와 비교된다.
+* 비교 대상은 RT-1-X, RT-2-X, Octo이다.
+* RT-1-X는 35M parameter model이다.
+* Octo는 93M parameter model이다.
+* RT-1-X와 Octo는 OpenX dataset의 subset에서 scratch로 학습된 transformer policy이다.
+* Octo는 open-source manipulation policy 중 state-of-the-art로 제시된다.
+* RT-2-X는 55B parameter model이다.
+* RT-2-X는 Internet-pretrained vision-language backbone을 활용하는 closed VLA이다.
+
+### c) Bridge V2 and Google Robot Results
+
+* Bridge V2 evaluation 결과는 Fig. 3에 요약되어 있다.
+* Google robot evaluation 결과는 Fig. 4에 요약되어 있다.
+* per-task breakdown은 Appendix의 Table 4와 Table 6에 제시되어 있다.
+* RT-1-X와 Octo는 테스트된 task에서 어려움을 보였다.
+* 특히 distractor가 있을 때 correct object를 조작하는 데 실패하는 경우가 많았다.
+* RT-2-X는 RT-1-X와 Octo보다 명확히 높은 성능을 보였다.
+* 이는 robotics에서 large pretrained VLM의 이점을 보여준다.
+* OpenVLA는 Google robot evaluation에서 RT-2-X와 유사한 성능을 보였다.
+* OpenVLA는 Bridge V2 evaluation에서 RT-2-X보다 유의미하게 높은 성능을 보였다.
+* OpenVLA는 RT-2-X보다 약 7배 작은 모델이다.
+* OpenVLA는 7B parameter이고, RT-2-X는 55B parameter이다.
+
+### d) Qualitative Behavior
+
+* 정성적으로 RT-2-X와 OpenVLA는 다른 테스트 모델보다 더 robust한 행동을 보였다.
+* 예를 들어 distractor object가 있을 때도 correct object로 접근했다.
+* target object의 orientation에 맞게 robot end-effector의 orientation을 조정했다.
+* object를 insecurely grasping하는 실수에서도 회복하는 모습을 보였다.
+
+### e) OpenVLA가 RT-2-X보다 높은 성능을 보인 가능한 요인
+
+* 논문은 OpenVLA가 RT-2-X보다 높은 성능을 보인 이유를 여러 요인의 조합으로 설명한다.
+* 첫째, OpenVLA는 RT-2-X보다 더 큰 training dataset을 사용했다.
+* OpenVLA는 970k trajectories를 사용했고, RT-2-X는 350k trajectories를 사용했다.
+* 둘째, OpenVLA는 training dataset을 더 careful하게 cleaning했다.
+* 예를 들어 Bridge dataset에서 all-zero actions를 filtering했다.
+* 셋째, OpenVLA는 pretrained semantic feature와 spatial feature를 결합한 fused vision encoder를 사용한다.
+* 이러한 component에 대한 ablation analysis는 Appendix F에 제시되어 있다.
+
+---
+
+## 4.2 Data-Efficient Adaptation to New Robot Setups
+
+### a) Motivation
+
+* 기존 연구들은 주로 VLA를 out-of-the-box로 평가하는 데 초점을 두었다.
+* 그러나 VLA를 새로운 task와 robot setup에 효과적으로 fine-tuning하는 문제는 충분히 탐구되지 않았다.
+* 논문은 VLA의 폭넓은 활용을 위해 새로운 robot setup에 대한 effective fine-tuning이 중요하다고 설명한다.
+* 이 section에서는 OpenVLA가 새로운 robot setup에 적응할 수 있는지 조사한다.
+
+### b) Robot Setups and Tasks
+
+* 저자들은 target task에 대해 10–100 demonstrations로 구성된 작은 dataset을 사용해 OpenVLA의 모든 parameter를 full fine-tuning한다.
+* parameter-efficient fine-tuning approach는 Section 4.3에서 별도로 탐구한다.
+* fine-tuning 실험은 두 가지 setup에서 수행된다.
+* 첫 번째는 Franka-Tabletop이다.
+* Franka-Tabletop은 table-mounted Franka Emika Panda 7-DoF robot arm이다.
+* 두 번째는 Franka-DROID이다.
+* Franka-DROID는 DROID dataset의 Franka setup이며, movable standing desk에 장착되어 있다.
+* Franka robot arm은 robot learning community에서 널리 사용되므로 OpenVLA fine-tuning의 likely target으로 설정된다.
+
+### c) Compared Methods
+
+* OpenVLA는 Diffusion Policy와 비교된다.
+* Diffusion Policy는 state-of-the-art data-efficient imitation learning approach이며 scratch로 학습된다.
+* 또한 Diffusion Policy (matched)와도 비교된다.
+* Diffusion Policy (matched)는 OpenVLA의 input 및 output specification과 맞춘 Diffusion Policy version이다.
+* 구체적으로 no history, no action chunking 조건을 사용한다.
+* target dataset에 fine-tuned된 Octo도 비교 대상에 포함된다.
+* RT-2-X는 fine-tuning을 지원하지 않기 때문에 이 비교에는 포함되지 않는다.
+* OpenVLA도 같은 target dataset에 fine-tuning되며, resulting policy는 OpenVLA로 표시된다.
+* ablation으로 OpenVLA (scratch)도 비교한다.
+* OpenVLA (scratch)는 OpenX pretraining을 생략하고, base Prismatic VLM을 target robot setup에 직접 fine-tuning한 모델이다.
+
+### d) Fine-Tuning Results
+
+![Fine-tuning to new robot setups](images/Fig_OpenVLA/Fig.005_OpenVLA.png)
+
+* 결과는 Fig. 5에 제시되어 있다.
+* per-task breakdown은 Appendix Table 7에 제시되어 있다.
+* Diffusion Policy 두 version은 “Put Carrot in Bowl”, “Pour Corn into Pot”과 같은 narrow single-instruction task에서 Octo 및 OpenVLA와 경쟁적이거나 더 높은 성능을 보였다.
+* 그러나 scene에 multiple objects가 있고 language conditioning이 필요한 더 diverse한 fine-tuning task에서는 pretrained generalist policy가 더 좋은 성능을 보였다.
+* Octo와 OpenVLA의 OpenX pretraining은 language grounding이 중요한 diverse task에 더 잘 적응하도록 돕는다.
+* 이는 OpenVLA (scratch)의 낮은 성능에서 확인된다.
+
+### e) Overall Findings
+
+* 전체적으로 OpenVLA는 가장 높은 average performance를 달성했다.
+* OpenVLA는 같은 robot data로 학습된 Octo보다 명확히 높은 성능을 보였다.
+* 논문은 이를 Internet-scale pretraining의 이점을 보여주는 결과로 설명한다.
+* 기존 방법들은 precise task 또는 diverse task 중 하나에서만 강한 성능을 보였다.
+* 그 결과 task별 success rate가 크게 달라졌다.
+* OpenVLA는 테스트된 모든 task에서 최소 50% 이상의 success rate를 달성한 유일한 approach이다.
+* 논문은 OpenVLA가 imitation learning task에서 strong default option이 될 수 있다고 설명한다.
+* 특히 다양한 language instruction을 포함하는 task에서 유용할 수 있다고 설명한다.
+* 반면 narrower but highly dexterous task에서는 Diffusion Policy가 여전히 더 smooth하고 precise한 trajectory를 보였다.
+* 논문은 Diffusion Policy에서 구현된 action chunking과 temporal smoothing을 OpenVLA에 통합하는 것이 dexterity 향상에 도움이 될 수 있으며, future work의 promising direction이라고 제시한다.
+
+---
+
+## 4.3 Efficient OpenVLA Fine-Tuning and Inference
+
+### a) Parameter-Efficient Fine-Tuning Evaluation
+
+![Parameter-Efficient Fine-Tuning Evaluation](images/Fig_OpenVLA/Table001_OpenVLA.png)
+
+* 논문은 여러 Franka-Tabletop task에서 OpenVLA의 parameter-efficient fine-tuning approach를 테스트한다.
+* 결과는 Table 1에 제시되어 있다.
+* 비교한 fine-tuning strategy는 last layer only, frozen vision, sandwich, LoRA이다.
+* last layer only는 OpenVLA transformer backbone의 마지막 layer와 token embedding matrix만 fine-tuning한다.
+* frozen vision은 vision encoder를 freeze하고 나머지 weight를 fine-tuning한다.
+* sandwich fine-tuning은 vision encoder, token embedding matrix, last layer를 unfreeze한다.
+* LoRA는 Hu et al.의 low-rank adaptation technique을 사용한다.
+* LoRA는 여러 rank value를 사용하며, model의 모든 linear layer에 적용된다.
+* 실험 결과 vision encoder의 fine-tuning이 중요하다고 보고된다.
+* 이는 sandwich와 LoRA 결과에서 확인된다.
+* LoRA는 full fine-tuning과 유사한 성능을 보이면서 전체 parameter 중 1.4%만 fine-tuning한다.
+* LoRA rank=32 설정은 single A100 GPU에서 새로운 task에 대해 OpenVLA를 10–15시간 내에 fine-tuning할 수 있게 한다.
+* 이는 full fine-tuning 대비 8배 compute reduction에 해당한다.
+
+### b) Quantized Inference
+
+![Parameter-Efficient Fine-Tuning Evaluation](images/Fig_OpenVLA/Table002_OpenVLA.png)
+
+* 논문은 quantized inference를 통한 OpenVLA의 efficient serving도 테스트한다.
+* 결과는 Table 2에 제시되어 있다.
+* 8-bit quantization은 대부분의 GPU에서 quantization operation의 overhead 때문에 inference를 느리게 만들었다.
+* 이로 인해 8개의 representative Bridge V2 task에서 성능이 감소했다.
+* 논문은 느린 모델이 training data와 비교하여 system dynamics의 distribution shift를 겪기 때문이라고 설명한다.
+* 반면 4-bit inference는 GPU memory transfer가 줄어들어 더 높은 throughput을 달성했다.
+* 그 결과 original bfloat16 model의 성능을 회복했다.
+* 동시에 4-bit inference는 GPU memory를 절반 이하로 요구했다.
+
+---
+
+## 5. Conclusion and Limitations
+
+### a) Conclusion
+
+* 논문은 OpenVLA를 state-of-the-art open-source Vision-Language-Action model로 제시한다.
+* OpenVLA는 cross-embodiment robot control에서 강한 out-of-the-box 성능을 보인다.
+* 또한 OpenVLA는 parameter-efficient fine-tuning technique을 통해 새로운 robot setup에 쉽게 적응할 수 있음을 보였다.
+
+### b) Limitation 1: Single-Image Observation
+
+* 현재 OpenVLA model은 single-image observation만 지원한다.
+* OpenVLA가 multi-image input을 지원하도록 확장하는 것은 future work의 중요한 방향이다.
+* 또한 proprioceptive input을 지원하도록 확장하는 것도 중요한 future work이다.
+
+### c) Limitation 2: Low Control Frequency
+
+* OpenVLA는 큰 모델 크기 때문에 상대적으로 낮은 control frequency로 동작한다.
+* 따라서 OpenVLA의 inference throughput을 개선하는 것이 중요하다.
+* 이는 ALOHA처럼 50Hz로 동작하는 high-frequency control setup에서 VLA control을 가능하게 하기 위해 필요하다.
+
+### d) Limitation 3: Underexplored VLA Design Decisions
+
+* compute limitation 때문에 많은 VLA design decision이 충분히 탐구되지 않았다.
+* 예를 들어 base VLM size 변화에 대한 탐구가 남아 있다.
+* robot action data와 Internet-scale VLM data를 함께 co-training하는 방식도 충분히 탐구되지 않았다.
+* 다른 종류의 visual feature를 사용하는 방식도 추가 탐구가 필요하다.
+* 저자들은 OpenVLA model과 codebase 공개가 이러한 design decision에 대한 후속 연구를 가능하게 하기를 기대한다.
+---
+
 
 </details>
