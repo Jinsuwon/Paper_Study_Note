@@ -113,4 +113,7 @@ feature, 이미지 인코더가 이미지의 정보(색_모양_경계_물체 위
 channel-wise concatenation, 채널 방향으로 두 feature을 이어 붙이는 것,,
 GPU memory transfer, GPU 메모리에서 데이터를 읽고 쓰는 과정. 큰 모델 추론에서는 이 데이터 이동량이 많을수록 속도 병목이 생길 수 있다.,,
 throughput, 단위 시간당 처리량. 모델이 일정 시간 동안 처리할 수 있는 토큰 수나 샘플 수를 의미한다.,,
-
+DDPM, Denoising Diffusion Probabilistic Model_노이즈가 섞인 행동 궤적에서 노이즈를 단계적으로 제거해 실행 가능한 행동 궤적을 생성하는 모델이다.,,
+seed, 실험 조건의 랜덤 시작점_같은 방법이 랜덤 조건이 달라도 안정적으로 성능을 내는지 확인하기 위해 반복 실험할 때에서의 랜덤 조건을 임의로 고정하는 번호,,
+iteration, 학습 또는 평가 과정에서 반복되는 특정 단계,,
+trajectory length, task를 끝내기전까지 걸린 step 수,,

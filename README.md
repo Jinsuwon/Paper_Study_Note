@@ -3164,3 +3164,1182 @@ OpenVLA의 action을 여러 번 연속해서 수행하면 하나의 긴 trajecto
 </details>
 
 </details>
+
+
+
+<details>
+<summary><b>25. TinyVLA: Towards Fast, Data-Efficient Vision-Language-Action Models for Robotic Manipulation</b></summary>
+
+## Basic Information
+
+- **Title**: TinyVLA: Towards Fast, Data-Efficient Vision-Language-Action Models for Robotic Manipulation
+- **Authors**: Junjie Wen, Yichen Zhu, Jinming Li, Minjie Zhu, Kun Wu, Zhiyuan Xu, Ning Liu, Ran Cheng, Chaomin Shen, Yaxin Peng, Feifei Feng, Jian Tang
+- **Conference / Journal**: arXiv preprint
+- **Year**: 2025
+
+---
+
+## One-line Summary
+
+-
+
+---
+
+
+
+## Understanding the Structure
+
+읽으면서 정리 TinyVLA
+
+## 0. Abstract
+
+### a) Background: VLA model의 가능성
+
+* Vision-Language-Action model, VLA는 end-to-end learning을 통해 visuomotor control과 instruction comprehension에서 높은 가능성을 보였다.
+* 즉, 시각 정보와 언어 명령을 입력받아 로봇 행동으로 연결하는 방식이 robot manipulation에서 중요한 방향으로 주목받고 있다.
+
+### b) Problem: 기존 VLA model의 한계
+
+* 기존 VLA model은 두 가지 큰 문제를 가진다.
+* 첫째, inference 속도가 느리다.
+* 둘째, 많은 양의 robot data를 활용한 extensive pre-training이 필요하다.
+* 이로 인해 기존 VLA model은 실제 환경에 배포하기 어렵다.
+
+### c) Proposal: TinyVLA
+
+* 논문은 이러한 문제를 해결하기 위해 TinyVLA라는 compact Vision-Language-Action model family를 제안한다.
+* TinyVLA는 기존 VLA model에 비해 두 가지 장점을 가진다.
+* 첫째, inference speed가 더 빠르다.
+* 둘째, data efficiency가 높다.
+* 특히 TinyVLA는 large-scale robot data에 대한 pre-training stage 없이도 학습이 가능하다는 점을 강조한다.
+
+### d) Core Component 1: Robust and High-Speed Multimodal Model
+
+* TinyVLA의 첫 번째 핵심 구성요소는 robust하고 high-speed인 multimodal model을 policy backbone으로 사용하는 것이다.
+* 기존 VLA처럼 큰 vision-language model에 의존하는 대신, 더 작고 빠른 multimodal backbone을 사용한다.
+* 이를 통해 inference latency를 줄이고 실제 robot control에 더 적합한 구조를 만든다.
+
+### e) Core Component 2: Diffusion Policy Decoder
+
+* TinyVLA의 두 번째 핵심 구성요소는 fine-tuning 과정에서 diffusion policy decoder를 통합하는 것이다.
+* 기존 VLA처럼 action을 discrete token으로 auto-regressive하게 생성하는 방식이 아니다.
+* 대신 diffusion policy decoder를 통해 precise robot action을 생성한다.
+* 이 구조는 robot action을 더 효율적이고 직접적으로 출력하기 위한 설계로 볼 수 있다.
+
+### f) Evaluation: Simulation and Real Robot
+
+* 논문은 TinyVLA를 simulation과 real robot 환경 모두에서 평가했다.
+* 실험 결과 TinyVLA는 OpenVLA보다 speed와 data efficiency 측면에서 더 우수한 성능을 보였다.
+* 동시에 task performance는 OpenVLA와 비슷하거나 더 높은 수준을 달성했다.
+
+### g) Generalization Capability
+
+* TinyVLA는 다양한 조건에서 strong generalization capability를 보였다.
+* 평가된 generalization 범위는 language instruction, novel object, unseen position, object appearance change, background variation, environment shift 등을 포함한다.
+* 여러 경우에서 TinyVLA는 OpenVLA와 비슷하거나 더 높은 성능을 보였다.
+
+### h) Overall Meaning
+
+* TinyVLA는 기존 VLA model의 핵심 한계였던 느린 inference와 large-scale robot data dependency를 줄이려는 접근이다.
+* 핵심 구조는 compact multimodal backbone과 diffusion policy decoder의 결합이다.
+* 논문은 이를 통해 VLA model이 반드시 거대한 robot dataset pre-training에 의존하지 않아도 strong performance와 generalization을 달성할 수 있음을 보인다.
+* 따라서 TinyVLA는 pre-trained multimodal model을 robot policy learning에 활용하는 새로운 관점을 제시한다.
+
+---
+
+## I. Introduction
+
+### a) Problem: multitasking robot imitator 학습의 어려움
+
+* 복잡하고 불확실한 환경에서 동작하는 multitasking robot imitator를 학습하는 것은 여전히 어려운 문제이다.
+* 그 이유는 robot data가 제한적이고, physical motion 자체를 학습하는 것이 어렵기 때문이다.
+* 기존 robot model은 새로운 scene이나 task에 적응하는 데 한계를 보인다.
+* 또한 distractor, lighting condition, background change와 같은 환경 변화에 쉽게 영향을 받는다.
+
+### b) Existing Direction: LLM과 predefined motion planner 활용
+
+* 최근의 일부 방법들은 off-the-shelf Large Language Model, LLM을 활용한다.
+* LLM은 scene description을 바탕으로 object affordance, object location, heatmap 등을 생성한다.
+* 이후 predefined motion planner가 이를 이용해 실제 task를 수행한다.
+
+### c) Existing Direction: Vision-Language-Action Models
+
+* 최근에는 Vision-Language-Action model, VLA가 큰 주목을 받고 있다.
+* VLA는 pretrained vision-language model을 robotics로 확장하는 방식이다.
+* 이때 robot action을 next-token prediction 방식으로 생성한다.
+
+### d) Limitation 1: 느린 inference speed
+
+* 기존 VLA model의 핵심 한계는 inference speed가 매우 느리다는 점이다.
+* 이는 주로 두 가지 이유에서 발생한다.
+* 첫째, 기존 VLA는 large vision-language model에 의존한다.
+* 둘째, robot action을 auto-regressive action token generation 방식으로 생성한다.
+* auto-regressive 방식은 action token을 순차적으로 생성하기 때문에 반복적인 inference가 필요하다.
+
+### e) Limitation 2: large-scale robot data pretraining 필요
+
+* 기존 VLA model은 large-scale robotic dataset에 대한 extensive pre-training을 필요로 한다.
+* 예를 들어 OpenVLA는 970K sample 규모의 OpenX dataset으로 pre-training되었다.
+* 이러한 pre-training은 computational cost가 크고 resource-intensive하다.
+* 결과적으로 기존 VLA model은 실제 환경에 배포하거나 새롭게 학습시키기 어렵다.
+
+### f) Research Question
+
+* 논문은 이러한 문제에서 다음 질문을 제기한다.
+* 기존 VLA model의 장점은 유지하면서도, fast inference와 data efficiency를 동시에 만족하는 VLA model을 어떻게 만들 수 있는가?
+
+### g) Proposal: TinyVLA
+
+* 논문은 이를 해결하기 위해 TinyVLA를 제안한다.
+* TinyVLA는 fast inference를 위해 설계된 compact Vision-Language-Action model이다.
+* 저자들은 기존 VLA의 높은 inference latency를 만드는 핵심 요인을 두 가지로 분석한다.
+* 첫째, 기존 VLA는 보통 7B parameter를 넘는 large vision-language model을 기반으로 한다.
+* 둘째, discrete action token을 auto-regressive하게 생성하기 때문에 각 degree of freedom마다 반복적인 inference가 필요하다.
+
+### h) Core Idea 1: Small Vision-Language Model 사용
+
+* TinyVLA는 1B parameter 미만의 vision-language model family를 학습하고 사용한다.
+* 이를 통해 기존 large VLM 기반 VLA보다 model size를 줄인다.
+
+### i) Core Idea 2: Diffusion-Based Action Head 사용
+
+* TinyVLA는 action을 next-token prediction 방식으로 생성하지 않는다.
+* 대신 pretrained multimodal model에 diffusion-based head를 붙인다.
+* 이 diffusion-based head는 robot action을 직접 출력한다.
+
+### j) Expected Effect: 빠르고 data-efficient한 adaptation
+
+* TinyVLA는 vision-language data pre-training에서 얻은 prior knowledge를 유지할 수 있다.
+* 동시에 OpenX와 같은 large-scale robot dataset에 대한 pre-training 없이도 robot task에 적응할 수 있다.
+* 논문은 이 조합이 TinyVLA를 new instruction에 효율적으로 적응시키고 다양한 setting에 대해 generalization할 수 있게 한다고 설명한다.
+
+### k) Performance Claim
+
+* TinyVLA는 simulation과 real-world setting 모두에서 baseline보다 우수한 multi-task learning 성능을 보였다.
+* real-world experiment에서 TinyVLA-H는 OpenVLA보다 25.7% 높은 success rate를 달성했다.
+* 동시에 TinyVLA-H는 OpenVLA보다 parameter 수가 5.5배 적다.
+* bimanual real-robot experiment에서는 OpenVLA가 bimanual setting에서 어려움을 보였다.
+* 논문은 그 이유를 OpenVLA가 의존하는 OpenX robot data pretraining이 single-arm data로만 구성되어 있기 때문이라고 설명한다.
+* 반면 TinyVLA-H는 bimanual task에서 OpenVLA보다 훨씬 높은 성능을 보였다.
+
+### l) Generalization Claim
+
+* TinyVLA는 다양한 setting에서 generalization capability를 보였다.
+* 논문은 TinyVLA가 observational generalization과 spatial generalization에서 좋은 성능을 보였다고 설명한다.
+* 일부 경우에는 OpenVLA와 비슷하거나 더 높은 성능을 보였다.
+
+### m) Contributions
+
+* 논문의 contribution은 크게 세 가지이다.
+* 첫째, lightweight vision-language model과 diffusion model을 결합한 새로운 VLA architecture를 제안한다.
+* 둘째, simulation과 real-world setting 모두에서 extensive experiments를 수행했다.
+* 셋째, large-scale robotic dataset 없이도 strong VLA model을 학습할 수 있음을 보였다.
+
+### n) Overall Meaning
+
+* TinyVLA는 기존 VLA의 느린 inference와 large-scale robot pretraining 의존성을 줄이기 위한 접근이다.
+* 핵심 구조는 small pretrained VLM과 diffusion-based action head의 결합이다.
+* 논문은 이를 통해 VLA model을 더 작고 빠르게 만들 수 있음을 보인다.
+
+---
+
+## II. Related Works
+
+### a) Vision-Language Models
+
+* Vision-Language Model(VLM)은 vision과 language를 연결하며, LLM의 reasoning 능력을 multimodal 입력으로 확장한 모델이다.
+* 기존 Multimodal LLM은 7B~70B 규모로 매우 커서 inference 비용이 높고 접근성이 떨어진다.
+* 이에 따라 최근에는 3B 이하의 경량화된 multimodal 모델을 통해 효율성과 실용성을 높이려는 연구가 진행되고 있다.
+
+### b) Vision-Language Models for Robot Learning
+
+* VLM은 robot learning에 도입되어 high-level planning, task decomposition, 그리고 end-to-end action prediction까지 다양한 방식으로 활용되고 있다.
+* 특히 최근에는 VLM을 직접 robot action predictor로 사용하는 방향이 주목받고 있으며, 본 논문은 이를 더 가볍고 빠르게 만들고, 기존 autoregressive 방식 대신 diffusion 기반으로 대체하는 두 가지 관점을 탐구한다.
+
+### c) Multi-Task Robot Learning
+
+* Multi-task robot learning은 다양한 작업 수행과 새로운 상황에 대한 일반화를 목표로 발전해왔으며, 이를 위해 대규모 interaction 데이터를 활용하는 경우가 많다.
+* RT-1은 task-agnostic 학습의 가능성을 보였고, RT-2는 robot data와 image-text 데이터를 결합했으며, PerAct와 Octo는 각각 language goal 활용과 cross-embodiment pretraining을 통해 성능을 향상시켰다.
+
+### d) Limitation of Prior Directions
+
+* 기존 연구들은 VLM을 다양한 방식으로 활용했지만, 여전히 모델 크기가 크고 inference가 느리며, multi-task 학습에는 많은 데이터가 필요하다는 한계를 가진다.
+* 이러한 문제로 인해 실제 로봇 환경에서 빠르고 효율적으로 적용하기 어렵다.
+
+### e) Position of TinyVLA
+
+* TinyVLA는 lightweight VLM과 diffusion model을 결합한 새로운 Vision-Language-Action 모델로, 기존 autoregressive 방식 대신 diffusion 기반으로 action을 생성한다.
+* 이를 통해 더 작고 빠르며 data-efficient한 robot action predictor를 구현하는 것을 목표로 한다.
+
+---
+
+## III. Method
+
+### Overview
+
+* 이 section은 TinyVLA의 전체 방법론을 설명한다.
+* TinyVLA는 세 가지 핵심 설계 요소로 구성된다.
+* 첫째, pre-trained VLM을 policy network의 초기 backbone으로 활용한다.
+* 둘째, robot data 학습 과정에서 pre-trained 부분은 대부분 freeze하고, LoRA를 통해 parameter-efficient fine-tuning을 수행한다.
+* 셋째, pre-trained multimodal model 뒤에 policy decoder를 추가하여 실행 가능한 robot action을 출력한다.
+* 전체 구조는 Fig. 2에 제시되어 있다.
+* Fig. 2의 왼쪽은 VLM pretraining pipeline을, 오른쪽은 robotic data를 이용한 TinyVLA policy fine-tuning 과정을 보여준다.
+
+---
+
+### A. Building TinyVLA with Efficient Vision-Language Models
+
+* TinyVLA의 첫 단계는 pre-trained Vision-Language Model(VLM)을 구축하는 것이다.
+* 기존 연구들은 일반적으로 3B 또는 7B 이상의 대형 VLM을 사용한다.
+* 반면 TinyVLA는 70M에서 1.4B 규모의 compact VLM family를 학습한다.
+* 이때 language model backend로 Pythia를 사용한다.
+* 즉, Pythia는 TinyVLA VLM 내부에서 language model 역할을 수행한다.
+* TinyVLA는 LLaVA의 training pipeline을 따라 vision-language dataset으로 compact VLM을 학습한다.
+* 이후 robot data fine-tuning 단계에서도 기존 VLM의 구조를 유지한다.
+* 유지되는 구성 요소에는 visual backbone과 vision-language alignment module이 포함된다.
+
+---
+
+### B. Robot Data Finetuning for Manipulation
+
+* TinyVLA는 robot manipulation task 수행을 위해 robot data로 fine-tuning된다.
+* 이 과정의 핵심은 pre-trained VLM의 지식을 유지하면서 robot action prediction에 적응하는 것이다.
+* 이를 위해 두 가지 전략을 사용한다.
+* 첫째, frozen weights와 LoRA를 활용한 parameter-efficient fine-tuning이다.
+* 둘째, action tokenization 대신 diffusion policy decoder를 사용하여 action을 생성한다.
+
+#### 1) Frozen weights and low-rank adaptation
+
+* TinyVLA는 robot data fine-tuning 시 pre-trained VLM의 모든 weight를 업데이트하지 않는다.
+* 대부분의 weight는 freeze하고, LoRA를 통해 일부 parameter만 학습한다.
+* LoRA는 gradient update를 저차원 공간으로 제한하는 parameter-efficient 학습 방법이다.
+* 기존 weight matrix를 (W_0), fine-tuning으로 인한 변화량을 (\Delta W)라고 할 때, LoRA는 이를 다음과 같이 표현한다.
+
+[
+W_0 + \Delta W = W_0 + BA
+]
+
+* 여기서 (B \in \mathbb{R}^{d \times r}), (A \in \mathbb{R}^{r \times k})이며, (r)은 (d)와 (k)보다 훨씬 작다.
+* 따라서 전체 (d \times k) weight를 직접 학습하는 대신, 작은 두 행렬만 학습한다.
+* TinyVLA는 attention mechanism의 (Q, K, V) weight에 LoRA를 적용한다.
+* Transformer의 나머지 weight는 모두 freeze된다.
+* 논문에 따르면 trainable parameter는 전체 transformer parameter의 약 5.0% 수준이다.
+* 이러한 방식은 pre-trained language model의 intrinsic knowledge를 보존하기 위함이다.
+* 학습 이후에는 LoRA module을 기존 모델에 통합하는 re-parameterization을 수행하여 inference 속도를 향상시킨다.
+
+#### 2) Learning action with diffusion policy decoder
+
+* Robot 제어를 위해서는 action space를 효과적으로 표현해야 한다.
+* 기존 방법 중 하나는 RT-2처럼 action을 discrete token으로 변환하는 방식이다.
+* 그러나 continuous하거나 high-dimensional action을 tokenization하는 것은 학습이 어렵고 많은 데이터가 필요하다.
+* 또한 single state로 converge되는 문제가 발생할 수 있다.
+* 따라서 TinyVLA는 action을 token으로 변환하지 않는다.
+* 대신 Diffusion Policy(DP)를 policy head로 사용한다.
+* Diffusion Policy는 DDPM 기반으로 robot policy를 구성한다.
+* 이 방식은 action을 직접 예측하는 대신 noise를 예측하여 action을 생성한다.
+
+#### 3) TinyVLA action prediction pipeline
+
+* TinyVLA의 action prediction pipeline은 **image와 language instruction을 바로 action으로 바꾸는 과정**이 아니다.
+* 정확히는 image와 language instruction을 먼저 VLM이 이해하고, 그 결과를 robot state와 결합한 뒤, Diffusion Policy가 사용할 수 있는 조건 정보로 변환하는 과정이다.
+* 논문은 이 pipeline을 세 단계로 설명한다.
+
+---
+
+##### Step 1. VLM backbone이 raw observation과 language instruction을 multimodal embedding으로 변환
+
+* 첫 번째 단계에서는 VLM backbone이 raw observation과 language instruction을 입력받는다.
+* 여기서 raw observation은 robot camera로 본 현재 장면이다.
+* language instruction은 사람이 준 자연어 명령이다.
+* 예를 들면 다음과 같다.
+
+```text
+raw observation:
+테이블 위에 컵, 공, 상자가 보이는 이미지
+
+language instruction:
+"공을 상자 안에 넣어라"
+```
+
+* VLM backbone은 이 둘을 함께 처리하여 multimodal embedding vector를 만든다.
+* 이 embedding은 단순한 이미지 feature가 아니다.
+* image와 language instruction이 함께 반영된 표현이다.
+* 즉, “현재 장면에 무엇이 있고, 명령에서 중요한 대상이 무엇인지”를 담은 벡터라고 볼 수 있다.
+
+```text
+카메라 이미지 + 언어 명령
+        ↓
+VLM backbone
+        ↓
+multimodal embedding
+```
+
+* 이 단계의 역할은 robot action을 바로 만드는 것이 아니라, **현재 장면과 명령을 이해한 feature를 만드는 것**이다.
+
+---
+
+##### Step 2. Adaptive pooling과 layer normalization으로 feature를 정리
+
+* VLM에서 나온 multimodal embedding은 입력에 따라 길이가 달라질 수 있다.
+* 예를 들어 이미지 patch 수, text token 수, 입력 sequence 구성에 따라 feature sequence 길이가 달라질 수 있다.
+
+```text
+입력 A → feature 길이 100
+입력 B → feature 길이 140
+입력 C → feature 길이 120
+```
+
+* 하지만 뒤쪽의 MLP와 Diffusion Policy는 일정한 크기의 입력을 받는 것이 안정적이다.
+* 그래서 adaptive pooling layer를 사용한다.
+* adaptive pooling은 길이가 들쭉날쭉한 feature를 고정된 크기의 compact feature로 바꿔준다.
+
+```text
+길이가 다른 multimodal embedding
+        ↓
+adaptive pooling
+        ↓
+fixed-size compact feature
+```
+
+* 그 다음 layer normalization을 적용한다.
+* layer normalization은 feature 값의 scale을 안정화하는 과정이다.
+* 쉽게 말하면 feature 값들이 너무 크거나 작게 치우치지 않도록 정리해준다.
+
+```text
+adaptive pooling:
+feature의 길이와 크기를 정리
+
+layer normalization:
+feature 값의 분포와 scale을 정리
+```
+
+* 따라서 이 단계는 VLM이 만든 embedding을 Diffusion Policy가 사용하기 좋은 형태로 정리하는 과정이다.
+
+---
+
+##### Step 3. Robot proprioceptive state와 결합
+
+* VLM feature만으로는 robot action을 결정하기에 부족하다.
+* VLM feature에는 장면과 명령에 대한 정보는 들어 있지만, robot 자신의 현재 상태 정보는 충분히 들어 있지 않다.
+* 그래서 TinyVLA는 normalized feature에 robot proprioceptive state vector를 결합한다.
+* proprioceptive state는 robot 자신의 내부 상태 정보이다.
+* 예를 들면 다음과 같다.
+
+```text
+robot proprioceptive state:
+- 현재 joint position
+- 현재 gripper state
+- robot arm의 현재 자세
+```
+
+* 즉, VLM feature가 “무엇을 해야 하는가”를 담고 있다면, proprioceptive state는 “현재 로봇이 어떤 상태인가”를 담고 있다.
+
+```text
+VLM feature:
+"공을 상자에 넣어야 한다"
+
+Robot proprioceptive state:
+"현재 로봇 팔은 왼쪽에 있고, gripper는 열려 있다"
+```
+
+* 이 둘을 concatenate한다는 것은 두 벡터를 하나로 이어 붙인다는 뜻이다.
+
+```text
+normalized VLM feature
++
+robot proprioceptive state vector
+        ↓
+combined representation
+```
+
+* 이 결합을 통해 TinyVLA는 장면, 명령, 로봇 자신의 상태를 모두 고려할 수 있게 된다.
+
+---
+
+##### Step 4. 3-layer MLP가 conditional embedding을 생성
+
+* 결합된 representation은 바로 Diffusion Policy에 들어가는 것이 아니라, 3-layer MLP를 통과한다.
+* MLP는 여러 개의 fully connected layer로 구성된 신경망이다.
+* 여기서는 combined representation을 Diffusion Policy가 사용하기 좋은 conditional embedding으로 변환하는 역할을 한다.
+
+```text
+combined representation
+        ↓
+3-layer MLP
+        ↓
+conditional embedding
+```
+
+* 여기서 conditional embedding은 Diffusion Policy에게 주는 조건 정보이다.
+* 쉽게 말하면 Diffusion Policy에게 다음과 같은 정보를 압축해서 전달하는 벡터이다.
+
+```text
+"현재 장면은 이렇고,
+명령은 이것이며,
+로봇의 현재 상태는 이러니,
+이 조건에 맞는 action을 생성해라."
+```
+
+---
+
+##### Step 5. Diffusion Policy가 conditional embedding을 바탕으로 action 생성
+
+* 마지막 단계에서는 Diffusion Policy가 conditional embedding을 조건으로 받아 robot action을 생성한다.
+* TinyVLA는 action을 discrete token으로 바꾸지 않는다.
+* 대신 Diffusion Policy를 사용하여 continuous robot action을 생성한다.
+* 즉, VLM이 직접 action token을 하나씩 뽑는 구조가 아니라, Diffusion Policy head가 action을 생성하는 구조이다.
+
+```text
+conditional embedding
+        ↓
+Diffusion Policy head
+        ↓
+robot action
+```
+
+* 최종 action은 robot arm을 실제로 움직이기 위한 값이다.
+* 예를 들면 위치, 회전, gripper 상태 등이 포함될 수 있다.
+
+```text
+robot action:
+- x, y, z 이동
+- roll, pitch, yaw 회전
+- gripper width
+```
+
+---
+
+##### 전체 데이터 흐름 요약
+
+```text
+1. Image observation + Language instruction
+   → 현재 장면과 명령 입력
+
+2. VLM backbone
+   → image와 language를 함께 이해한 multimodal embedding 생성
+
+3. Adaptive pooling + Layer normalization
+   → embedding을 고정 크기·안정된 scale의 feature로 정리
+
+4. Robot proprioceptive state와 concatenate
+   → 장면/명령 정보에 robot 현재 상태를 추가
+
+5. 3-layer MLP
+   → Diffusion Policy가 사용할 conditional embedding 생성
+
+6. Diffusion Policy
+   → 조건에 맞는 robot action 생성
+```
+
+#### 4) Training strategy
+
+* TinyVLA는 VLM과 Diffusion Policy head를 서로 다른 방식으로 학습한다.
+* VLM은 LoRA를 사용하여 parameter-efficient하게 fine-tuning한다.
+* Diffusion Policy head는 full-parameter training을 수행한다.
+* 이를 통해 VLM의 vision-language knowledge는 유지하면서, action 생성 능력은 충분히 학습할 수 있도록 한다.
+
+
+---
+## IV. Experiments
+
+### Overview
+
+* 이 section은 TinyVLA의 실험 설계와 결과를 설명한다.
+* 논문은 실험을 통해 다음 질문들을 확인하고자 한다.
+
+#### 1) TinyVLA가 baseline보다 multi-task robotic manipulation에서 더 높은 success rate를 달성하는가?
+
+* TinyVLA가 여러 task를 동시에 학습하는 multi-task setting에서 기존 방법보다 더 좋은 성능을 보이는지 확인한다.
+* 비교 대상은 Diffusion Policy, Multimodal Diffusion, OpenVLA 등이다.
+
+#### 2) TinyVLA가 novel instruction을 해석하고 따를 수 있는가?
+
+* 학습 중 보지 못한 새로운 instruction이 들어왔을 때, TinyVLA가 이를 이해하고 적절한 action으로 연결할 수 있는지 확인한다.
+* 이는 단순히 학습한 문장을 외우는 것이 아니라, language instruction에 대한 generalization이 가능한지를 보는 실험이다.
+
+#### 3) TinyVLA가 unseen environment에 generalization할 수 있는가?
+
+* 논문은 TinyVLA가 새로운 환경 조건에서도 robust하게 동작하는지 확인한다.
+* 평가 범위에는 new background, lighting condition, camera view change, novel distractor 등이 포함된다.
+* 즉, 학습 환경과 다른 시각적 조건에서도 task를 수행할 수 있는지 보는 것이다.
+
+#### 4) TinyVLA가 scaling law를 따르는가?
+
+* 논문은 모델 크기가 커질수록 performance와 generalization이 향상되는지 확인한다.
+* 여기서 scaling law는 모델 parameter 규모가 커질수록 일반적으로 성능이 좋아지는 경향을 의미한다.
+* TinyVLA는 TinyVLA-S, TinyVLA-B, TinyVLA-H로 model size를 나누어 이 경향을 평가한다.
+
+---
+
+### A. Experimental Setup
+
+* 이 subsection은 TinyVLA의 실험 환경, 모델 크기 구분, simulation benchmark, real robot setup, task 구성, data collection, baseline 설정을 설명한다.
+
+#### 1) TinyVLA model size
+
+* 논문은 multimodal model의 크기에 따라 TinyVLA를 세 가지로 구분한다.
+
+```text
+TinyVLA-S = Small
+TinyVLA-B = Base
+TinyVLA-H = Huge
+```
+
+* 이 구분은 TinyVLA가 model size에 따라 성능이 어떻게 달라지는지 보기 위한 설정이다.
+* 즉 scaling law를 확인하기 위한 실험 설계와 연결된다.
+
+---
+
+#### 2) Simulation Benchmark
+
+* Simulation benchmark에서는 MetaWorld를 사용한다.
+* MetaWorld는 robot manipulation task를 평가하기 위한 benchmark이다.
+* 논문에서는 MetaWorld의 50개 task를 사용한다.
+* 이 50개 task는 난이도에 따라 easy, medium, hard, very hard로 나뉜다.
+
+```text
+MetaWorld 50 tasks
+- Easy
+- Medium
+- Hard
+- Very Hard
+```
+
+* simulation 실험에서는 TinyVLA와 Diffusion Policy를 비교한다.
+* 모든 방법은 50 demonstrations를 사용해 multi-task learning 방식으로 학습된다.
+* 즉 task별로 따로 모델을 학습하는 것이 아니라, 여러 task를 하나의 policy가 함께 학습하는 설정이다.
+
+##### 3 seeds와 five different iterations의 의미
+
+* 실험은 3 seeds로 평가된다.
+* seed는 랜덤 조건을 다르게 한 독립 실험 반복을 의미한다.
+* 예를 들어 model initialization, data shuffle, batch 구성 등이 seed에 따라 달라질 수 있다.
+* 각 seed마다 success rate는 five different iterations에 대해 평균된다.
+* 여기서 iteration은 프로그래밍의 iterator가 아니라, 학습 또는 평가 과정에서의 반복 평가 지점으로 이해하면 된다.
+
+```text
+Seed 1 → iteration 1~5 success rate 평균
+Seed 2 → iteration 1~5 success rate 평균
+Seed 3 → iteration 1~5 success rate 평균
+```
+
+* 이렇게 하는 이유는 특정 랜덤 조건이나 특정 평가 시점에서 우연히 좋거나 나쁜 결과가 나오는 것을 줄이기 위해서이다.
+
+---
+
+#### 3) Real Robot Setup
+
+* Real robot experiment는 single-arm setup과 bimanual setup 두 가지로 진행된다.
+
+##### Single-arm setup
+
+* single-arm setting에서는 Franka Panda 7-DoF robot arm을 사용한다.
+* 7-DoF는 robot arm이 7개의 자유도를 가진다는 뜻이다.
+* scene은 robot 양쪽에 고정된 두 대의 ZED 2 stereo camera로 관찰된다.
+
+```text
+Single-arm setup
+- Robot: Franka Panda 7-DoF
+- Cameras: two external ZED 2 stereo cameras
+- Camera position: robot 양쪽에 고정
+```
+
+##### Bimanual setup
+
+* bimanual setting에서는 두 개의 UR5 robot arm을 사용한다.
+* bimanual은 두 팔을 함께 사용하는 robot setup을 의미한다.
+* scene은 wrist camera 두 대와 top camera 한 대로 관찰된다.
+* 이 카메라는 Realsense D435i를 사용한다.
+
+```text
+Bimanual setup
+- Robot: two UR5 robotic arms
+- Cameras: two wrist cameras + one top camera
+- Camera model: Realsense D435i
+```
+
+---
+
+#### 4) Tasks
+
+##### Single-arm tasks
+
+* single-arm setting에는 총 5개의 task가 있다.
+
+```text
+1. CloseDrawer
+   = drawer 닫기
+
+2. StackCubes
+   = pink cube를 blue cube 위에 쌓기
+
+3. OpenBox
+   = box의 lid 열기
+
+4. PlaceTennis
+   = tennis ball을 ball box 안에 넣기
+
+5. FlipMug
+   = tipped-over mug를 upright하게 세우기
+```
+
+* 여기서 FlipMug는 넘어진 머그컵을 다시 바로 세우는 task이다.
+
+##### Bimanual tasks
+
+* bimanual robot experiment에는 총 3개의 task가 있다.
+* 이 task들은 두 robot arm 사이의 cooperation이 필요하다.
+
+```text
+1. TransferBread
+   = bread를 plate로 옮기기
+
+2. PlaceTennisBag
+   = bag의 zipper를 열고 tennis ball을 bag 안에 넣기
+
+3. StackCubes
+   = cubes를 plate 위에 쌓기
+```
+
+##### Task별 action space 차이
+
+* 논문은 task마다 action space가 상당히 다르다는 점을 강조한다.
+* action space는 robot이 선택해야 하는 행동의 범위나 형태를 의미한다.
+* 예를 들어 FlipMug는 mug 안쪽으로 gripper를 측면에서 넣기 위해 큰 rotation이 필요하다.
+* 반면 StackCubes는 pick-and-place 형태의 task이다.
+* 즉 FlipMug와 StackCubes는 필요한 action의 형태가 크게 다르다.
+
+```text
+FlipMug
+→ wide-ranging rotation 필요
+→ gripper를 mug 안쪽에 lateral하게 삽입해야 함
+
+StackCubes
+→ pick-and-place type
+→ cube를 집고 다른 cube 위에 놓는 방식
+```
+
+##### 같은 task 안에서도 trajectory 길이가 다름
+
+* 같은 task 안에서도 trajectory의 길이는 크게 달라질 수 있다.
+* 예를 들어 StackCubes task의 trajectory length는 100에서 300까지 다양하다.
+* 여기서 trajectory length는 task를 수행하는 동안의 step 수로 이해할 수 있다.
+
+```text
+StackCubes trajectory length
+= 100 ~ 300 steps
+```
+
+* 이는 TinyVLA가 단순히 고정된 길이의 행동 패턴을 외우는 것이 아니라, task마다 다른 action space와 trajectory variation을 학습해야 한다는 의미이다.
+* 따라서 이러한 task 구성은 TinyVLA에게 더 어려운 학습 조건을 제공한다.
+
+---
+
+#### 5) Data collection
+
+* 데이터는 teleoperation을 통해 수집된다.
+* teleoperation은 사람이 원격으로 robot을 조작하면서 demonstration을 만드는 방식이다.
+* 논문은 robot control 과정 전체에서 RGB camera stream과 robot state를 기록한다.
+
+```text
+Recorded data
+- RGB stream from two camera views
+- robot state
+- joint position
+- gripper width
+```
+
+* robot gripper width는 0에서 1 사이의 값으로 기록된다.
+
+```text
+gripper width = 0
+→ fully closed
+
+gripper width = 1
+→ fully open
+```
+
+* TinyVLA는 7-dimensional action을 예측한다.
+
+```text
+TinyVLA action output
+- position: x, y, z
+- rotation: roll, pitch, yaw
+- gripper width
+```
+
+* 즉 TinyVLA의 최종 출력은 자연어 문장이 아니라, robot arm을 실제로 움직이기 위한 연속적인 action 값이다.
+
+##### Distractor 설정
+
+* 대부분의 task에서는 additional distractor를 넣지 않는다.
+* 예외적으로 remove the lid of the box task에서는 distractor를 추가한다.
+* 이는 distractor에 대한 model의 generalization capability를 더 잘 평가하기 위한 설정이다.
+
+```text
+대부분 task
+→ additional distractor 없음
+
+remove the lid of the box task
+→ additional distractor 있음
+```
+
+* 여기서 additional distractor는 task 수행에 직접 필요하지 않지만, robot이나 model을 헷갈리게 할 수 있는 방해 물체를 의미한다.
+
+##### Trajectory 수
+
+* 논문은 각 task마다 100 trajectories를 수집한다.
+* 이는 5개 task 간 data distribution을 균형 있게 맞추기 위한 것이다.
+
+```text
+5 tasks × 100 trajectories
+= 총 500 trajectories
+```
+
+---
+
+#### 6) Baseline
+
+* 논문은 TinyVLA를 세 가지 baseline과 비교한다.
+
+```text
+1. Diffusion Policy, DP
+2. Multimodal Diffusion
+3. OpenVLA
+```
+
+* 공정한 비교를 위해 baseline에 몇 가지 수정을 적용한다.
+
+##### OpenVLA baseline 수정
+
+* vanilla OpenVLA는 single view로 fine-tuning된 모델이다.
+* 반면 TinyVLA의 real robot setting은 multi-view camera input을 사용한다.
+* 따라서 OpenVLA를 그대로 사용하면 입력 조건이 맞지 않아 비교가 불공정해진다.
+* 이를 해결하기 위해 논문은 각 view의 image를 shared visual backbone에 따로 통과시킨다.
+* 그 후 각 view에서 나온 visual token을 concatenate하여 language model에 입력한다.
+
+```text
+view 1 image → shared visual backbone → visual tokens 1
+view 2 image → shared visual backbone → visual tokens 2
+
+visual tokens 1 + visual tokens 2
+        ↓ concatenate
+language model에 입력
+        ↓
+action token 예측
+```
+
+* 중요한 점은 각 view마다 따로 action을 예측하는 것이 아니다.
+* 각 view에서 visual token을 뽑은 뒤, 이를 합쳐 하나의 action prediction을 수행하는 것이다.
+
+##### Diffusion Policy baseline 수정
+
+* vanilla Diffusion Policy는 language instruction을 포함하지 않는다.
+* 즉 기본 DP는 image observation과 robot state를 보고 action을 생성하지만, “무엇을 하라”는 자연어 명령을 직접 입력으로 쓰지 않는다.
+
+```text
+Vanilla DP
+image observation + robot state
+        ↓
+action
+```
+
+* 그러나 TinyVLA는 image, language instruction, robot state를 모두 사용한다.
+* 따라서 DP도 language instruction을 활용할 수 있도록 수정해야 공정한 비교가 된다.
+* 논문은 RT-1과 YAY를 따라 FiLM을 사용해 language information을 visual backbone에 통합한다.
+
+```text
+Language instruction
+        ↓
+FiLM
+        ↓
+visual feature 조절
+        ↓
+language-conditioned visual feature
+```
+
+* FiLM은 언어 정보를 이용해 visual feature를 조절하는 방식이다.
+* 예를 들어 “red cube를 집어라”라는 명령이 들어오면, visual feature 안에서 red cube와 관련된 정보를 더 중요하게 반영하도록 조절할 수 있다.
+
+---
+
+### B. Experimental Results on Multi-Task Learning
+
+* 이 subsection은 TinyVLA가 multi-task learning setting에서 baseline보다 높은 success rate를 보이는지 평가한다.
+* 결과는 simulation experiment와 real-world experiment로 나뉜다.
+
+#### 1) Simulation experimental results
+
+* simulation 실험 결과는 Table I에 제시된다.
+* TinyVLA-H를 method로 사용한다.
+* 비교 대상은 Diffusion Policy이다.
+* 모든 방법은 multi-task setting에서 학습된다.
+
+##### Table I 결과 요약
+
+```text
+Diffusion Policy Avg. = 10.5
+TinyVLA-H Avg. = 31.6
+```
+
+* 표에 보이는 평균 success rate 기준으로 TinyVLA-H는 Diffusion Policy보다 21.1 percentage points 높다.
+
+```text
+31.6 - 10.5 = 21.1
+```
+
+* 논문 본문에서는 TinyVLA의 average success rate가 Diffusion Policy보다 21.5% 높다고 서술한다.
+* 표에 표시된 반올림 값만 기준으로 계산하면 21.1이지만, 원래 내부 계산값 기준으로는 21.5가 나왔을 가능성이 있다.
+* 정확히 표현하면 “21.5% 향상”보다는 “약 21.5 percentage points higher”에 가깝다.
+
+##### Hard scenario에서의 성능 차이
+
+* 논문은 task가 복잡해질수록 TinyVLA와 Diffusion Policy의 성능 차이가 더 커진다고 설명한다.
+* 특히 MetaWorld Hard scenario에서 TinyVLA의 성능은 Diffusion Policy보다 약 6배 높다.
+
+```text
+Hard scenario
+Diffusion Policy = 1.9
+TinyVLA-H = 11.4
+
+11.4 / 1.9 = 6
+```
+
+* 이는 TinyVLA가 단순한 task뿐 아니라 복잡한 multi-task manipulation에서도 더 강한 성능을 보인다는 근거로 제시된다.
+
+---
+
+#### 2) Real-world experimental results
+
+* real-world 실험 결과는 Table II에 제시된다.
+* single-arm setting에서는 각 model을 task마다 20 trials로 평가한다.
+* 논문은 3 checkpoints에 대한 success rate의 평균과 표준편차를 보고한다.
+
+##### 20 trials의 의미
+
+* 20 trials는 각 task에 대해 robot이 실제로 task를 20번 수행했다는 뜻이다.
+* 예를 들어 FlipMug task에서 20번 시도하여 성공한 횟수를 바탕으로 success rate를 계산한다.
+
+```text
+FlipMug
+20 trials 중 18번 성공
+→ success rate = 90%
+```
+
+##### 3 checkpoints의 의미
+
+* checkpoint는 학습 중 특정 시점에 저장된 모델 상태이다.
+* 3 checkpoints는 학습 과정에서 저장된 서로 다른 모델 3개를 평가했다는 뜻이다.
+* 논문은 이 3개 checkpoint에서 나온 success rate의 평균과 표준편차를 보고한다.
+
+```text
+checkpoint 1 → success rate
+checkpoint 2 → success rate
+checkpoint 3 → success rate
+
+평균 ± 표준편차
+```
+
+* 이를 통해 특정 checkpoint 하나가 우연히 좋거나 나쁜 결과를 내는 문제를 줄일 수 있다.
+
+##### Table II 주요 결과
+
+* TinyVLA-H는 real-world single-arm task에서 가장 높은 평균 success rate를 보인다.
+
+```text
+TinyVLA-H Avg. = 94.0
+OpenVLA Avg. = 68.3
+Diffusion Policy Avg. = 35.3
+Multimodal Diffusion Avg. = 18.0
+```
+
+* TinyVLA-H는 FlipMug와 StackCubes에서 98.3% success rate를 달성한다.
+* PlaceTennis에서는 90.0% success rate를 달성한다.
+* 이는 다른 baseline보다 큰 차이로 높은 성능이다.
+
+```text
+TinyVLA-H
+- PlaceTennis: 90.0
+- FlipMug: 98.3
+- StackCubes: 98.3
+- CloseDrawer: 96.7
+- OpenBox: 86.7
+- Avg.: 94.0
+```
+
+##### Scaling law 관점
+
+* Table II에서 TinyVLA-S, TinyVLA-B, TinyVLA-H의 성능은 모델 크기가 커질수록 크게 증가한다.
+
+```text
+TinyVLA-S Avg. = 23.3
+TinyVLA-B Avg. = 77.4
+TinyVLA-H Avg. = 94.0
+```
+
+* 이는 TinyVLA가 model size 증가에 따라 성능이 향상되는 scaling law 경향을 보인다는 근거로 제시된다.
+* 즉 TinyVLA에서는 더 큰 multimodal model을 사용할수록 real-world robot task 성능이 좋아지는 경향이 나타난다.
+
+##### OpenVLA 대비 성능 차이
+
+* TinyVLA-H의 평균 success rate는 OpenVLA보다 25.7 percentage points 높다.
+
+```text
+TinyVLA-H Avg. = 94.0
+OpenVLA Avg. = 68.3
+
+94.0 - 68.3 = 25.7
+```
+
+* 이 결과는 TinyVLA가 OpenVLA보다 훨씬 작은 trainable parameter 수를 사용하면서도 더 높은 real-world task 성능을 달성했다는 점에서 중요하다.
+
+```text
+OpenVLA
+- Total Params: 7.2B
+- Trainable Params: 195M
+- Avg.: 68.3
+
+TinyVLA-H
+- Total Params: 1.3B
+- Trainable Params: 143M
+- Avg.: 94.0
+```
+
+* 즉 TinyVLA-H는 OpenVLA보다 전체 모델 크기가 작고 trainable parameter도 적지만, 평균 success rate는 더 높다.
+
+
+### C. Generalization to Unseen Instructions
+
+* 이 subsection은 TinyVLA-H가 학습 중 보지 못한 instruction에 대해 generalization할 수 있는지 평가한다.
+* TinyVLA-H를 사용한 이유는 simulation과 real-world experiment 모두에서 가장 좋은 성능을 보였기 때문이다.
+* TinyVLA는 pre-trained multimodal model을 backbone으로 사용한다.
+* 논문은 이 pre-trained multimodal model 안에 저장된 rich world knowledge가 TinyVLA의 embodied capability에 도움을 준다고 본다.
+* 중요한 점은 TinyVLA가 RT-2처럼 question-answering pair로 학습된 것은 아니라는 점이다.
+* 그럼에도 불구하고 pre-trained multimodal backbone 덕분에 새로운 instruction을 어느 정도 이해하고 실행할 수 있음을 보인다.
+
+#### 1) Evaluation setting
+
+* 논문은 instruction generalization을 평가하기 위해 고정된 instruction template을 사용한다.
+* 예시는 다음과 같다.
+
+```text
+"Pick the [object]"
+```
+
+* 여기서 `[object]`에는 training data에서 보지 못한 randomized object가 들어간다.
+* Figure 4에서는 object를 줄여서 `obj.`라고 표기한다.
+* 실험에는 세 가지 object가 사용된다.
+
+```text
+1. mug
+2. toy car
+3. pink cube
+```
+
+* 이 실험의 목적은 TinyVLA가 단순히 학습된 문장을 외운 것이 아니라, instruction 안의 object description을 실제 물체와 연결할 수 있는지 확인하는 것이다.
+
+---
+
+#### 2) Level 1: unseen color 이해
+
+* 첫 번째 level은 TinyVLA가 seen color와 unseen color를 구분할 수 있는지 평가한다.
+* 실험에서는 table 위에 두 개의 mug를 놓는다.
+* 하나는 training data에서 본 색상이고, 다른 하나는 training data에서 보지 못한 색상이다.
+* 모델에게는 green mug를 flip하라는 instruction이 주어진다.
+* 여기서 green color는 training data에 없던 색상이다.
+
+```text
+Instruction:
+"Upright the tipped-over green mug."
+```
+
+* TinyVLA는 이 task를 성공적으로 수행했다.
+* 이는 TinyVLA가 색상이라는 object attribute를 어느 정도 이해하고, unseen color가 포함된 instruction도 실제 object와 연결할 수 있음을 보여준다.
+
+```text
+핵심 의미:
+TinyVLA는 학습 때 보지 못한 색상 표현도
+pre-trained multimodal knowledge를 바탕으로 해석할 수 있다.
+```
+
+---
+
+#### 3) Level 2: seen object 구분 및 grasping
+
+* 두 번째 level은 모델이 instruction에 나온 object를 실제 장면 속 object와 연결해 grasp할 수 있는지 평가한다.
+* 이 실험에서는 제시된 object들이 training data에 포함되어 있었던 object이다.
+* 모델에게는 다음과 같은 instruction이 주어진다.
+
+```text
+Instruction:
+"Pick the cube."
+```
+
+* 환경과 instruction 자체는 training data에 없었지만, TinyVLA는 cube를 성공적으로 집었다.
+* 이는 TinyVLA가 text description을 physical object에 mapping할 수 있음을 보여준다.
+
+```text
+핵심 의미:
+TinyVLA는 "cube"라는 언어 표현을
+실제 장면 속 cube object와 연결할 수 있다.
+```
+
+---
+
+#### 4) Level 3: unseen object와 새로운 skill-object combination
+
+* 세 번째 level은 난이도를 더 높인 실험이다.
+* 모델은 toy car를 집어서 box 안에 넣으라는 instruction을 받는다.
+* toy car는 training data에 없던 object이다.
+
+```text
+Instruction:
+"Pick a toy car and place it into the box."
+```
+
+* 실험 환경에는 toy car 옆에 pink cube도 함께 배치된다.
+* 이는 모델이 instruction을 제대로 이해하는지 확인하기 위한 설정이다.
+* 즉 모델이 단순히 눈에 잘 띄는 object나 익숙한 object를 고르는 것이 아니라, instruction에 나온 toy car를 선택해야 한다.
+
+```text
+Scene:
+toy car + pink cube
+
+Target:
+toy car
+```
+
+* 또한 “place into the box”는 새로운 skill-object combination을 만든다.
+* box라는 object는 익숙할 수 있지만, 해당 object를 사용하는 방식이나 기능 조합은 training data와 다를 수 있다.
+* 따라서 이 실험은 두 가지 generalization을 동시에 확인한다.
+
+```text
+1. unseen object recognition
+   = training data에 없던 toy car를 인식할 수 있는가?
+
+2. new functionality of familiar object
+   = 익숙한 object인 box를 새로운 방식으로 사용할 수 있는가?
+```
+
+* TinyVLA가 이 task를 성공하면, 새로운 object를 인식하고 익숙한 object의 새로운 기능적 역할까지 이해할 수 있음을 의미한다.
+
+---
+
+#### 5) Overall Meaning
+
+* C절의 핵심은 TinyVLA-H가 unseen instruction에 대해 어느 정도 generalization할 수 있음을 보이는 것이다.
+* TinyVLA는 question-answering pair로 학습된 RT-2류 모델은 아니지만, pre-trained multimodal backbone을 사용하기 때문에 object attribute, object name, instruction-object mapping을 활용할 수 있다.
+* 실험은 난이도를 세 단계로 올리며 진행된다.
+
+```text
+Level 1:
+unseen color 이해
+
+Level 2:
+seen object를 instruction에 따라 구분하고 grasp
+
+Level 3:
+unseen object 인식 + familiar object의 새로운 기능 조합 이해
+```
+
+* 결과적으로 TinyVLA는 단순히 학습한 task를 반복하는 것이 아니라, 새로운 언어 표현과 새로운 object 조합에도 어느 정도 대응할 수 있음을 보여준다.
+
+---
+
+### D. More Real-World Experiments: Bimanual Robot
+
+* 이 subsection은 TinyVLA-H를 bimanual UR5 robot setup에 적용한 추가 real-world experiment를 설명한다.
+* bimanual robot은 두 개의 robot arm을 함께 사용하는 setup이다.
+* 이 실험은 single-arm task보다 더 어렵다.
+* 그 이유는 두 팔의 coordination이 필요하고, task duration과 required skills가 task마다 크게 다르기 때문이다.
+
+#### 1) Bimanual task 구성
+
+* 논문은 bimanual UR5 robot에서 세 가지 task를 수행한다.
+
+```text
+1. PlaceBread
+   = bread를 plate 위로 옮기기
+
+2. StackCube
+   = cube를 쌓기
+
+3. PlaceTennisBag
+   = bag을 열고 tennis ball을 넣기
+```
+
+* 이 task들은 duration과 필요한 skill이 크게 다르다.
+* 따라서 하나의 multi-task policy model이 이들을 모두 학습하기 어렵다.
+
+```text
+PlaceBread:
+물체를 plate로 옮기는 task
+
+StackCube:
+물체를 정확히 쌓는 task
+
+PlaceTennisBag:
+bag을 열고 tennis ball을 넣는 task
+```
+
+* 특히 PlaceTennisBag는 두 팔의 협력과 조작 순서가 중요할 가능성이 높다.
+* 따라서 bimanual setting은 TinyVLA가 single-arm 환경을 넘어 더 복잡한 robot manipulation에도 적용될 수 있는지 확인하는 실험이다.
+
+---
+
+#### 2) Quantitative results
+
+* 결과는 Table III에 제시된다.
+* 모든 모델은 multi-task setting에서 학습된다.
+* Table III은 각 task에 대해 10 trials의 평균 success rate를 보고한다.
+* 비교 대상은 Diffusion Policy, OpenVLA, TinyVLA-H이다.
+
+```text
+Diffusion Policy Avg. = 38.2
+OpenVLA Avg. = 0.0
+TinyVLA-H Avg. = 44.5
+```
+
+* TinyVLA-H는 평균 success rate 44.5%를 달성하여 Diffusion Policy의 38.2%보다 높다.
+* 즉 bimanual robot setting에서도 TinyVLA-H가 전체 평균 기준으로 Diffusion Policy를 surpass한다.
+
+---
+
+#### 3) OpenVLA failure
+
+* 논문에서 주목하는 점은 OpenVLA가 모든 trial에서 실패했다는 것이다.
+* OpenVLA의 success rate는 모든 bimanual task에서 0%로 나타난다.
+* 논문은 그 이유를 OpenVLA의 pre-training data 특성에서 찾는다.
+* OpenVLA는 OpenX dataset으로 pre-trained되었는데, 이 dataset은 single-arm robot data로 구성되어 있다.
+* 따라서 bimanual robot에 적용했을 때 효과적으로 동작하지 못했을 가능성이 있다고 설명한다.
+
+```text
+OpenVLA pretraining:
+single-arm robot data 중심
+
+Bimanual task:
+two-arm coordination 필요
+
+결과:
+OpenVLA가 bimanual setting에 적응하지 못함
+```
+
+* 즉 OpenVLA의 실패는 model 자체의 문제라기보다는, pre-training data와 target robot setup 사이의 mismatch 때문일 수 있다.
+
+---
+
+#### 4) Overall Meaning
+
+* D절의 핵심은 TinyVLA-H가 single-arm setting뿐 아니라 bimanual robot setting에서도 일정 수준의 성능을 보인다는 것이다.
+* bimanual task는 두 팔의 협력, 긴 trajectory, 다양한 skill 조합이 필요하기 때문에 multi-task policy 학습이 더 어렵다.
+* 그럼에도 TinyVLA-H는 Diffusion Policy보다 높은 평균 success rate를 달성했다.
+* 반면 OpenVLA는 single-arm data 중심의 pretraining 때문에 bimanual setting에서 실패했다.
+* 이 결과는 TinyVLA가 robot data pretraining 없이도 새로운 robot setup에 상대적으로 더 잘 적응할 가능성을 보여준다.
+
+
+
+
+---
+
+
+</details>
