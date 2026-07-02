@@ -4859,3 +4859,318 @@ Autoregressive 방식은 action token을 순차적으로 생성하므로, action
 </details>
 
 </details>
+
+
+<details>
+<summary><b>26. Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models</b></summary>
+
+## Basic Information
+* **Title**: Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models
+* **Authors**: Lucy Xiaoyang Shi, Brian Ichter, Michael Equi, Liyiming Ke, Karl Pertsch, Quan Vuong, James Tanner, Anna Walling, Haohuan Wang, Niccolo Fusai, Adrian Li-Bell, Danny Driess, Lachy Groom, Sergey Levine, Chelsea Finn
+* **Conference / Journal**: Proceedings of the 42nd International Conference on Machine Learning (ICML), PMLR 267
+* **Year**: 2025
+
+
+
+---
+
+## One-line Summary
+
+-
+
+---
+
+## Understanding the Structure
+
+읽으면서 정리 Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Model
+
+hierarchical reasoning system based on VLM
+propose to syntheticaly label datasets consisting of robot observations and actions with hypothetical prompts and human interjections that might have been plausible for that situation
+Hierarchical Interactive Robot learning system, a novel framework that uses VLMs for both high-level reasoning and low-level task execution.
+
+## Abstract
+
+### a) Problem: open-world generalist robot의 요구사항
+
+* Open-world 환경에서 다양한 task를 수행하는 generalist robot은 단순히 행동을 실행하는 능력만으로는 부족하다.
+* 로봇은 목표를 달성하기 위한 단계들을 reasoning할 수 있어야 한다.
+* 또한 복잡한 instruction, prompt, 그리고 task execution 중 들어오는 feedback까지 처리할 수 있어야 한다.
+* 예를 들어 “채식 샌드위치를 만들어줘” 또는 “나는 저건 싫어”와 같은 명령은 단순한 물리적 조작만 요구하지 않는다.
+* 이러한 명령은 사용자의 의도와 feedback을 현재 물리적 환경 속 객체·상황과 연결하여 이해하는 능력을 요구한다.
+
+### b) Proposal: hierarchical structure
+
+* 논문은 vision-language model을 hierarchical structure로 사용하는 시스템을 제안한다.
+* 먼저 high-level model이 complex prompt와 user feedback을 해석한다.
+* 이 과정에서 task를 수행하기 위해 가장 적절한 다음 단계를 결정한다.
+* 이후 low-level policy가 해당 단계를 실제 robot action으로 수행한다.
+* 즉, 복잡한 명령을 바로 action으로 바꾸는 것이 아니라, 먼저 “다음에 무엇을 해야 하는가”를 판단한 뒤 실제 행동으로 연결한다.
+
+### c) Difference from direct instruction following
+
+* 기존 direct instruction following 방식은 “pick up the cup”처럼 단순한 command를 수행하는 데 초점이 있다.
+* 반면 Hi Robot은 “that’s not trash”처럼 task 수행 중 들어오는 situated feedback을 반영할 수 있다.
+* 따라서 이 논문의 초점은 단순한 instruction following이 아니라, 복잡한 prompt와 real-time feedback을 현재 상황에 맞게 해석하고 행동으로 연결하는 것이다.
+
+### d) Evaluation
+
+* 논문은 Hi Robot을 세 가지 robotic platform에서 평가한다.
+
+  * single-arm robot
+  * dual-arm robot
+  * dual-arm mobile robot
+* 평가 task는 다음과 같은 long-horizon task를 포함한다.
+
+  * messy table cleaning
+  * sandwich making
+  * grocery shopping
+* 이를 통해 Hi Robot이 복잡한 instruction과 feedback을 처리하면서 실제 robot task를 수행할 수 있음을 보인다.
+
+---
+
+## 1. Introduction
+
+### a) Motivation: flexibility as intelligence
+
+* 논문은 intelligence의 중요한 특징을 flexibility로 본다.
+
+* 사람은 복잡한 task를 수행할 뿐만 아니라, 새로운 상황에 적응하고, 행동을 실시간으로 수정하며, 다양한 입력·수정·피드백에 반응할 수 있다.
+
+* 로봇이 open-ended, human-centric environment에서 동작하려면 이러한 유연성이 필요하다.
+
+* 예를 들어 식사 후 테이블을 정리하는 robot을 생각할 수 있다.
+
+* 이 robot은 정해진 순서대로 물건을 치우는 것만으로는 충분하지 않다.
+
+* “아직 식사 중인 사람의 접시는 치우지 마라”와 같은 dynamic prompt를 해석해야 한다.
+
+* “그건 그대로 둬라”와 같은 correction에도 반응해야 한다.
+
+* 조심스럽게 다뤄야 하는 낯선 물체가 등장하면, 그에 맞게 행동 방식을 바꿀 수 있어야 한다.
+
+* 논문은 robot이 다양한 natural language command, feedback, correction을 해석하고 행동으로 옮길 수 있게 하는 것을 목표로 한다.
+
+* 이러한 능력이 가능해지면, 사용자는 robot에게 새로운 task를 지시하고, task 수행 중 실시간으로 robot을 교정할 수 있다.
+
+### b) Limitation of prior instruction-following policies
+
+* 기존 language-conditioned imitation learning은 simple, atomic instruction을 수행하는 데에는 효과적이다.
+
+* 예를 들어 “pick up the coke can”과 같은 명령은 기존 policy로도 수행할 수 있다.
+
+* 하지만 실제 환경에서 사용자가 주는 명령은 이보다 훨씬 복잡하다.
+
+* 예를 들어 다음과 같은 prompt가 있다.
+
+  * “채식 샌드위치를 만들어줘.”
+  * “토마토는 빼줘.”
+  * “햄이나 로스트비프가 있으면 친구용 샌드위치도 따로 만들어줘.”
+
+* 이 명령은 단일 행동으로 해결되지 않는다.
+
+* 로봇은 언어를 이해하는 것뿐 아니라, 현재 환경 속 재료와 객체 상태를 파악해야 한다.
+
+* 또한 기존 skill들을 조합하여 새로운 task를 수행해야 한다.
+
+* task 수행 중 feedback이 들어오는 경우도 있다.
+
+* 예를 들어 “그렇게 하면 안 되고 더 낮게 내려가야 해”와 같은 correction이 들어오면, robot은 이를 execution 과정에 동적으로 반영해야 한다.
+
+* 따라서 단순히 instruction을 action으로 바로 변환하는 방식만으로는 실제 human-robot interaction을 충분히 다루기 어렵다.
+
+### c) System 1 and System 2 analogy
+
+* 논문은 이 문제를 Kahneman의 System 1과 System 2 cognitive process에 비유한다.
+
+* **System 1**
+
+  * 빠르고 자동적인 실행 과정에 해당한다.
+  * robot 관점에서는 straightforward command를 수행하는 policy와 대응된다.
+  * 예를 들어 pre-learned skill을 사용하여 “pick up the cup”과 같은 명령을 바로 실행하는 방식이다.
+
+* **System 2**
+
+  * 더 신중한 high-level reasoning 과정에 해당한다.
+  * robot 관점에서는 complex long-horizon task를 해석하고, feedback을 이해하며, 적절한 행동 방향을 결정하는 과정이다.
+  * 복잡한 instruction을 parsing하고, 현재 상황에 맞는 다음 행동을 선택하는 역할에 가깝다.
+
+* 논문은 기존 robotic instruction following 연구가 대부분 atomic instruction을 수행하는 System 1 수준의 behavior에 집중해왔다고 본다.
+
+* Hi Robot은 여기에 System 2에 해당하는 high-level reasoning을 추가하려는 접근으로 볼 수 있다.
+
+### d) Proposal: hierarchical reasoning system for robotic control
+
+* 논문은 complex prompt와 feedback을 처리하기 위해 VLM 기반 hierarchical reasoning system을 제안한다.
+
+* 이 시스템에서 robot은 VLM을 사용하여 다음 정보를 해석한다.
+
+  * current observation
+  * user utterance
+
+* high-level VLM은 이를 바탕으로 다음 두 가지를 생성한다.
+
+  * 적절한 verbal response
+  * low-level policy에 전달할 atomic command
+
+* 예를 들어 복잡한 사용자 명령이 들어오면, high-level VLM은 이를 “grasp the cup”과 같은 단순한 command로 바꾼다.
+
+* 이후 low-level policy가 이 command를 실제 robot action으로 실행한다.
+
+* 이 low-level policy는 robot action을 생성하도록 fine-tuning된 vision-language model이다.
+
+* 논문에서는 이를 vision-language-action model, 즉 VLA model로 설명한다.
+
+* 정리하면 Hi Robot의 구조는 다음과 같다.
+
+  * high-level VLM: 복잡한 prompt와 feedback을 해석하고 atomic command를 생성
+  * low-level VLA policy: atomic command를 실제 robot action으로 실행
+
+### e) Synthetic data generation for high-level policy
+
+* 논문은 atomic command가 달린 robot demonstration만으로는 high-level model을 학습하기에 충분하지 않다고 본다.
+
+* 그 이유는 high-level model이 complex, open-ended prompt를 처리하려면, 단순한 atomic command 이상의 학습 예시가 필요하기 때문이다.
+
+* 즉, “어떤 행동을 했는가”뿐 아니라, “그 행동이 어떤 복잡한 prompt나 human interaction에서 비롯되었는가”를 학습해야 한다.
+
+* 이를 위해 논문은 synthetic labeling 방식을 제안한다.
+
+* robot observation과 action으로 구성된 dataset에 대해, 해당 상황에서 plausibly 발생했을 법한 prompt와 human interjection을 생성한다.
+
+* 구체적인 방식은 다음과 같다.
+
+  * state-of-the-art VLM에 robot observation과 target atomic command를 제공한다.
+  * VLM에게 그 observation과 command가 나오기 전에 어떤 prompt나 human interaction이 있었을 수 있는지 생성하게 한다.
+  * 이렇게 생성된 situated example을 high-level policy training에 사용한다.
+
+* 논문은 이 방식이 다양한 prompt와 interjection에 대한 generalization을 가능하게 한다고 본다.
+
+* 동시에 robot의 실제 capability와 연결된 training example을 만들 수 있다고 주장한다.
+
+### f) Main contribution: Hi Robot
+
+* 논문의 주요 기여는 hierarchical interactive robot learning system인 Hi Robot이다.
+
+* Hi Robot은 VLM을 다음 두 단계 모두에 사용한다.
+
+  * high-level reasoning
+  * low-level task execution
+
+* 이 framework는 기존 end-to-end instruction following system보다 복잡한 prompt를 처리할 수 있다.
+
+* 또한 task 수행 중 들어오는 feedback을 반영할 수 있다.
+
+* 논문은 low-level VLA policy와 같은 개별 구성요소는 기존 연구에서도 다뤄졌다고 설명한다.
+
+* 그러나 다음 요소들을 결합한 전체 구조가 이 논문의 새로운 점이다.
+
+  * high-level VLM
+  * low-level VLA policy
+  * synthetic data generation scheme
+
+### g) Evaluation and claim
+
+* 논문은 Hi Robot을 다양한 robot platform에서 평가한다.
+
+  * single-arm robot
+  * dual-arm robot
+  * mobile robot
+
+* 평가 task는 다음과 같은 scenario를 포함한다.
+
+  * messy table cleaning
+  * sandwich making
+  * grocery shopping
+
+* 이 task들은 training 중 본 skill들의 새로운 조합을 요구한다.
+
+* 실험 결과, 논문은 Hi Robot이 여러 prior approach보다 더 좋은 성능을 보였다고 주장한다.
+
+* 비교 대상에는 API-based VLM과 flat VLA policy가 포함된다.
+
+* 성능 비교 기준은 다음 두 가지이다.
+
+  * human intent alignment
+  * task success
+
+
+## 2. Related Work
+
+### a) VLMs for robotic control
+
+* 논문은 VLM을 robotic control에 활용한 기존 연구를 크게 두 가지 흐름으로 나눈다.
+
+#### 1) VLM을 직접 robot control model로 fine-tuning하는 방식
+
+* 첫 번째 흐름은 VLM을 fine-tuning하여 image와 language command를 입력받고, robot control action을 직접 출력하도록 만드는 방식이다.
+* 이러한 방법들은 generalization과 instruction-following 측면에서 좋은 성능을 보였다.
+* 하지만 주로 “put the cup on the plate”처럼 비교적 단순하고 명확한 command를 대상으로 한다.
+* 즉, 복잡한 prompt, 사용자와의 상호작용, task 수행 중 들어오는 feedback을 반영하는 데에는 한계가 있다.
+* Hi Robot은 이와 달리 복잡한 prompt와 human interaction이 포함된 task를 다루며, 현재 관측에 기반한 situated reasoning을 요구하는 상황을 목표로 한다.
+
+#### 2) VLM/LLM을 pre-defined robot skill과 결합하는 방식
+
+* 두 번째 흐름은 LLM이나 VLM을 사용하여 robot observation과 command를 해석하고, multi-stage task를 low-level controller가 수행할 수 있는 단순한 step으로 나누는 방식이다.
+
+* 초기 연구들은 language model을 learned skill 또는 hand-designed skill과 결합하였다.
+
+* 하지만 이러한 방식은 image observation처럼 복잡한 visual context를 reasoning 과정에 충분히 반영하기 어렵다는 한계가 있었다.
+
+* 이후 연구들은 VLM을 사용하여 pre-defined robotic skill의 parameter를 출력하도록 하였다.
+
+* 이 방식은 language command를 visual observation과 연결할 수 있기 때문에, 이전보다 복잡한 명령을 처리할 수 있다.
+
+* 그러나 논문은 이 계열의 방법들이 여전히 physical dexterity가 제한적이고, 인간과의 real-time language interaction을 반영하는 능력도 제한적이라고 본다.
+
+* Hi Robot은 이 두 흐름과 달리 VLM을 high-level reasoning과 low-level control 양쪽에 모두 사용한다.
+
+* 또한 high-level model과 low-level policy 사이를 flexible language interface로 연결한다.
+
+* 논문은 이러한 구조와 synthetic data generation scheme을 통해, 기존 연구들이 충분히 달성하지 못한 detailed promptability와 physical dexterity를 함께 확보하고자 한다.
+
+---
+
+### b) Robotic language interaction with users
+
+* 사용자와 자연어로 상호작용하는 robot을 만들기 위한 연구들도 Hi Robot과 관련된다.
+* 기존 연구들은 크게 model-based system과 learning-based method로 나눌 수 있다.
+
+#### 1) Model-based system
+
+* 초기 model-based system들은 language instruction과 feedback을 parsing한 뒤, 이를 scene의 symbolic representation에 grounding하는 방식으로 동작했다.
+* 즉, 사용자의 말을 symbolic scene representation과 연결하여 robot behavior를 결정하는 방식이다.
+* 하지만 이러한 방식은 복잡한 실제 환경이나 다양한 사용자 feedback을 유연하게 처리하는 데 한계가 있다.
+
+#### 2) Learning-based hierarchical method
+
+* 최근에는 user feedback을 직접 처리하는 learning-based method들이 제안되었다.
+* 이 계열의 방법들은 대체로 hierarchical architecture를 사용한다.
+* Hi Robot도 이 흐름에 속한다.
+* 구체적으로 high-level policy가 user feedback을 반영하고, low-level policy가 수행할 수 있는 atomic command를 생성하는 구조를 따른다.
+
+#### 3) Prior methods와 Hi Robot의 차이
+
+* **OLAF**
+
+  * OLAF는 LLM을 사용하여 robot trajectory를 수정한다.
+  * 반면 Hi Robot은 robot observation을 기반으로 situated correction을 반영할 수 있다.
+  * 또한 correction에 real time으로 응답하고, dexterous manipulation task를 포함한 복잡한 prompt를 처리할 수 있다.
+
+* **YAY Robot**
+
+  * YAY Robot은 situated real-time correction을 다룰 수 있다.
+  * 하지만 하나의 prompt와 human-written data에 포함된 correction에 제한된다.
+  * 반면 Hi Robot은 VLM과 synthetic data generation scheme을 활용하여 더 다양한 prompt와 open-ended correction을 다루고자 한다.
+
+* **RACER**
+
+  * RACER도 situated correction을 반영할 수 있다.
+  * 하지만 recovery behavior를 만들기 위해 physics simulator에 의존한다.
+  * 반면 Hi Robot은 intentional perturbation이나 correction이 포함되지 않은 real robot demonstration만 사용한다.
+  * 또한 open-ended prompt에도 적용될 수 있다고 설명한다.
+
+
+---
+
+
+</details>
