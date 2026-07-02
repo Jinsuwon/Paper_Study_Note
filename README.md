@@ -4844,6 +4844,18 @@ Autoregressive 방식은 action token을 순차적으로 생성하므로, action
 **가능한 방향**  
 이 부분은 아직 명확한 해결 방향을 떠올리지는 못했다. 다만 autoregressive 방식처럼 특정 action token 전환 지점을 추적하는 방식과, TinyVLA의 continuous action generation에서 실패 구간을 분석하는 방식이 어떻게 달라지는지 비교해볼 필요가 있다고 생각했다. 특히 action 결과가 이상하게 나왔을 때, continuous action에서도 특정 시점의 변화나 실패 구간을 사람이 지목할 수 있는지 확인해볼 수 있을 것 같다.
 
+### OpenVLA vs TinyVLA Comparison
+
+| 비교 항목 | OpenVLA | TinyVLA |
+|---|---|---|
+| Pre-training 방식 | OpenX 기반 large-scale robot data pre-training | Pythia 기반 compact VLM을 LLaVA-style vision-language data로 pre-training |
+| Fine-tuning 방식 | robot data로 autoregressive action token prediction 학습 | VLM 대부분 freeze + LoRA fine-tuning + diffusion policy head 학습 |
+| Inference 속도 | 느림. large VLM과 autoregressive action token generation 때문 | 빠름. compact VLM과 diffusion-based policy head로 action을 생성하기 때문 |
+| Model size | 7B급 | 70M~1.4B compact VLM family |
+| Action 출력 방식 | discretized action tokens를 autoregressive하게 예측한 뒤 action으로 변환 | diffusion policy decoder가 continuous robot action을 생성 |
+| Language model backend | LLaMA 계열 language model | Pythia language model backend |
+| Camera view 차이 | vanilla는 single-view 기반, 논문 비교에서는 multi-view 입력에 맞게 수정 | real robot setting에서 multi-view camera input 사용 |
+
 </details>
 
 </details>
