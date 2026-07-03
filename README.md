@@ -4844,6 +4844,15 @@ Autoregressive 방식은 action token을 순차적으로 생성하므로, action
 **가능한 방향**  
 이 부분은 아직 명확한 해결 방향을 떠올리지는 못했다. 다만 autoregressive 방식처럼 특정 action token 전환 지점을 추적하는 방식과, TinyVLA의 continuous action generation에서 실패 구간을 분석하는 방식이 어떻게 달라지는지 비교해볼 필요가 있다고 생각했다. 특히 action 결과가 이상하게 나왔을 때, continuous action에서도 특정 시점의 변화나 실패 구간을 사람이 지목할 수 있는지 확인해볼 수 있을 것 같다.
 
+**가능한 방향 (Hi Robot 논문을 읽은 뒤)**
+
+Hi Robot은 전체 policy를 high-level inference와 low-level policy로 나누어 구성한다. High-level에서는 현재 vision observation과 language prompt, 그리고 사용자 feedback을 바탕으로 low-level language command를 생성한다. 이후 low-level VLA는 이 command와 현재 robot state를 입력으로 받아 continuous action을 chunk 단위로 출력한다.
+
+이 구조에서 중요한 점은 사용자의 interjection이 들어왔을 때 high-level inference가 다시 실행된다는 것이다. 예를 들어 사용자가 “that’s not trash” 또는 “leave it alone”처럼 task 수행 중간에 피드백을 주면, high-level policy는 현재 이미지와 사용자 발화를 함께 해석하여 low-level command를 다시 계산한다. 그러면 low-level VLA는 갱신된 command를 바탕으로 새로운 continuous action chunk를 생성할 수 있다.
+
+따라서 Hi Robot의 방향은 continuous action sequence 자체를 직접 해석하거나 수정하는 것보다는, action을 생성하게 만드는 상위 명령을 high-level inference가 상황에 맞게 갱신하는 방식에 가깝다. 이 구조를 활용하면 돌발적인 사용자 피드백이나 상황 변화가 발생했을 때, low-level action을 직접 조작하기보다 high-level command를 다시 생성하여 행동 흐름을 바꾸는 방향을 생각해볼 수 있다.
+
+
 ### OpenVLA vs TinyVLA Comparison
 
 | 비교 항목 | OpenVLA | TinyVLA |
@@ -5169,7 +5178,774 @@ Hierarchical Interactive Robot learning system, a novel framework that uses VLMs
   * 반면 Hi Robot은 intentional perturbation이나 correction이 포함되지 않은 real robot demonstration만 사용한다.
   * 또한 open-ended prompt에도 적용될 수 있다고 설명한다.
 
+---
 
+## 3. Preliminaries and Problem Statement
+
+### a) Robot policy and action chunk
+
+* 논문은 먼저 robot policy를 다음과 같이 정의한다.
+
+* Learned policy는 현재 observation을 입력으로 받아 robot action을 출력한다.
+
+* 현재 시점의 observation은 (o_t)로 표기한다.
+
+* policy가 출력하는 action은 (A_t)로 표기한다.
+
+* 여기서 (A_t)는 단일 action 하나가 아니라, 다음 (H)개의 action을 묶은 action chunk이다.
+
+* 즉, (A_t = [a_t, a_{t+1}, ..., a_{t+H-1}])로 표현된다.
+
+* 이는 로봇이 한 번에 다음 한 step의 action만 예측하는 것이 아니라, 앞으로 실행할 여러 action sequence를 묶어서 예측한다는 뜻이다.
+
+* 이 논문에서 robot observation (o_t)는 다음 요소들로 구성된다.
+
+  * 여러 camera image: (I_t^1, ..., I_t^n)
+  * language prompt: (\ell_t)
+  * robot configuration: (q_t)
+
+* 여기서 (q_t)는 robot의 joint position과 gripper position을 의미한다.
+
+* 따라서 observation은 다음과 같이 정리된다.
+
+* (o_t = [I_t^1, ..., I_t^n, \ell_t, q_t])
+
+* policy는 이 observation이 주어졌을 때 action chunk (A_t)를 출력하는 분포 (p(A_t|o_t))로 표현된다.
+
+---
+
+### b) Why VLA is needed
+
+* 이 논문의 관심은 단순한 robot control이 아니라 complex, multi-stage task이다.
+
+* 이러한 task에서는 로봇이 복잡한 prompt를 해석해야 한다.
+
+* 또한 task 수행 중 들어오는 dynamic user feedback도 처리해야 한다.
+
+* 따라서 policy는 단순히 image를 보고 action을 출력하는 수준을 넘어서야 한다.
+
+* 로봇은 language를 해석하고, 그 의미를 현재 environment observation에 grounding할 수 있어야 한다.
+
+* 이를 위해 논문은 VLA model이 적합한 접근이라고 본다.
+
+---
+
+### c) VLM as the basis of VLA
+
+* VLA model은 VLM pre-training을 사용하여 robot policy (p(A_t|o_t))를 초기화한다.
+
+* 여기서 VLM은 image input도 처리할 수 있도록 학습된 language model이다.
+
+* VLM은 기본적으로 다음과 같은 분포로 표현된다.
+
+* (p(ℓ' | I, ℓ))
+
+* 각 기호의 의미는 다음과 같다.
+
+  * (I): image
+  * (ℓ): language prefix, 즉 입력 prompt
+  * (ℓ'): language suffix, 즉 모델이 생성하는 답변 또는 이어지는 문장
+
+* 즉, (p(ℓ'|I,ℓ))은 image (I)와 prompt (ℓ)이 주어졌을 때, 그 뒤에 이어질 language output (ℓ')이 나올 확률을 의미한다.
+
+* 예를 들어 image와 visual question이 주어졌을 때, VLM이 그에 대한 answer를 생성하는 구조라고 보면 된다.
+
+---
+
+### d) Autoregressive token generation
+
+* 일반적인 VLM은 (p(\ell'|I,\ell))을 autoregressive decoder-only Transformer로 표현한다.
+
+* 여기서 autoregressive는 이전 token들을 보고 다음 token을 하나씩 생성하는 방식을 의미한다.
+
+* 이를 token 단위로 쓰면 다음과 같다.
+
+* (p(x_{t+1}|x_1,...,x_t,I))
+
+* 여기서 (x_t)는 t번째 language token이다.
+
+* 이때 t는 robot의 physical time step이 아니라, 문장 안에서 token이 몇 번째인지 나타내는 index이다.
+
+* prompt와 output은 token sequence로 나뉜다.
+
+  * (\ell = [x_1, ..., x_{t_p}])
+  * (\ell' = [x_{t_p+1}, ..., x_{t_p+t_s}])
+
+* 여기서 (t_p)는 prefix의 길이이고, (t_s)는 suffix의 길이이다.
+
+* 즉, 앞부분 token들은 prompt이고, 그 뒤 token들은 모델이 생성하는 output이다.
+
+* 다만 논문은 VLM의 autoregressive 구조 자체를 수정하지 않는다.
+
+* 그래서 이후 논의에서는 복잡한 token-level notation 대신, VLM을 간단히 (p(\ell'|I,\ell))로 표기한다.
+
+---
+
+### e) Standard VLA from VLM fine-tuning
+
+* Standard VLA는 VLM (p(\ell'|I,\ell))을 fine-tuning하여 만든다.
+
+* 기존 VLM은 image와 prompt를 보고 language suffix를 출력한다.
+
+* VLA에서는 이 suffix (\ell') 안에 robot action (A_t)가 표현되도록 만든다.
+
+* 일반적으로는 robot action을 token으로 바꿔서 VLM이 출력할 수 있게 한다.
+
+* 예를 들어 continuous action을 discretization하여 action token으로 변환하는 방식이 사용된다.
+
+* 이렇게 하면 VLM은 언어 token을 생성하던 방식과 유사하게 robot action token을 출력할 수 있다.
+
+* 따라서 standard VLA는 다음과 같이 이해할 수 있다.
+
+  * 기존 VLM: image + prompt → language output
+  * VLA: observation + prompt → robot action
+
+---
+
+### f) π0 VLA used in Hi Robot
+
+* Hi Robot은 low-level policy로 π0 VLA를 기반으로 한다.
+
+* π0는 standard VLA보다 입력과 출력 표현이 더 확장되어 있다.
+
+* π0는 다음 입력을 처리할 수 있다.
+
+  * multiple images
+  * continuous robot state observation (q_t)
+
+* 또한 π0는 VLM을 수정하여 continuous action chunk distribution을 출력한다.
+
+* 여기서 action chunk는 다음 여러 step의 action sequence를 의미한다.
+
+* continuous action은 discrete token이 아니라, 로봇의 관절 움직임이나 gripper 값처럼 연속적인 실수값 action을 의미한다.
+
+* π0는 이러한 continuous action chunk를 출력하기 위해 flow-matching 방식을 사용한다.
+
+* 이 논문을 읽는 단계에서는 flow-matching을 “연속적인 robot action sequence를 생성하기 위한 방식” 정도로 이해하면 된다.
+
+* 하지만 high-level principle은 기존 VLA와 비슷하다.
+
+* 즉, observation과 language command를 입력받아 robot action을 출력하는 policy라는 점은 같다.
+
+---
+
+### g) Limitation of standard VLA
+
+* 기존 VLA model은 다양한 language prompt를 따를 수 있다.
+
+* 하지만 단독으로 사용할 경우, 보통 simple and atomic command에 제한된다.
+
+* 여기서 simple command는 짧고 명확한 명령을 의미한다.
+
+  * 예: “pick up the cup”
+  * 예: “put the cup on the plate”
+
+* atomic command는 하나의 low-level skill로 수행할 수 있는 단일 행동 단위에 가깝다.
+
+  * 예: 컵 집기
+  * 예: 접시 위에 놓기
+  * 예: 서랍 열기
+
+* 반면 이 논문이 다루는 prompt는 더 복잡하다.
+
+* 사용자의 선호, 조건, task 순서, real-time feedback이 포함될 수 있다.
+
+* 예를 들어 샌드위치를 만들되 특정 재료를 빼거나, task 수행 중 “그건 치우지 마라”와 같은 feedback을 반영해야 하는 상황이다.
+
+* 따라서 기존 VLA만으로는 complex prompt와 feedback을 충분히 처리하기 어렵다.
+
+* 이 한계 때문에 Hi Robot은 high-level VLM과 low-level VLA를 분리한 hierarchical structure를 사용한다.
+
+* high-level VLM은 complex prompt와 feedback을 해석하고, low-level VLA가 실행할 수 있는 atomic command로 바꾼다.
+
+* low-level VLA는 그 atomic command를 실제 robot action으로 실행한다.
+---
+
+## 4. Hi Robot
+
+### a) Overall structure
+
+* Hi Robot은 전체 policy (p(A_t|o_t))를 하나의 모델로 처리하지 않고, 두 단계로 나눈다.
+
+  * high-level inference process
+  * low-level inference process
+
+* low-level policy는 VLA로 구성된다.
+
+* low-level VLA는 단순한 low-level language command를 입력받고, 실제 robot action chunk (A_t)를 출력한다.
+
+* high-level policy는 VLM으로 구성된다.
+
+* high-level VLM은 open-ended task prompt와 user feedback을 처리하고, low-level VLA가 실행할 수 있는 low-level language command를 생성한다.
+
+* 즉, Hi Robot의 전체 흐름은 다음과 같다.
+
+  * 사용자 prompt / feedback 입력
+  * high-level VLM이 현재 이미지와 언어를 해석
+  * low-level language command 생성
+  * low-level VLA가 command와 robot state를 바탕으로 action chunk 출력
+  * robot action 실행
+
+* 두 process는 서로 다른 속도로 실행된다.
+
+  * low-level process: 높은 주파수로 action chunk를 계속 생성
+  * high-level process: 더 낮은 주파수로 실행되며, 일정 시간이 지나거나 새로운 user feedback이 들어올 때 다시 실행
+
+* 따라서 high-level process는 low-level process에게 “말을 걸듯이” 복잡한 prompt와 interaction을 작고 실행 가능한 bite-sized command로 바꿔주는 역할을 한다.
+
+---
+
+## 4.1. Hierarchical Inference with VLAs
+
+### a) High-level policy
+
+* high-level policy는 다음과 같이 표현된다.
+
+* (\phi_{hi}(\hat{\ell}_t | I_t^1, ..., I_t^n, \ell_t))
+
+* 입력은 다음과 같다.
+
+  * 여러 camera image: (I_t^1, ..., I_t^n)
+  * open-ended prompt: (\ell_t)
+
+* 출력은 low-level language command이다.
+
+  * (\hat{\ell}_t)
+
+* 여기서 (\hat{\ell}_t)는 low-level VLA가 이해하고 실행할 수 있는 단순한 command이다.
+
+* 예를 들어 사용자가 “테이블을 정리해줘. 단, 접시는 건드리지 마”라고 하면, high-level policy는 이를 “pick up the trash” 또는 “leave the plate alone” 같은 command로 바꿀 수 있다.
+
+### b) Low-level policy
+
+* low-level policy는 다음과 같이 표현된다.
+
+* (p_{lo}(A_t | I_t^1, ..., I_t^n, \hat{\ell}_t, q_t))
+
+* 입력은 다음과 같다.
+
+  * 여러 camera image: (I_t^1, ..., I_t^n)
+  * high-level policy가 생성한 low-level command: (\hat{\ell}_t)
+  * robot configuration: (q_t)
+
+* 출력은 action chunk (A_t)이다.
+
+* 기존 standard VLA와 비슷하지만, 차이점은 language command (\ell_t) 대신 high-level policy가 만든 (\hat{\ell}_t)를 사용한다는 점이다.
+
+### c) Role of high-level and low-level
+
+* System 1 / System 2 비유로 보면 다음과 같다.
+
+* high-level policy는 System 2에 가깝다.
+
+  * 전체 task prompt를 해석한다.
+  * user interaction을 반영한다.
+  * 현재 image context를 바탕으로 지금 해야 할 적절한 task를 결정한다.
+  * low-level policy가 이해할 수 있는 command (\hat{\ell}_t)로 바꾼다.
+
+* low-level policy는 System 1에 가깝다.
+
+  * 주어진 command를 빠르게 실행한다.
+  * 실제 robot action chunk를 생성한다.
+
+* 단순하고 익숙한 task라면 high-level inference가 꼭 필요하지 않을 수 있다.
+
+* 예를 들어 low-level policy가 이미 직접 학습한 command라면, (\hat{\ell}_t = \ell_t)로 두고 기존 VLA처럼 바로 실행할 수 있다.
+
+* 하지만 다음 상황에서는 hierarchical inference가 필요하다.
+
+  * prompt가 low-level policy가 바로 해석하기에 너무 복잡한 경우
+  * robot data에서 익숙하지 않은 표현이 들어온 경우
+  * 사용자와의 세밀한 interaction이 포함된 경우
+
+### d) Frequency of high-level inference
+
+* high-level inference는 low-level control보다 느리다.
+
+* 하지만 high-level은 빠른 환경 변화에 매 순간 반응해야 하는 역할은 아니다.
+
+* 따라서 high-level inference는 낮은 주파수로 실행해도 된다.
+
+* 더 정교한 방식으로는 현재 command (\hat{\ell}_t)가 완료되었는지 감지한 뒤, 다음 command를 추론할 수도 있다.
+
+* 그러나 이 논문에서는 단순한 전략을 사용한다.
+
+* high-level inference를 다시 실행하고 (\hat{\ell}_t)를 다시 계산하는 경우는 두 가지이다.
+
+  * 1초가 지났을 때
+  * 새로운 user interaction이 들어왔을 때
+
+* 이 방식은 단순하면서도, 사용자가 feedback이나 correction을 줄 때 robot이 반응적으로 행동할 수 있게 한다.
+
+---
+
+## 4.2. Incorporating User Interaction
+
+### a) User intervention
+
+* 사용자는 policy execution 중 언제든지 개입할 수 있다.
+
+* 사용자는 다음과 같은 정보를 줄 수 있다.
+
+  * 추가 정보
+  * feedback
+  * correction
+  * task 변경
+
+* prototype에서는 user intervention이 text command 또는 spoken language 형태로 들어온다.
+
+* spoken language는 text로 변환된 뒤 처리된다.
+
+* user intervention이 들어오면 high-level inference가 즉시 실행된다.
+
+* 이때 (\hat{\ell}_t)가 다시 계산된다.
+
+### b) Verbal utterance (u_t)
+
+* high-level policy는 (\hat{\ell}_t) 안에 verbal utterance (u_t)를 포함할 수 있다.
+
+* (u_t)는 robot이 사용자에게 말하는 confirmation 또는 clarification이다.
+
+* 예를 들어 다음과 같은 말이 될 수 있다.
+
+  * “Sure thing.”
+  * “Whoops, sorry.”
+  * “Got it.”
+  * “Do you mean this one?”
+
+* (u_t)가 포함된 경우, system은 text-to-speech를 사용하여 사용자에게 해당 문장을 들려준다.
+
+* 이후 low-level policy에 넘기기 전에 (\hat{\ell}_t)에서 (u_t)를 제거한다.
+
+* 이유는 low-level policy에는 robot이 말할 문장이 아니라, 실제로 실행할 command만 들어가야 하기 때문이다.
+
+### c) Interjection and returning to previous command
+
+* 사용자가 “leave it alone” 같은 interjection을 줄 수 있다.
+
+* interjection은 task 수행 중간에 사용자가 끼어들어 주는 짧은 피드백이나 correction이다.
+
+* 이 interjection이 처리되면, 사용자는 robot에게 이전 command로 돌아가 task execution을 계속해도 된다고 신호를 줄 수 있다.
+
+* 즉, Hi Robot은 중간 피드백 때문에 전체 task를 완전히 중단하는 것이 아니라, 피드백을 반영한 뒤 이전 task 흐름으로 복귀할 수 있다.
+
+### d) Contextual response
+
+* high-level policy의 응답은 contextual하다.
+
+* 그 이유는 high-level policy가 language prompt (\ell_t)만 보는 것이 아니라, 현재 image observation도 함께 보기 때문이다.
+
+* 따라서 “that’s not trash” 같은 feedback을 올바르게 grounding할 수 있다.
+
+* language-only system은 “that”이 무엇을 가리키는지 알기 어렵다.
+
+* 반면 Hi Robot은 현재 image observation을 함께 보므로, 사용자가 말한 “that”이 지금 로봇이 잡으려는 object라는 것을 파악할 수 있다.
+
+* 이 점이 user feedback을 실제 robot behavior에 반영할 수 있게 만드는 핵심이다.
+
+---
+
+## 4.3. Data Collection and Training Hi Robot
+
+### a) Overall training strategy
+
+* Hi Robot을 scalable하게 학습시키기 위해 논문은 두 종류의 interaction data를 사용한다.
+
+  * human-labeled data
+  * synthetically generated interaction data
+
+* 전체 과정은 다음 흐름으로 진행된다.
+
+  * robot demonstration data 수집
+  * demonstration을 short skill로 segment
+  * human annotation 또는 heuristic으로 skill label 생성
+  * VLM을 사용해 synthetic user prompt와 robot response 생성
+  * high-level policy와 low-level policy 학습
+
+### b) Robot demonstration data (D_{demo})
+
+* 먼저 teleoperation을 통해 robot demonstration data (D_{demo})를 수집한다.
+
+* 이 데이터는 전체 task trajectory를 포함한다.
+
+* 각 trajectory에는 전체 goal에 대한 coarse language annotation이 붙어 있다.
+
+* 예를 들어 “make a sandwich” 같은 전체 목표 annotation이 있다.
+
+### c) Segmenting demonstrations into short skills
+
+* 전체 demonstration episode를 짧은 skill 단위로 나눈다.
+
+* 각 short skill은 (\hat{\ell}_t)로 표현된다.
+
+* 예를 들어 다음과 같은 skill label이 있다.
+
+  * “pick up one piece of lettuce”
+  * “pick up KitKat”
+  * “move the right arm to the left”
+
+* 이러한 short skill은 보통 1~3초 정도 지속된다.
+
+* 또한 raw robot action에서 작은 corrective motion 같은 basic movement primitive도 heuristic하게 추출한다.
+
+### d) Labeled dataset (D_{labeled})
+
+* 이 과정을 통해 (D_{labeled})가 만들어진다.
+
+* (D_{labeled})는 다음 형태의 tuple들을 포함한다.
+
+* ((\hat{\ell}_t, I_t^1, ..., I_t^n))
+
+* 여기서 각 tuple은 특정 robot skill을 설명하는 하나의 데이터 샘플이다.
+
+* (\hat{\ell}_t)는 skill label이고, (I_t^1, ..., I_t^n)은 여러 camera image이다.
+
+* 즉, “이 이미지 상황에서 이 skill command가 해당 robot behavior를 설명한다”는 묶음이다.
+
+### e) Synthetic data generation
+
+* 다음으로 큰 VLM (p_{gen})을 사용하여 synthetic user prompt와 interjection을 생성한다.
+
+* 입력으로는 다음이 사용된다.
+
+  * visual context: (I_t^1, ..., I_t^n)
+  * skill label: (\hat{\ell}_t)
+
+* (p_{gen})은 해당 skill이 실제 user interaction에서 어떤 prompt로부터 나왔을 수 있는지 상상하여 생성한다.
+
+* 예를 들어 skill label이 “pick up the lettuce”라면, (p_{gen})은 다음과 같은 user prompt를 생성할 수 있다.
+
+  * “Can you add some lettuce for me?”
+
+* 동시에 robot의 verbal response나 clarification (u_t)도 생성한다.
+
+* 예를 들어 다음과 같은 response가 생성될 수 있다.
+
+  * “Sure, I can grab you a KitKat.”
+
+* 이렇게 생성된 synthetic data는 high-level policy가 다양한 open-ended prompt와 user interjection을 학습하는 데 사용된다.
+
+### f) Training high-level policy
+
+* high-level policy는 다음 분포로 표현된다.
+
+* (\phi_{hi}(\hat{\ell}_t | I_t^1, ..., I_t^n, \ell_t))
+
+* 학습 데이터는 다음을 함께 사용한다.
+
+  * (D_{syn})
+  * (D_{labeled})
+
+* 학습 방식은 next-token prediction을 위한 cross-entropy loss이다.
+
+* 즉, high-level VLM이 image와 user prompt를 보고 적절한 low-level command (\hat{\ell}_t)를 생성하도록 학습한다.
+
+### g) Training low-level policy
+
+* low-level policy는 다음 분포로 표현된다.
+
+* (p_{lo}(A_t | I_t^1, ..., I_t^n, \hat{\ell}_t, q_t))
+
+* 학습 데이터는 다음을 함께 사용한다.
+
+  * (D_{labeled})
+  * (D_{demo})
+
+* 학습 방식은 flow-matching objective이다.
+
+* 이는 low-level policy가 image, low-level command, robot state를 보고 continuous action chunk (A_t)를 생성하도록 학습하기 위한 방식이다.
+
+---
+
+## 4.4. Model Architecture and Implementation
+
+### a) Base VLM
+
+* low-level policy와 high-level policy는 같은 base VLM에서 출발한다.
+
+* 논문 구현에서는 PaliGemma-3B VLM을 사용한다.
+
+* 즉, high-level과 low-level 모두 image-language 이해 능력을 가진 VLM을 기반으로 한다.
+
+### b) Low-level policy: π0 VLA
+
+* low-level policy는 π0 VLA이다.
+
+* π0는 PaliGemma-3B를 fine-tuning하여 만든다.
+
+* 여기에 flow matching action expert를 추가하여 continuous action을 출력하도록 한다.
+
+* 즉, low-level policy는 low-level language command와 image, robot state를 입력받고, continuous action chunk를 생성한다.
+
+### c) High-level policy
+
+* high-level policy는 Section 4.3에서 만든 image-language tuple을 사용해 fine-tuning된다.
+
+* 목표는 image observation과 user command를 보고 low-level command를 예측하는 것이다.
+
+* 즉, high-level policy는 complex prompt와 feedback을 low-level VLA가 실행 가능한 command로 변환하는 역할을 한다.
+
+### d) Modularity
+
+* 논문 실험에서는 low-level policy로 π0를 사용한다.
+
+* 하지만 Hi Robot framework가 π0에만 의존하는 것은 아니다.
+
+* 구조 자체는 modular하다.
+
+* 따라서 필요하다면 다른 language-conditioned policy를 low-level policy로 통합할 수 있다.
+
+* 중요한 조건은 해당 policy가 language command를 입력받고 robot action을 출력할 수 있어야 한다는 점이다.
+
+---
+
+## 5. Experiments
+
+### a) Experimental focus
+
+* 실험에서는 physical interaction과 complex user interaction이 결합된 문제들을 평가한다.
+
+* 실험 task는 단순한 instruction following이 아니라, 다음 요소들을 포함한다.
+
+  * multi-stage instruction
+  * task 중간의 live user feedback
+  * novel task variation을 설명하는 prompt
+  * 복잡한 object manipulation
+
+### b) Experimental aims
+
+* 논문은 실험의 목적을 세 가지로 제시한다.
+
+#### 1) Complex prompt와 live feedback 수행 능력 평가
+
+* Hi Robot이 다양한 complex textual prompt를 따를 수 있는지 평가한다.
+
+* 또한 task 수행 중 들어오는 live user feedback에 반응할 수 있는지 평가한다.
+
+#### 2) Prior approach와 비교
+
+* Hi Robot을 기존 방식들과 비교한다.
+
+* 비교 대상은 다음과 같다.
+
+  * flat instruction-following VLA policy
+  * foundation model을 out-of-the-box high-level reasoning에 사용하는 방식
+
+#### 3) Synthetic data와 hierarchy의 중요성 평가
+
+* synthetic data가 task performance와 language following에 얼마나 중요한지 평가한다.
+
+* 또한 hierarchical structure가 실제 성능 향상에 기여하는지 확인한다.
+
+---
+
+## 5.1. Tasks and Baseline Methods
+
+### a) Task domains
+
+* 논문은 세 가지 complex problem domain에서 평가를 수행한다.
+
+  * Table Bussing
+  * Sandwich Making
+  * Grocery Shopping
+
+---
+
+### b) Table Bussing
+
+* Table Bussing은 테이블을 정리하는 task이다.
+
+* robot은 다음과 같이 object를 분류해서 처리해야 한다.
+
+  * dishes and utensils → bussing bin
+  * trash items → trash bin
+
+* training data는 full table cleaning episode로 구성된다.
+
+* 이 task는 physical manipulation 측면에서 어렵다.
+
+* 이유는 다음과 같다.
+
+  * plate edge를 잡는 것처럼 섬세한 grasping strategy가 필요하다.
+  * 서로 다른 object를 집고 분리해야 한다.
+  * 어떤 경우에는 한 object를 이용해 다른 object를 조작해야 한다.
+  * 예를 들어 쓰레기가 올라간 plate를 집어 기울여서 trash bin에 버리는 행동이 필요할 수 있다.
+
+* evaluation에서는 기본 table cleaning과 다른 prompt가 주어진다.
+
+* 예시는 다음과 같다.
+
+  * “can you clean up only the trash, but not dishes?”
+  * “can you clean up only the dishes, but not trash?”
+  * “bus all the yellowish things”
+
+* 이 task에서는 high-level model이 각 object가 무엇인지 판단해야 한다.
+
+* 예를 들어 reusable plastic cup은 dish로 볼 수 있고, paper cup은 trash로 볼 수 있다.
+
+* 또한 robot의 default behavior인 “모든 물건을 치우기”를 prompt에 맞게 수정해야 한다.
+
+* 특히 중요한 점은 robot이 해야 할 것뿐 아니라, 하지 말아야 할 것도 이해해야 한다는 것이다.
+
+* 예를 들어 “only trash”라고 했을 때 dishes는 건드리지 않아야 한다.
+
+* task 중간에 contextual feedback이 들어올 수도 있다.
+
+  * “this is not trash”
+  * “leave the rest”
+  * “leave it alone”
+
+* robot은 이러한 interjection을 현재 image context와 연결해서 해석하고 행동을 수정해야 한다.
+
+---
+
+### c) Sandwich Making
+
+* Sandwich Making은 robot이 bread와 최대 여섯 가지 ingredient를 사용해 sandwich를 만드는 task이다.
+
+* 이 task는 physical manipulation 측면에서 어렵다.
+
+* 이유는 다음과 같다.
+
+  * ingredient가 deformable하다.
+  * ingredient가 delicate하기 때문에 조심스럽게 잡아야 한다.
+  * 재료를 정확한 위치에 놓아야 한다.
+
+* training data에는 여러 종류의 sandwich example이 포함된다.
+
+* 각 segment에는 다음과 같은 label이 붙어 있다.
+
+  * “pick up one slice of bread”
+  * “pick up one slice of cheese”
+  * “put cheese on bread”
+
+* 평가에서는 complex prompt와 live correction을 본다.
+
+* 예시는 다음과 같다.
+
+  * “hi robot, can you make me a sandwich with cheese, roast beef, and lettuce?”
+  * “can you make me a vegetarian sandwich? I’m allergic to pickles”
+  * “that’s all, no more”
+
+* 이 task에서는 robot이 사용자의 ingredient 조건, 선호, 알레르기 정보, 중간 correction을 반영해야 한다.
+
+---
+
+### d) Grocery Shopping
+
+* Grocery Shopping은 grocery shelf에서 요청된 물건들을 집어 basket에 넣고, basket을 가까운 table 위에 올려놓는 task이다.
+
+* 이 task는 bimanual mobile manipulator를 제어해야 한다.
+
+* 즉, 양팔과 mobile base를 함께 사용하는 robot task이다.
+
+* 이 task에서는 variable number of objects와 nuanced semantics를 해석해야 한다.
+
+* 예를 들어 사용자가 정확한 상품명을 말하지 않고 목적이나 상황 중심으로 요청할 수 있다.
+
+* prompt 예시는 다음과 같다.
+
+  * “hey robot, can you get me some chips? I’m preparing for a movie night”
+  * “can you get me something sweet?”
+  * “can you grab me something to drink?”
+  * “hey robot, can you get me some Twix and Skittles?”
+
+* task 중간에 interjection이 들어올 수도 있다.
+
+  * “I also want some KitKat”
+
+* 따라서 robot은 현재 shopping context를 유지하면서 새로운 요청을 추가로 반영해야 한다.
+
+---
+
+### e) Comparisons and ablations
+
+* 논문은 Hi Robot의 full method를 여러 alternative approach와 비교한다.
+
+* 비교 대상은 크게 두 종류이다.
+
+  * 다른 high-level strategy를 사용하는 방법
+  * hierarchical structure를 사용하지 않는 방법
+
+---
+
+### f) Expert human high level
+
+* Expert human high level은 oracle baseline이다.
+
+* high-level model 대신 expert human이 직접 low-level language command를 입력한다.
+
+* expert human은 task 성공 가능성이 가장 높다고 판단되는 low-level behavior command를 수동으로 입력한다.
+
+* 이 baseline의 목적은 low-level policy 자체의 한계를 파악하는 것이다.
+
+* 즉, high-level command가 이상적으로 주어졌을 때 low-level policy가 얼마나 잘 수행할 수 있는지를 보기 위한 비교 대상이다.
+
+---
+
+### g) GPT-4o high-level model
+
+* 이 baseline은 Hi Robot과 같은 high-level / low-level decomposition을 사용한다.
+
+* 하지만 high-level policy로 논문에서 fine-tuning한 VLM 대신 GPT-4o API model을 사용한다.
+
+* low-level policy는 Hi Robot과 동일한 것을 사용한다.
+
+* GPT-4o는 논문에서 사용하는 high-level VLM보다 훨씬 큰 VLM이다.
+
+* 하지만 Hi Robot의 real dataset과 synthetic dataset으로 fine-tuning된 모델은 아니다.
+
+* 이 비교는 out-of-the-box foundation model을 high-level policy로 사용할 때의 성능을 보기 위한 것이다.
+
+* 논문은 이 방식을 SayCan의 발전된 형태와 유사하게 본다.
+
+* 차이점은 SayCan은 LLM을 high-level policy로 사용한 반면, 이 baseline은 VLM을 사용한다는 점이다.
+
+* GPT-4o가 robot affordance에 맞게 command를 고르도록 하기 위해, 연구진은 prompt engineering을 수행한다.
+
+* 구체적으로 human-annotated dataset에서 가장 흔한 skill label들을 ranking하고, GPT-4o가 그중에서 low-level policy가 수행할 수 있는 command를 고르도록 한다.
+
+---
+
+### h) Flat VLA
+
+* Flat VLA는 Hi Robot에서 사용하는 것과 같은 π0 low-level policy를 직접 사용하는 비교 방법이다.
+
+* 하지만 high-level model을 사용하지 않는다.
+
+* synthetic data도 사용하지 않는다.
+
+* 즉, 사용자 prompt를 VLA가 직접 받아 action으로 변환하는 flat instruction-following VLA policy이다.
+
+* 이 baseline은 기존 state-of-the-art instruction following 방식과 비교하기 위한 것이다.
+
+---
+
+### i) Flat VLA with synthetic data
+
+* 이 ablation은 π0 low-level policy를 단독으로 사용한다.
+
+* high-level model은 없다.
+
+* 하지만 low-level policy 학습에 synthetic data를 포함한다.
+
+* 목적은 complex prompt를 직접 처리할 수 있도록 low-level policy를 학습시키는 것이다.
+
+* 이 baseline은 hierarchy의 효과와 synthetic data의 효과를 분리해서 보기 위한 비교이다.
+
+* 즉, synthetic data를 추가해도 high-level / low-level 구조가 없으면 충분한지 확인하는 역할을 한다.
+
+---
+
+### j) Hi Robot without synthetic data
+
+* 이 ablation은 Hi Robot 구조를 유지하되, synthetic training data를 사용하지 않는 방식이다.
+
+* 목적은 synthetically generated prompt가 성능에 얼마나 중요한지 평가하는 것이다.
+
+* 이 baseline은 VLM 기반의 발전된 YAY Robot 형태로 볼 수 있다.
+
+* 즉, high-level model이 low-level model을 위한 language command를 예측하는 구조는 유지하지만, 다양한 synthetic prompt를 학습하지 않았을 때 성능이 어떻게 되는지 확인한다.
 ---
 
 
