@@ -39,7 +39,7 @@ A repository for organizing and summarizing papers I have read.
 
 ## Thoughts After Reading This Paper
 
-### 1) Single-Image Observation
+### 1) 
 
 **논문 한계**  
 
