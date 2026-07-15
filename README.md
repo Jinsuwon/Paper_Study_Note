@@ -9468,3 +9468,1160 @@ Ground-truth Goal Images = 40%
 
 
 
+<details>
+<summary><b>28. RetoVLA: Reusing Register Tokens for Spatial Reasoning in Vision-Language-Action Models</b></summary>
+
+## Basic Information
+
+- **Title**: RetoVLA: Reusing Register Tokens for Spatial Reasoning in Vision-Language-Action Models
+- **Authors**: Jiyeon Koo, Taewan Cho, Hyunjoon Kang, Eunseom Pyo, Tae Gyun Oh, Taeryang Kim, Andrew Jaeyong Choi
+- **Conference / Journal**: IEEE International Conference on Robotics and Automation (ICRA)
+- **Year**: 2026
+
+---
+
+## One-line Summary
+
+* RetoVLA는 경량 VLA model에서 경량화로 인해 약해질 수 있는 3D spatial reasoning과 global context awareness를 보완하기 위해, 기존 ViT에서 사용 후 버려지던 Register Token을 Action Expert에 직접 주입하여 추가 parameter 없이 spatial context를 활용하고, 실제 7-DOF robot 실험에서 baseline 대비 평균 성공률을 크게 향상시킨 lightweight spatial-aware VLA model이다.
+
+---
+
+
+
+## Understanding the Structure
+
+## 0. Abstract
+
+### a) Background: VLA model의 가능성과 배치 한계
+
+* Vision-Language-Action model, VLA는 시각 정보와 언어 명령을 바탕으로 로봇 행동을 생성하는 모델이다.
+
+* 기존 VLA model은 다양한 robotic task에서 강한 성능을 보여주었다.
+
+* 하지만 VLA model은 일반적으로 높은 memory 사용량과 computational cost를 요구한다.
+
+* 이 때문에 실제 로봇 hardware에서 real-time deployment를 수행하는 데 한계가 있다.
+
+---
+
+### b) Problem: 경량화된 VLA model의 공간 추론 성능 저하
+
+* 기존 model compression technique은 VLA model의 parameter footprint를 줄이는 데 사용된다.
+
+* 그러나 모델을 경량화하는 과정에서 3D spatial reasoning 능력과 scene layout understanding 능력이 저하될 수 있다.
+
+* 즉, 작은 VLA model은 연산 효율성은 좋아지지만, 로봇이 작업 공간의 구조와 객체 간 공간 관계를 이해하는 능력이 약해질 수 있다.
+
+* 논문은 이러한 문제를 “lightweight model에서 spatial awareness를 어떻게 유지할 것인가”라는 문제로 바라본다.
+
+---
+
+### c) Proposal: Register Token의 재활용
+
+* 논문은 RetoVLA라는 architecture를 제안한다.
+
+* RetoVLA의 핵심은 Vision Transformer에서 사용되는 Register Token을 버리지 않고 재활용하는 것이다.
+
+* Register Token은 원래 Vision Transformer에서 attention artifact를 완화하기 위해 도입된 learnable parameter이다.
+
+* 일반적으로 Register Token은 vision encoder 내부에서 사용된 뒤 폐기된다.
+
+* 그러나 논문은 Register Token이 global spatial context를 dense하게 담고 있다고 보고, 이를 VLA model의 공간 추론에 다시 활용한다.
+
+---
+
+### d) Method: Spatial Context Injection Path
+
+* RetoVLA는 Register Token을 action-planning module에 직접 연결한다.
+
+* 논문에서는 이를 dedicated spatial context injection path라고 설명한다.
+
+* 이 경로를 통해 Register Token에 담긴 global scene context가 Action Expert로 전달된다.
+
+* 따라서 RetoVLA는 image patch feature와 semantic feature뿐만 아니라, Register Token에 저장된 전역 공간 정보를 함께 활용한다.
+
+* 중요한 점은 이 과정에서 total parameter count를 증가시키지 않는다는 것이다.
+
+---
+
+### e) Core Idea: 버려지는 내부 정보를 활용한 공간 인식 회복
+
+* RetoVLA의 핵심 아이디어는 새로운 encoder나 추가 module을 붙이는 것이 아니다.
+
+* 대신 기존 Vision Transformer 내부에서 이미 생성되지만 일반적으로 폐기되던 Register Token을 재사용한다.
+
+* 이를 통해 lightweight VLA model이 잃어버리기 쉬운 global context를 회복한다.
+
+* 즉, RetoVLA는 “추가적인 parameter 증가 없이 spatial awareness를 보완하는 구조”라고 정리할 수 있다.
+
+```text
+기존 VLA 경량화 문제:
+model compression
+        ↓
+parameter 감소
+        ↓
+3D spatial reasoning / scene layout understanding 저하
+
+RetoVLA:
+Register Token 재활용
+        ↓
+global spatial context를 Action Expert에 주입
+        ↓
+parameter 증가 없이 spatial awareness 보완
+```
+
+---
+
+### f) Evaluation: Real-world 7-DOF Manipulator
+
+* 논문은 실제 7-DOF manipulator를 사용하여 RetoVLA를 평가했다.
+
+* 실험 결과, RetoVLA는 baseline보다 평균 성공률이 17.1%p 향상되었다.
+
+* 이는 Register Token을 활용한 spatial context injection이 실제 robotic manipulation task에서도 효과적임을 보여준다.
+
+* 따라서 논문은 내부 Register Token을 활용하는 방식이 efficient하고 spatially-aware한 robotic agent를 만드는 데 효과적인 mechanism이라고 주장한다.
+---
+
+## I. Introduction
+
+![Overview of the RetoVLA architecture](images/Fig_RetoVLA/Fig.001_RetoVLA.png)
+
+### a) Background: VLA model과 real-time deployment 문제
+
+* Vision-Language-Action model, VLA는 자연어 명령을 robot motor command로 변환하는 모델이다.
+
+* RT-2, OpenVLA와 같은 VLA model은 web-scale pre-training을 통해 unseen environment에서도 강한 zero-shot generalization 능력을 보여주었다.
+
+* 즉, VLA model은 vision-language model의 일반화 능력을 robot action prediction과 연결하여, 새로운 환경에서도 로봇이 명령을 수행할 수 있도록 하는 방향이다.
+
+* 그러나 이러한 VLA model은 model scale과 computational cost가 크기 때문에 실제 physical hardware에서 real-time deployment를 수행하는 데 병목이 된다.
+
+---
+
+### b) Problem: Small VLA model의 spatial reasoning 손실
+
+* VLA model의 높은 연산 비용을 줄이기 위해 SmolVLA와 같은 smaller model이 제안되었다.
+
+* 하지만 model size를 줄이면 효율성은 좋아지지만, 그에 따른 성능 손실이 발생한다.
+
+* 특히 lightweight model은 3D layout과 spatial relationship을 표현하는 능력이 약해질 수 있다.
+
+* 로봇 조작 task에서는 단순히 객체를 인식하는 것뿐 아니라, 작업 공간의 구조, 객체 간 위치 관계, 3D scene layout을 이해하는 능력이 중요하다.
+
+* 따라서 논문은 “작은 VLA model에서 spatial reasoning 능력을 어떻게 유지할 것인가”를 핵심 문제로 설정한다.
+
+---
+
+### c) Observation: Vision Transformer의 background patch와 Register Token
+
+* 논문은 Vision Transformer, ViT 내부에서 발생하는 현상에 주목한다.
+
+* Darcet et al.은 DINOv2와 같은 large Vision Transformer가 training 과정에서 background image patch에 global scene information을 임시로 저장한다는 점을 관찰했다.
+
+* 이러한 현상은 global understanding에는 도움이 되지만, background patch의 visual detail을 저하시킬 수 있다.
+
+* 즉, 원래는 이미지의 local visual information을 담아야 하는 patch가 global information 저장 공간처럼 사용되면서 attention artifact가 발생한다.
+
+* 이를 완화하기 위해 Register Token이 도입되었다.
+
+---
+
+### d) Register Token: Global information을 흡수하는 scratchpad
+
+* Register Token은 Vision Transformer에서 learnable token으로 추가된다.
+
+* 이 token은 image patch가 global information을 떠안지 않도록, 전역 정보를 흡수하는 dedicated scratchpad 역할을 한다.
+
+* 이를 통해 image patch의 visual fidelity를 보존하면서도 global scene information을 처리할 수 있다.
+
+* 그러나 일반적인 vision encoder에서는 Register Token이 내부 처리 과정에서 사용된 뒤, 최종적으로는 버려진다.
+
+* RetoVLA는 바로 이 지점에 문제의식을 둔다.
+
+---
+
+### e) Hypothesis: Register Token은 spatial context를 담고 있다
+
+* 논문은 Register Token이 단순히 attention artifact를 줄이기 위한 보조 token에 그치지 않는다고 본다.
+
+* 저자들은 Register Token이 workspace layout과 3D relationship에 대한 압축된 정보를 담고 있을 것이라고 가정한다.
+
+* 즉, Register Token은 global scene context를 포함하고 있으며, 이 정보를 유지하면 robot scene understanding에 도움이 될 수 있다고 본다.
+
+* 따라서 RetoVLA의 출발점은 “버려지는 Register Token을 action prediction에 다시 활용하면 spatial reasoning을 보완할 수 있다”는 가설이다.
+
+---
+
+### f) Proposal: RetoVLA
+
+* 논문은 RetoVLA, Reusing Register Tokens VLA를 제안한다.
+
+* RetoVLA는 기존에 버려지던 Register Token의 latent information을 재활용하여 lightweight VLA model의 spatial awareness를 향상시키는 구조이다.
+
+* 핵심은 Register Token을 artifact absorber가 아니라 spatial context provider로 재해석하는 것이다.
+
+* RetoVLA는 Register Token을 Action Expert에 직접 전달하여, action generation 과정에서 global spatial context를 활용할 수 있도록 한다.
+
+* 이를 통해 추가적인 encoder나 parameter 증가 없이 spatial reasoning 성능을 보완한다.
+
+```text
+기존 처리:
+image input
+    ↓
+vision encoder
+    ↓
+Register Token 사용 후 폐기
+    ↓
+action prediction
+
+RetoVLA:
+image input
+    ↓
+vision encoder
+    ↓
+Register Token 재활용
+    ↓
+Action Expert에 spatial context 주입
+    ↓
+spatially-aware action prediction
+```
+
+---
+
+### g) Contributions
+
+* 논문의 contribution은 크게 세 가지이다.
+
+* 첫 번째는 spatial context injection method이다.
+
+* RetoVLA는 Register Token을 artifact absorber에서 spatial context provider로 재활용하고, 이를 Action Expert에 직접 입력한다.
+
+* 두 번째는 efficient design이다.
+
+* RetoVLA는 SmolVLA와 같은 lightweight model에서 손실된 spatial awareness를 회복하면서도, 추가적인 computational overhead를 만들지 않는다.
+
+* 세 번째는 simulation과 real-world hardware에서의 평가이다.
+
+* 논문은 LIBERO benchmark와 실제 7-DOF robot에서 RetoVLA를 평가하였다.
+
+* 실험 결과 real-world average success rate가 baseline의 50.3%에서 RetoVLA의 67.4%로 향상되었으며, 이는 +17.1%p improvement에 해당한다.
+
+---
+
+### h) Introduction 핵심 정리
+
+![Comparison of RetoVLA and SmolVLA on challenging real-world tasks](images/Fig_RetoVLA/Fig.003_RetoVLA.png)
+* 기존 VLA model은 성능은 좋지만 크고 무거워 real-time robot deployment에 부담이 있다.
+
+* 이를 해결하기 위해 lightweight VLA model이 필요하지만, 경량화 과정에서 3D spatial reasoning과 scene layout understanding 능력이 약해진다.
+
+* RetoVLA는 Vision Transformer 내부에서 사용된 뒤 버려지는 Register Token에 global spatial context가 남아 있다고 보고, 이를 Action Expert에 직접 주입한다.
+
+* 따라서 RetoVLA의 핵심은 “버려지는 내부 token을 재활용하여, 추가 parameter 없이 경량 VLA의 spatial reasoning을 보완하는 것”이다.
+---
+## II. Related Work
+
+### A. Vision-Language-Action (VLA) Models
+
+* 최근 robot learning에서는 Transformer가 standard backbone으로 사용된다.
+
+* RT-1은 multi-task manipulation을 지원한 초기 VLA 계열 모델이며, 이후 모델들은 large VLM을 robot action과 직접 연결하는 방향으로 발전했다.
+
+* RT-2는 robot action을 discrete text token으로 표현했고, OpenVLA와 π0 같은 open-weight model은 강한 zero-shot generalization을 보였다.
+
+* 하지만 이러한 대형 VLA model은 billions of parameters를 가지기 때문에 inference가 느리고, 실제 physical robot의 reactive control에 병목이 된다.
+
+* 최근 연구들은 spatial awareness, visual robustness, low-data learning 등을 개선했지만, computational efficiency 문제는 여전히 충분히 해결되지 않았다.
+
+---
+
+### B. Lightweight Vision-Language-Action Models
+
+* 실제 로봇에 VLA를 배치하기 위해 SmolVLA와 같은 lightweight VLA model이 제안되었다.
+
+* SmolVLA는 smaller backbone, layer skipping, LoRA를 활용하여 memory cost를 줄인다.
+
+* 이외에도 model merging이나 diffusion-based decoder를 통해 action generation 속도를 높이려는 연구들이 있다.
+
+* 하지만 lightweight VLA model은 빠르고 가벼운 대신, 중요한 3D spatial reasoning과 global context awareness를 잃는 문제가 있다.
+
+* 기존 연구는 external depth encoder를 추가하여 spatial information을 보완하려 했지만, 이는 추가적인 computational overhead를 만든다.
+
+* RetoVLA는 새로운 encoder를 추가하지 않고, 기존 ViT의 Register Token을 재사용하여 spatial awareness를 회복하려는 방식이다.
+
+---
+
+### C. Artifacts and Register Tokens in Vision Transformers
+
+* Large ViT는 global scene information을 background image patch에 scratchpad처럼 저장하는 경향이 있다.
+
+* 이 방식은 global understanding에는 도움이 되지만, local feature prediction을 방해할 수 있다.
+
+* Register Token은 이러한 attention artifact를 흡수하기 위해 도입된 learnable token이다.
+
+* 일반적으로 Register Token은 vision encoder 내부에서 사용된 뒤 버려진다.
+
+* 그러나 RetoVLA는 이 Register Token 안에 useful spatial summary가 남아 있다고 본다.
+
+* 따라서 RetoVLA는 버려지는 Register Token을 robot motion을 guide하기 위한 spatial context로 직접 활용한다.
+
+---
+
+## III. Method
+
+### a) Core Idea: Register Token을 spatial context로 재활용
+
+* RetoVLA의 핵심 아이디어는 Register Token을 버리지 않고, spatial context를 제공하는 정보로 재활용하는 것이다.
+
+* 기존 방식에서는 Vision Transformer 내부의 Register Token이 사용된 뒤 제거된다.
+
+* RetoVLA는 이 latent representation을 재사용하여 Action Expert에 직접 전달한다.
+
+* 이를 통해 robot motion planning에 필요한 geometric cue를 제공한다.
+
+```text
+기존 방식:
+Register Token 사용
+        ↓
+폐기
+
+RetoVLA:
+Register Token 사용
+        ↓
+global spatial context로 재활용
+        ↓
+Action Expert에 전달
+```
+
+---
+
+### b) Architecture Overview and Information Flow
+
+* RetoVLA는 baseline 구조 자체를 크게 바꾸지는 않는다.
+
+* 대신 내부 information flow를 수정한다.
+
+* 기존 baseline은 Action Expert에 local image patch feature 중심의 정보만 전달한다.
+
+* RetoVLA는 두 가지 stream을 함께 전달한다.
+
+```text
+1. standard image patches
+   → local detail 정보
+
+2. Register Tokens
+   → global scene summary 정보
+```
+
+* 이후 cross-attention layer가 두 stream을 결합한다.
+
+* 결과적으로 Action Expert는 local visual detail과 global spatial context를 함께 활용할 수 있다.
+
+---
+
+### c) Depth-Adaptive VLM Backbone
+
+* RetoVLA는 속도와 성능의 균형을 맞추기 위해 pre-trained VLM의 전체 layer를 모두 사용하지 않는다.
+
+* 전체 VLM layer 수를 `L`이라고 할 때, 앞쪽 절반인 `N = L/2` layer만 사용한다.
+
+* 이는 SmolVLA에서 사용된 방식과 유사하다.
+
+* 이러한 truncation은 inference 속도를 높이면서도 semantic capability를 어느 정도 유지할 수 있다.
+
+```text
+Full VLM:
+Layer 1 → Layer 2 → ... → Layer L
+
+Depth-Adaptive VLM Backbone:
+Layer 1 → Layer 2 → ... → Layer L/2
+```
+
+* 다만 layer를 줄이면 빠른 inference에는 유리하지만, 복잡한 spatial reasoning이나 예외적인 장면 이해 능력은 약해질 수 있다.
+
+* RetoVLA는 이러한 손실을 Register Token 기반 spatial context injection으로 보완하려 한다.
+
+---
+
+### d) Spatial Context Injection via Register Tokens
+
+* RetoVLA는 Register Token을 Action Expert에 직접 주입한다.
+
+* 이 과정은 크게 세 단계로 이루어진다.
+
+```text
+1. Register Token Generation
+2. Injection into the Action Expert
+3. Gating Mechanism
+```
+
+---
+
+### e) Step 1: Register Token Generation
+
+* 먼저 VLM image patch feature `P`가 Spatial Context Aggregator에 입력된다.
+
+* Spatial Context Aggregator는 standard multi-head attention block으로 구성된다.
+
+* 이때 initial Register Token `Rinit`은 query 역할을 한다.
+
+* image patch feature `P`는 key와 value 역할을 한다.
+
+```text
+Q = Rinit
+K = P
+V = P
+```
+
+* 즉, Register Token이 image patch feature들을 attention으로 읽어 장면 전체 정보를 요약한다.
+
+```text
+Rscene = Attention(Q = Rinit, K = P, V = P)
+```
+
+* 여기서 `Rscene`은 image patch들의 정보를 가중합하여 만든 global scene summary이다.
+
+* 중요한 점은 Register Token이 특정 patch 하나를 가져오는 것이 아니라, 여러 image patch feature를 attention으로 읽고 자기 자신을 global context token으로 업데이트한다는 것이다.
+
+---
+
+### f) Step 2: Injection into the Action Expert
+
+* 생성된 `Rscene`은 Action Expert가 사용할 수 있는 차원으로 projection된다.
+
+* 이후 Register Token 기반 key/value pair인 `Kreg`, `Vreg`를 만든다.
+
+```text
+Rscene
+   ↓ projection
+Kreg, Vreg
+```
+
+* 기존 VLM에서 나온 key/value pair는 `Kvlm`, `Vvlm`이다.
+
+* 여기서 의미는 다음과 같다.
+
+```text
+Kvlm, Vvlm
+→ 기존 VLM image patch 기반 정보
+→ local detail 중심
+
+Kreg, Vreg
+→ Register Token 기반 정보
+→ global context 중심
+```
+
+* RetoVLA는 이 둘을 concatenate하여 Action Expert가 local detail과 global context를 함께 볼 수 있도록 한다.
+
+```text
+Kfinal = Concat(Kvlm, σ(g) · Kreg)
+
+Vfinal = Concat(Vvlm, σ(g) · Vreg)
+```
+
+* 즉, Action Expert는 기존 image patch feature뿐 아니라, Register Token에서 온 global spatial summary도 함께 참조한다.
+
+---
+
+### g) Step 3: Gating Mechanism
+
+* global context는 spatial reasoning에는 도움이 되지만, precision task에서는 오히려 방해가 될 수 있다.
+
+* 예를 들어 매우 정밀한 grasping이나 위치 조정에서는 local detail이 더 중요할 수 있다.
+
+* 따라서 RetoVLA는 learnable gate parameter `g`를 도입한다.
+
+* `g`는 sigmoid function `σ`를 거쳐 Register Token의 영향력을 조절한다.
+
+```text
+σ(g) · Kreg
+σ(g) · Vreg
+```
+
+* `σ(g)` 값이 크면 Register Token의 global context 영향이 커진다.
+
+* `σ(g)` 값이 작으면 Register Token의 영향이 줄어들고, local patch feature 중심으로 동작한다.
+
+* 이를 통해 모델은 local precision과 global context 사이의 균형을 adaptive하게 조절할 수 있다.
+
+---
+
+### h) Training Objective: Conditional Flow Matching
+
+* RetoVLA는 Conditional Flow Matching을 사용하여 학습된다.
+
+* 목표는 image와 text condition이 주어졌을 때, pure noise에서 robot action으로 변환하는 방법을 학습하는 것이다.
+
+* 논문에서는 실제 robot action을 `a0`, random noise를 `a1`로 정의한다.
+
+```text
+a0 = real robot action
+
+a1 ~ N(0, I) = random noise
+```
+
+* `at`는 실제 action과 noise 사이의 중간 지점이다.
+
+```text
+at = (1 - t)a0 + t a1
+```
+
+* `t = 0`이면 `at = a0`이므로 실제 robot action이다.
+
+* `t = 1`이면 `at = a1`이므로 random noise이다.
+
+```text
+t = 0:
+at = real action
+
+t = 1:
+at = random noise
+```
+
+* target vector `ut`는 실제 action에서 noise로 향하는 방향 벡터이다.
+
+```text
+ut = a1 - a0
+```
+
+* 모델은 현재 중간 action 상태 `at`, time step `t`, condition `c`를 입력받아 이 target vector를 예측한다.
+
+```text
+vθ(at, t, c)
+```
+
+* 여기서 `c`는 image input, text instruction, Register Token 기반 spatial cue를 포함하는 condition이다.
+
+* 학습 loss는 모델이 예측한 vector와 target vector `a1 - a0` 사이의 차이를 MSE로 줄이는 방식이다.
+
+```text
+LFM = E || vθ(at, t, c) - (a1 - a0) ||²
+```
+
+* 여기서 `LFM`은 Flow Matching Loss, 더 정확히는 Conditional Flow Matching Loss이다.
+
+* 이 objective를 통해 Action Expert는 Register Token의 spatial cue를 활용하여 올바른 robot action을 복원하는 방법을 학습한다.
+
+---
+
+### Method 핵심 정리
+
+* RetoVLA는 기존 VLA 구조를 크게 바꾸기보다, 내부 정보 흐름을 수정한다.
+
+* pre-trained VLM은 전체 layer를 모두 사용하지 않고 앞쪽 절반만 사용하여 inference 속도를 높인다.
+
+* 이때 경량화로 인해 spatial reasoning이 약해질 수 있으므로, Register Token을 재활용한다.
+
+* Register Token은 image patch feature를 attention으로 읽어 global scene summary `Rscene`을 만든다.
+
+* 이 `Rscene`은 `Kreg`, `Vreg`로 변환되어 기존 VLM key/value와 함께 Action Expert에 주입된다.
+
+* gate parameter `g`는 Register Token의 영향력을 조절하여 local precision과 global context 사이의 균형을 맞춘다.
+
+* 최종적으로 RetoVLA는 Conditional Flow Matching Loss를 통해 image, text, spatial context 조건에서 noise를 robot action으로 복원하는 Action Expert를 학습한다.
+
+---
+
+## IV. Experiments
+
+### a) Evaluation Overview
+![Experimental setup for LIBERO, real-world robot arm, and custom simulation environment](images/Fig_RetoVLA/Fig.002_RetoVLA.png)
+
+* 논문은 RetoVLA를 세 가지 환경에서 평가한다.
+
+```text
+1. LIBERO benchmark
+2. Real-world 7-DOF robot arm
+3. Custom simulation environment
+```
+
+* 실험의 목적은 Register Token을 Action Expert에 주입하는 방식이 실제로 spatial reasoning과 manipulation 성능을 개선하는지 확인하는 것이다.
+
+---
+
+### b) Experimental Setup
+
+#### 1. Standardized Benchmark
+
+* 표준 벤치마크로 LIBERO benchmark를 사용한다.
+
+* 사용한 task group은 다음 네 가지이다.
+
+```text
+Spatial
+→ single spatial relations 평가
+
+Object
+→ object-centric, local manipulation 평가
+
+Goal
+→ goal-directed, global placement 평가
+
+10 (Long)
+→ long-horizon, complex scenes 평가
+```
+
+* 이를 통해 RetoVLA가 단순한 물체 조작뿐 아니라 spatial relation, global placement, long-horizon task에서도 효과가 있는지 평가한다.
+
+---
+
+#### 2. Real-World Environment and Task Design
+
+* 실제 환경에서는 custom 7-DOF robot arm을 사용한다.
+
+* 논문은 총 7개의 real-world manipulation task를 구성한다.
+
+```text
+1. Pick and Place
+2. Stack by Size
+3. Pull and Place (Jenga)
+4. Build Domino Line
+5. Close Drawer
+6. Move Bowl
+7. Clean Marker on Mirror
+```
+![Table I. Details of the seven real-world tasks and camera views](images/Fig_RetoVLA/Table.001_RetoVLA.png)
+
+* task 난이도는 기본적인 pick-and-place부터 long-horizon planning과 3D understanding이 필요한 task까지 포함한다.
+
+* 특히 `Build Domino Line`은 평균 900 frames per episode로 구성된 long-horizon manipulation task이며, 일반적인 real-world task보다 2~3배 길다.
+
+* `Clean Marker on Mirror`에서는 visual input 사용을 최소화하기 위해 single wrist-mounted camera만 사용하고, 제한된 시야를 보완하기 위해 mirror를 auxiliary visual modality로 활용한다.
+
+* 두 모델을 custom hardware에서 학습시키기 위해 1,804개의 human demonstration을 수집하였다.
+
+---
+
+#### 3. Custom Simulation Environment
+
+* 논문은 physical noise와 lighting shift의 영향을 분리하기 위해 custom simulation experiment도 수행한다.
+
+* 이를 위해 real-world setup을 Unity의 MuJoCo engine으로 디지털 복제하였다.
+
+* 이 환경은 실제 로봇 환경에서 발생할 수 있는 물리적 노이즈나 조명 변화 없이, Register Token 재사용의 효과를 더 직접적으로 확인하기 위한 목적이다.
+
+---
+
+#### 4. Model and Training Setup
+
+* 효율성을 위해 SmolVLM2-500M의 앞쪽 16개 layer만 사용한다.
+
+* 학습은 100k steps 동안 진행되며, batch size는 64이다.
+
+* RetoVLA는 Action Expert 내부에 2개의 Register Token을 사용한다.
+
+* baseline은 Register Token을 사용하지 않는다.
+
+```text
+Baseline:
+Register Token 없음
+
+RetoVLA:
+2 Register Tokens 사용
+```
+
+---
+
+### c) LIBERO Benchmark Results
+![Table II. Overall success rates on the four main categories of the LIBERO benchmark](images/Fig_RetoVLA/Table.002_RetoVLA.png)
+
+* LIBERO benchmark의 전체 success rate만 보면 RetoVLA의 향상 폭은 크지 않다.
+
+```text
+Spatial:
+SmolVLA 75.8%
+RetoVLA 76.2%
+
+Object:
+SmolVLA 70.8%
+RetoVLA 71.8%
+
+Goal:
+SmolVLA 80.4%
+RetoVLA 80.4%
+
+10 (Long):
+SmolVLA 50.4%
+RetoVLA 50.4%
+```
+
+* 하지만 skill type별로 나누어 보면 차이가 더 명확하게 나타난다.
+![Fig. 6. Breakdown of RetoVLA’s performance by skill type](images/Fig_RetoVLA/Fig.006_RetoVLA.png)
+
+* Figure 6에 따르면 RetoVLA는 `Working Memory`에서 +11.5%p, `Global & 3D Spatial Reasoning`에서 +9.0%p의 성능 향상을 보인다.
+
+* 이는 Register Token 재사용이 3D understanding과 spatial memory가 필요한 task에 도움이 된다는 것을 시사한다.
+
+![Fig. 5. Qualitative example of 3D spatial reasoning using Register Tokens](images/Fig_RetoVLA/Fig.005_RetoVLA.png)
+
+* Figure 5에서는 baseline SmolVLA가 시각적으로 유사하지만 잘못된 물체를 잡는 반면, RetoVLA는 “top drawer”라는 instruction을 room layout과 연결하여 올바른 drawer를 여는 예시를 보여준다.
+
+* 다만 extreme local precision이 필요한 task에서는 약간의 성능 하락이 나타난다.
+
+* 논문은 broad scene context가 fine control에는 가끔 방해가 될 수 있다고 설명한다.
+
+---
+
+### d) Real-World Experiments
+![Table IV. Success rates on real-world manipulation tasks](images/Fig_RetoVLA/Table.004_RetoVLA.png)
+
+* 실제 로봇 실험에서는 RetoVLA가 baseline보다 명확한 성능 향상을 보인다.
+
+* 평균 success rate는 SmolVLA의 50.28%에서 RetoVLA의 67.42%로 증가한다.
+
+```text
+SmolVLA MSR:
+50.28% ± 11.06%
+
+RetoVLA MSR:
+67.42% ± 9.07%
+
+Improvement:
++17.14%p
+```
+
+* task별 결과는 다음과 같다.
+
+```text
+Pick and Place:
+86% → 92% (+6.0%p)
+
+Stack by Size:
+80% → 76% (-4.0%p)
+
+Pull and Place (Jenga):
+60% → 78% (+18.0%p)
+
+Build Domino Line:
+12% → 40% (+28.0%p)
+
+Clean Marker on Mirror:
+38% → 52% (+14.0%p)
+
+Close Drawer:
+60% → 96% (+36.0%p)
+
+Move Bowl:
+16% → 38% (+14.0%p)
+```
+
+* RetoVLA는 특히 spatial understanding이 더 깊게 요구되는 task에서 큰 향상을 보인다.
+
+* `Build Domino Line`은 +28.0%p, `Close Drawer`는 +36.0%p 향상된다.
+
+* `Pull and Place (Jenga)`에서도 +18.0%p 향상되며, 이는 spatial context가 조심스러운 object interaction에 도움이 된다는 것을 보여준다.
+
+* 반면 `Stack by Size`에서는 -4.0%p 하락한다.
+
+* 이는 broad global context가 항상 좋은 것은 아니며, local precision이 중요한 task에서는 오히려 fine control에 방해가 될 수 있음을 보여준다.
+
+---
+
+### e) Custom Simulation Experiments
+![Table III. Success rates on simulation environment manipulation tasks](images/Fig_RetoVLA/Table.003_RetoVLA.png)
+
+* custom simulation에서는 physical noise를 제거한 상태에서 Register Token 재사용 효과를 확인한다.
+
+* Simulation environment에서 평균 success rate는 SmolVLA의 62.8%에서 RetoVLA의 74.8%로 증가한다.
+
+```text
+SmolVLA MSR:
+62.8% ± 11.56%
+
+RetoVLA MSR:
+74.8% ± 8.8%
+
+Improvement:
++12.0%p
+```
+
+* task별 결과는 다음과 같다.
+
+```text
+Pick and Place:
+88% → 96% (+6.0%p)
+
+Stack by Size:
+86% → 88% (+2.0%p)
+
+Pull and Place (Jenga):
+66% → 82% (+16.0%p)
+
+Build Domino Line:
+28% → 52% (+24.0%p)
+
+Clean Marker on Mirror:
+46% → 56% (+10.0%p)
+```
+
+* 가장 큰 향상은 `Build Domino Line`에서 +24.0%p, `Pull and Place (Jenga)`에서 +16.0%p로 나타난다.
+
+* simulation, LIBERO, real-world evaluation에서 일관된 향상이 나타나므로, 논문은 Register Token injection이 spatial task performance를 개선한다고 해석한다.
+
+---
+
+### f) Analytical Studies: Attention and Causality
+![Fig. 4. Attention and causal analysis of Register Tokens](images/Fig_RetoVLA/Fig.004_RetoVLA.png)
+
+* 논문은 attention map과 causal analysis를 통해 RetoVLA가 Register Token을 실제로 사용하는지 분석한다.
+
+* Figure 4에서는 Register Token이 여러 task에서 높은 attention weight를 받는다는 것을 보여준다.
+
+* 이는 Register Token이 단순히 추가된 token으로 남아 있는 것이 아니라, Action Expert가 실제로 참조하는 정보라는 것을 의미한다.
+
+* gate value `g`를 변화시키면 predicted action도 함께 변화한다.
+
+* 이는 Register Token의 영향력이 action output에 직접적인 영향을 줄 수 있음을 보여준다.
+
+* 또한 Register Token을 random noise로 대체하면 success rate가 감소한다.
+
+* 이는 Register Token 안에 의미 있는 spatial information이 들어 있음을 뒷받침한다.
+
+---
+
+### g) Efficient Attention Redistribution
+![Fig. 7. Visualization of efficient attention redistribution](images/Fig_RetoVLA/Fig.007_RetoVLA.png)
+
+* 논문은 Figure 7을 통해 RetoVLA가 attention을 더 효율적으로 재분배한다고 설명한다.
+
+* RetoVLA는 broad, featureless background region에 대한 raw image patch attention을 줄인다.
+
+* 이러한 global context 처리는 Register Token으로 offload된다.
+
+* 그 결과 image patch attention은 gripper와 target object 같은 task-relevant region으로 이동한다.
+
+* 즉, Register Token이 “big picture”를 담당하고, image patch attention은 조작에 직접 필요한 영역에 더 집중하게 된다.
+
+```text
+Baseline:
+image patch attention이 local detail과 global context를 함께 처리
+        ↓
+background에도 attention 분산
+
+RetoVLA:
+Register Token이 global context 담당
+        ↓
+background attention 감소
+        ↓
+gripper / target object attention 증가
+```
+
+* 논문은 이러한 attention redistribution이 실제 성능 향상을 설명하는 근거라고 본다.
+
+---
+
+### Experiments 핵심 정리
+
+* RetoVLA는 LIBERO benchmark, real-world robot arm, custom simulation environment에서 평가되었다.
+
+* LIBERO 전체 success rate 향상은 작지만, Working Memory와 Global & 3D Spatial Reasoning에서는 뚜렷한 성능 향상을 보였다.
+
+* 실제 7-DOF robot arm 실험에서는 평균 success rate가 50.28%에서 67.42%로 +17.14%p 향상되었다.
+
+* custom simulation에서도 평균 success rate가 62.8%에서 74.8%로 +12.0%p 향상되었다.
+
+* RetoVLA는 특히 long-horizon task, 3D understanding task, spatial context가 필요한 조작에서 더 큰 성능 향상을 보였다.
+
+* 다만 extreme local precision이 필요한 task에서는 broad scene context가 fine control을 방해할 수 있다.
+
+* 분석 결과 Register Token은 실제로 높은 attention을 받으며, gate value 변화와 random token replacement 실험을 통해 action prediction에 의미 있는 영향을 준다는 것이 확인되었다.
+
+---
+
+## V. Conclusions
+
+### a) Main Conclusion
+
+* RetoVLA는 Register Token을 재사용하여 robotic action generation에 필요한 spatial context를 제공하는 방법을 제안한다.
+
+* 이를 통해 lightweight VLA model이 complex task에서 더 나은 성능을 보일 수 있음을 확인하였다.
+
+* 핵심은 기존 ViT에서 사용 후 버려지던 Register Token을 Action Expert에 주입하여, global spatial context를 robot action prediction에 활용하는 것이다.
+
+---
+
+### b) Robustness
+
+* 평가 과정에서 RetoVLA는 moving shadow에 비교적 robust한 모습을 보였다.
+
+* 논문은 그 이유를 Register Token이 broad layout information을 포착하고, lighting change에 대한 민감도를 줄이기 때문이라고 해석한다.
+
+* 즉, Register Token이 장면 전체 배치 정보를 담기 때문에 조명 변화가 있어도 공간 구조를 어느 정도 안정적으로 유지할 수 있다는 것이다.
+
+---
+
+### c) Remaining Challenge
+
+* 그러나 highly reflective object는 여전히 어려운 문제로 남아 있다.
+
+* 이는 small model이 complex texture perception을 처리하는 데 한계가 있음을 보여준다.
+
+* 즉, Register Token이 global spatial context를 보완할 수는 있지만, 반사체나 복잡한 질감 인식까지 완전히 해결하지는 못한다.
+
+---
+
+### d) Limitations
+
+* RetoVLA는 extreme local precision이 필요한 task에서 성능이 약간 하락한다.
+
+* 이는 global context가 항상 도움이 되는 것은 아니며, 정밀한 조작에서는 local detail을 더 우선해야 할 수 있음을 의미한다.
+
+* 따라서 논문은 더 selective한 gating mechanism이 필요하다고 언급한다.
+
+* 또한 본 논문은 작은 모델에서만 접근법을 평가했다.
+
+* 따라서 이 아이디어가 더 큰 backbone에서도 유효한지는 추가 검증이 필요하다.
+
+---
+
+### e) Future Work
+
+* 향후 연구에서는 OpenVLA와 같은 larger backbone에 동일한 아이디어를 적용해볼 필요가 있다.
+
+* 또한 mobile robot을 포함한 다른 robotic platform에서도 RetoVLA 방식이 효과적인지 검증해야 한다.
+
+* 논문은 code, model weights, data, hardware designs를 공유하여 후속 연구를 지원하겠다고 밝힌다.
+
+---
+
+
+
+<details>
+<summary><b>Summary</b></summary>
+
+## Summary
+
+### 1. 문제의식
+
+* 기존 VLA model은 vision-language 정보를 robot action으로 연결하여 다양한 robotic task에서 강한 성능을 보였다.
+
+* 그러나 OpenVLA, π0와 같은 대형 VLA model은 billions of parameters를 가지기 때문에 inference가 느리고, 실제 로봇 hardware에서 real-time deployment에 부담이 크다.
+
+* 이를 해결하기 위해 SmolVLA와 같은 lightweight VLA model이 제안되었지만, 모델을 경량화하면 3D spatial reasoning과 global context awareness가 약해질 수 있다.
+
+* 즉, lightweight VLA는 빠르고 효율적이지만, 로봇이 작업 공간 전체 구조와 객체 간 공간 관계를 이해하는 능력이 저하될 수 있다.
+
+---
+
+### 2. 핵심 아이디어
+
+* RetoVLA의 핵심 아이디어는 기존 ViT에서 사용 후 버려지던 Register Token을 재활용하는 것이다.
+
+* Register Token은 원래 ViT에서 image patch가 global information을 임시 저장 공간처럼 사용하지 않도록, 전역 정보와 attention artifact를 흡수하는 learnable token이다.
+
+* 일반적으로 Register Token은 vision encoder 내부에서 사용된 뒤 폐기된다.
+
+* RetoVLA는 이 Register Token 안에 global spatial context가 남아 있다고 보고, 이를 Action Expert에 직접 주입한다.
+
+```text
+기존 방식:
+Register Token 사용
+        ↓
+폐기
+
+RetoVLA:
+Register Token 사용
+        ↓
+global scene summary로 재활용
+        ↓
+Action Expert에 전달
+```
+
+---
+
+### 3. Method
+
+* RetoVLA는 baseline VLA 구조를 크게 바꾸지 않고, 내부 information flow를 수정한다.
+
+* 기존 baseline은 Action Expert에 standard image patch feature 중심의 정보만 전달한다.
+
+* RetoVLA는 두 가지 stream을 함께 전달한다.
+
+```text
+standard image patches
+→ local detail 정보
+
+Register Tokens
+→ global scene summary 정보
+```
+
+* 먼저 VLM image patch feature `P`를 Spatial Context Aggregator에 넣는다.
+
+* 이때 initial Register Token `Rinit`은 query 역할을 하고, image patch feature `P`는 key와 value 역할을 한다.
+
+```text
+Rscene = Attention(Q = Rinit, K = P, V = P)
+```
+
+* 이 과정을 통해 Register Token은 여러 image patch feature를 attention으로 읽고, global scene summary인 `Rscene`으로 업데이트된다.
+
+* 이후 `Rscene`은 Action Expert에 맞는 key/value pair인 `Kreg`, `Vreg`로 변환된다.
+
+* 기존 VLM의 `Kvlm`, `Vvlm`과 Register Token 기반 `Kreg`, `Vreg`를 concatenate하여 Action Expert가 local detail과 global context를 함께 보도록 한다.
+
+```text
+Kfinal = Concat(Kvlm, σ(g) · Kreg)
+
+Vfinal = Concat(Vvlm, σ(g) · Vreg)
+```
+
+* 여기서 `g`는 learnable gate parameter이다.
+
+* `σ(g)`는 Register Token의 영향력을 조절하여, local precision과 global context 사이의 균형을 맞춘다.
+
+---
+
+### 4. Training Objective
+
+* RetoVLA는 Conditional Flow Matching으로 학습된다.
+
+* 목표는 image와 text condition이 주어졌을 때, noise에서 올바른 robot action으로 복원하는 것이다.
+
+* 논문에서는 실제 robot action을 `a0`, random noise를 `a1`로 정의한다.
+
+```text
+a0 = real robot action
+
+a1 ~ N(0, I) = random noise
+```
+
+* `at`는 실제 action과 noise 사이의 중간 지점이다.
+
+```text
+at = (1 - t)a0 + t a1
+```
+
+* target vector는 실제 action에서 noise로 향하는 방향이다.
+
+```text
+ut = a1 - a0
+```
+
+* 모델은 현재 중간 상태 `at`, time step `t`, condition `c`를 보고 target vector를 예측한다.
+
+```text
+vθ(at, t, c)
+```
+
+* 학습 loss는 모델이 예측한 vector와 target vector의 차이를 MSE로 줄이는 방식이다.
+
+```text
+LFM = E || vθ(at, t, c) - (a1 - a0) ||²
+```
+
+* 여기서 `LFM`은 Conditional Flow Matching Loss이다.
+
+---
+
+### 5. Experiments
+
+* 논문은 RetoVLA를 세 가지 환경에서 평가한다.
+
+```text
+1. LIBERO benchmark
+2. Real-world 7-DOF robot arm
+3. Custom simulation environment
+```
+
+* LIBERO benchmark에서는 전체 success rate 향상은 크지 않았지만, skill type별 분석에서 Working Memory와 Global & 3D Spatial Reasoning 관련 task에서 성능 향상이 나타났다.
+
+* 실제 7-DOF robot arm 실험에서는 평균 success rate가 baseline 50.28%에서 RetoVLA 67.42%로 향상되었다.
+
+```text
+SmolVLA:
+50.28%
+
+RetoVLA:
+67.42%
+
+Improvement:
++17.14%p
+```
+
+* 특히 spatial understanding과 long-horizon planning이 필요한 task에서 큰 성능 향상이 나타났다.
+
+```text
+Build Domino Line:
+12% → 40%
+
+Close Drawer:
+60% → 96%
+
+Pull and Place (Jenga):
+60% → 78%
+```
+
+* Custom simulation에서도 평균 success rate가 62.8%에서 74.8%로 향상되었다.
+
+```text
+SmolVLA:
+62.8%
+
+RetoVLA:
+74.8%
+
+Improvement:
++12.0%p
+```
+
+---
+
+### 6. Analytical Studies
+
+* 논문은 RetoVLA가 Register Token을 실제로 활용하는지 attention과 causal analysis를 통해 분석한다.
+
+* Register Token은 여러 task에서 높은 attention weight를 받았다.
+
+* gate value `g`를 변화시키면 predicted action도 달라졌다.
+
+* Register Token을 random noise로 대체하면 success rate가 감소했다.
+
+* 이는 Register Token이 단순히 추가된 token이 아니라, action prediction에 영향을 주는 meaningful spatial information을 담고 있음을 의미한다.
+
+* 또한 RetoVLA는 broad background region에 대한 raw image patch attention을 줄이고, gripper와 target object 같은 task-relevant region에 attention을 더 집중시키는 경향을 보였다.
+
+```text
+Baseline:
+image patch attention이 local detail과 global context를 함께 처리
+        ↓
+background에도 attention 분산
+
+RetoVLA:
+Register Token이 global context 담당
+        ↓
+background attention 감소
+        ↓
+gripper / target object attention 증가
+```
+
+---
+
+### 7. Conclusion and Limitation
+
+* RetoVLA는 Register Token을 spatial context provider로 재활용하여 lightweight VLA model의 spatial reasoning 능력을 보완한다.
+
+* 추가적인 large encoder나 depth encoder를 붙이지 않고도 global context를 Action Expert에 전달할 수 있다는 점이 핵심이다.
+
+* 실험 결과, RetoVLA는 complex spatial task, long-horizon manipulation, global context가 필요한 task에서 baseline보다 높은 성능을 보였다.
+
+* 그러나 extreme local precision이 필요한 task에서는 global context가 fine control을 방해할 수 있다.
+
+* 또한 highly reflective object처럼 복잡한 texture perception이 필요한 경우는 여전히 한계로 남는다.
+
+* 향후 연구로는 더 selective한 gating mechanism, larger backbone 적용, mobile robot 등 다른 robotic platform에서의 검증이 제안된다.
+
+---
+
+### 핵심 요약
+
+* RetoVLA는 경량 VLA model의 spatial reasoning 손실을 보완하기 위해, ViT 내부에서 사용 후 버려지던 Register Token을 Action Expert에 직접 주입하는 방법을 제안한다.
+
+* Register Token은 global scene summary를 담고, image patch feature는 local detail을 담당하게 하여, Action Expert가 global context와 local precision을 함께 활용하도록 만든다.
+
+* 그 결과 RetoVLA는 추가 parameter 증가 없이 spatially-aware action prediction을 수행하며, 실제 7-DOF robot 실험에서 baseline 대비 평균 성공률을 크게 향상시켰다.
+
+</details>
+
+
+</details>
