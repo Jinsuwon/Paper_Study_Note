@@ -9486,8 +9486,6 @@ Ground-truth Goal Images = 40%
 
 ---
 
-
-
 ## Understanding the Structure
 
 ## 0. Abstract
@@ -10486,10 +10484,10 @@ a0 = real robot action
 a1 ~ N(0, I) = random noise
 ```
 
-* `at`는 실제 action과 noise 사이의 중간 지점이다.
+* `a_t`는 실제 action과 noise 사이의 중간 지점이다.
 
 ```text
-at = (1 - t)a0 + t a1
+a_t = (1 - t)a0 + t a1
 ```
 
 * target vector는 실제 action에서 noise로 향하는 방향이다.
@@ -10498,23 +10496,22 @@ at = (1 - t)a0 + t a1
 ut = a1 - a0
 ```
 
-* 모델은 현재 중간 상태 `at`, time step `t`, condition `c`를 보고 target vector를 예측한다.
+* 모델은 현재 중간 상태 `a_t`, time step `t`, condition `c`를 보고 target vector를 예측한다.
 
 ```text
-vθ(at, t, c)
+vθ(a_t, t, c)
 ```
 
 * 학습 loss는 모델이 예측한 vector와 target vector의 차이를 MSE로 줄이는 방식이다.
 
-```text
-LFM = E || vθ(at, t, c) - (a1 - a0) ||²
+```text 
+LFM = E || vθ(a_t, t, c) - (a1 - a0) ||²
 ```
 
 * 여기서 `LFM`은 Conditional Flow Matching Loss이다.
 
 ---
-
-### 5. Experiments
+### 5. Experiments: Benchmark, Simulation, and Real-World Evaluation
 
 * 논문은 RetoVLA를 세 가지 환경에서 평가한다.
 
@@ -10524,47 +10521,139 @@ LFM = E || vθ(at, t, c) - (a1 - a0) ||²
 3. Custom simulation environment
 ```
 
-* LIBERO benchmark에서는 전체 success rate 향상은 크지 않았지만, skill type별 분석에서 Working Memory와 Global & 3D Spatial Reasoning 관련 task에서 성능 향상이 나타났다.
-
-* 실제 7-DOF robot arm 실험에서는 평균 success rate가 baseline 50.28%에서 RetoVLA 67.42%로 향상되었다.
+* 먼저 LIBERO benchmark에서는 전체 success rate 기준으로는 향상 폭이 크지 않았다.
 
 ```text
-SmolVLA:
-50.28%
+LIBERO Spatial:
+75.8% → 76.2% (+0.4%p)
 
-RetoVLA:
-67.42%
+LIBERO Object:
+70.8% → 71.8% (+1.0%p)
+
+LIBERO Goal:
+80.4% → 80.4% (0.0%p)
+
+LIBERO 10 (Long):
+50.4% → 50.4% (0.0%p)
+```
+
+* 즉, LIBERO 전체 category 평균만 보면 RetoVLA가 baseline을 크게 압도한다고 보기는 어렵다.
+
+* 하지만 skill type별로 나누어 보면 RetoVLA의 효과가 더 명확하게 나타난다.
+
+```text
+Working Memory:
++11.5%p
+
+Global & 3D Spatial Reasoning:
++9.0%p
+```
+
+* 이는 Register Token 재사용이 모든 task를 일괄적으로 개선한다기보다는, 장면 기억, 공간 관계, 3D layout 이해가 필요한 task에서 더 효과적임을 의미한다.
+
+* 반대로 extreme local precision이 필요한 task에서는 약간의 성능 하락이 나타났다.
+
+* 논문은 이를 broad scene context가 fine control에는 때때로 방해가 될 수 있기 때문이라고 해석한다.
+
+---
+
+* 실제 7-DOF robot arm 실험에서는 RetoVLA의 성능 향상이 더 뚜렷하게 나타났다.
+
+```text
+SmolVLA MSR:
+50.28% ± 11.06%
+
+RetoVLA MSR:
+67.42% ± 9.07%
 
 Improvement:
 +17.14%p
 ```
 
-* 특히 spatial understanding과 long-horizon planning이 필요한 task에서 큰 성능 향상이 나타났다.
+* task별 결과를 보면, 대부분의 real-world manipulation task에서 RetoVLA가 baseline보다 높은 성공률을 보였다.
 
 ```text
-Build Domino Line:
-12% → 40%
-
-Close Drawer:
-60% → 96%
+Pick and Place:
+86% → 92% (+6.0%p)
 
 Pull and Place (Jenga):
-60% → 78%
+60% → 78% (+18.0%p)
+
+Build Domino Line:
+12% → 40% (+28.0%p)
+
+Clean Marker on Mirror:
+38% → 52% (+14.0%p)
+
+Close Drawer:
+60% → 96% (+36.0%p)
+
+Move Bowl:
+16% → 38% (+14.0%p)
 ```
 
-* Custom simulation에서도 평균 success rate가 62.8%에서 74.8%로 향상되었다.
+* 특히 `Close Drawer`, `Build Domino Line`, `Pull and Place (Jenga)`에서 향상 폭이 컸다.
+
+* `Close Drawer`는 drawer의 위치와 공간 배치를 이해해야 하므로 3D spatial reasoning이 중요하다.
+
+* `Build Domino Line`은 평균 900 frames per episode로 구성된 long-horizon task이며, domino를 순차적으로 배치해야 하기 때문에 장면 전체 구조와 누적된 작업 상태를 유지하는 능력이 필요하다.
+
+* `Pull and Place (Jenga)`는 object interaction 과정에서 위치 관계와 접촉 상황을 더 안정적으로 이해해야 한다.
+
+* 따라서 real-world 결과는 RetoVLA가 특히 spatial context와 long-horizon manipulation이 필요한 task에서 강점을 보였다는 근거로 해석된다.
+
+* 다만 모든 task에서 좋아진 것은 아니다.
 
 ```text
-SmolVLA:
-62.8%
+Stack by Size:
+80% → 76% (-4.0%p)
+```
 
-RetoVLA:
-74.8%
+* `Stack by Size`에서는 RetoVLA가 baseline보다 낮은 성공률을 보였다.
+
+* 이는 Register Token이 제공하는 broad global context가 항상 이득이 되는 것은 아니며, 크기 비교 이후 정밀하게 쌓는 과정처럼 local precision이 중요한 task에서는 fine control을 방해할 수 있음을 보여준다.
+
+---
+
+* Custom simulation experiment는 physical noise와 lighting shift를 제거한 상태에서 Register Token 재사용 효과를 확인하기 위해 수행되었다.
+
+```text
+SmolVLA MSR:
+62.8% ± 11.56%
+
+RetoVLA MSR:
+74.8% ± 8.8%
 
 Improvement:
 +12.0%p
 ```
 
+* simulation에서는 평가된 모든 task에서 RetoVLA가 baseline보다 높은 성공률을 보였다.
+
+```text
+Pick and Place:
+88% → 96% (+6.0%p)
+
+Stack by Size:
+86% → 88% (+2.0%p)
+
+Pull and Place (Jenga):
+66% → 82% (+16.0%p)
+
+Build Domino Line:
+28% → 52% (+24.0%p)
+
+Clean Marker on Mirror:
+46% → 56% (+10.0%p)
+```
+
+* 가장 큰 향상은 `Build Domino Line`과 `Pull and Place (Jenga)`에서 나타났다.
+
+* 이는 real-world 결과와 마찬가지로, Register Token 기반 spatial context injection이 단순 pick-and-place보다 공간 관계와 장기적인 작업 진행 상태가 중요한 task에서 더 효과적임을 보여준다.
+
+* 종합하면, RetoVLA는 모든 benchmark에서 항상 큰 평균 향상을 만든 것은 아니지만, spatial memory, 3D layout understanding, long-horizon manipulation이 필요한 task에서 일관되게 더 큰 이득을 보였다.
+
+* 반면 local precision 중심의 task에서는 성능 향상이 작거나, real-world `Stack by Size`처럼 오히려 하락할 수 있다.
 ---
 
 ### 6. Analytical Studies
@@ -10622,6 +10711,39 @@ gripper / target object attention 증가
 * 그 결과 RetoVLA는 추가 parameter 증가 없이 spatially-aware action prediction을 수행하며, 실제 7-DOF robot 실험에서 baseline 대비 평균 성공률을 크게 향상시켰다.
 
 </details>
+
+
+<details>
+<summary><b>Thoughts After Reading This Paper</b></summary>
+
+## Thoughts After Reading This Paper
+```
+Register Token은 원래도 있었다.
+
+기존 방식에서는 Register Token이 global information과 artifact를 받아주는 역할을 했지만, 최종적으로는 버려졌다.
+
+RetoVLA는 이 버려지던 Register Token 안에 global spatial context가 남아 있다고 보고, 이를 Action Expert에 전달해 robot action prediction에 활용한다.
+```
+
+### 1) 
+
+**논문 한계**  
+- extreme local precision이 필요한 task에서는 global context가 fine control을 방해할 수 있다.
+
+**내가 떠올린 확장 질문**  
+- Register Token은 spatial reasoning에는 도움이 되지만 precision task에서는 방해될 수 있으므로, task type에 따라 gate 값을 조절하는 task-adaptive gating이 필요할 수 있다
+
+**생각해볼 수 있는 문제**  
+
+- Stack by Size처럼 global context와 local precision이 동시에 필요한 task에서는 gate 조절이 딜레마에 빠질 수 있다. gate 값을 높이면 물체들의 크기 관계, 순서같은 global spatial context를 활용하는 데는 유리하지만, 마지막에 물체를 정확히 집고 중심을 맞춰 쌓는 fine control에는 방해가 될 수 있다. 반대로 gate 값을 낮추면 정밀한 grasping, placement에는 유리할 수 있지만, 물체 간 관계나 전체 task structure를 이해하는 능력이 약해질 수 있다.
+
+**가능한 방향**  
+- RetoVLA에는 Register Token의 영향력을 조절하는 gate mechanism이 존재한다.
+따라서 task가 extreme local precision 중심인지 아닌지를 구분할 수 있다면, precision-critical task에서는 gate 값을 낮춰 global context의 영향을 줄이고, spatial reasoning이 중요한 task에서는 gate 값을 높여 global context를 적극적으로 활용하는 방식으로 task-adaptive gating을 설계할 수 있지 않을까?
+
+
+</details>
+
 
 
 </details>
